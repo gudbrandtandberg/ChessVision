@@ -122,7 +122,7 @@ def extractBoards(img, w, h):
 
         #perspective = getPerspective(img, c)
         #if perspective is not None:
-        b = extractPerspective(im_bw, approx, w, h)
+        b = extractPerspective(im_gray, approx, w, h)
         #plt.imshow(b)
         #plt.show()
         boards.append(b)
