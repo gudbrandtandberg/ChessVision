@@ -15,7 +15,7 @@ board_imgs = [cv2.imread(board_dir+f, 0) for f in board_filenames]
 
 model = load_model('square_classifier_v1.h5')
 
-board_img = board_imgs[1]
+board_img = board_imgs[7]
 
 squares, names = extract_squares(board_img)
 squares = np.array(squares)
