@@ -58,3 +58,10 @@ Forever:
     show image
     wait for user-input... 
     record label
+
+
+https://github.com/ChessCV/chess
+http://cvgl.stanford.edu/teaching/cs231a_winter1415/prev/projects/chess.pdf
+http://www.raspberryturk.com/details/vision.html
+http://vision.soic.indiana.edu/b657/sp2016/projects/rkanchib/paper.pdf
+http://indigenousengineering.com/index.php/16-ie-project/10-extract-chess-position-from-an-image-using-image-processing-algorithms
