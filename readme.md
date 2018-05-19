@@ -8,10 +8,10 @@ The project is built partly on another chess ocr program that can be found here:
 This is what the program does:
 
 ### Input: 
-<img src="./data/raw/IMG_4387.JPG" width="200" />
+<img src="./data/raw/IMG_4387.JPG" width="400" />
 
 ### Output:
-<img src="h./example1.png" width="200"/>
+<img src="./example1.png" width="300"/>
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
