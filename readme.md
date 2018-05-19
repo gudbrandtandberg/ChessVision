@@ -7,11 +7,11 @@ The project is built partly on another chess ocr program that can be found here:
 
 This is what the program does:
 
-Input: 
-![](./data/raw/IMG_4387.JPG)
+### Input: 
+![](./data/raw/IMG_4387.JPG =250x)
 
-Output:
-![](./example1.png/)
+### Output:
+![](./example1.png/=250x)
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
