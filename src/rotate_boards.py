@@ -30,7 +30,7 @@ def sum_corners(c):
 if __name__ == "__main__":
     # Rotate all rotated board-images
     print("Rotating boards...")
-    board_dir = "../data/boards/"
+    board_dir = "../data/extra_boards/"
     board_filenames = listdir_nohidden(board_dir)
     filenames = [f for f in board_filenames]
     board_imgs = [cv2.imread(board_dir+f, 0) for f in filenames]

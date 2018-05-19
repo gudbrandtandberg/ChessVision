@@ -8,8 +8,8 @@ import chess
 import chess.svg
 #from IPython.display import SVG
 
-board_dir = "../data/Boards/"
-out_dir = "../data/results/"
+board_dir = "../data/extra_boards/"
+out_dir = "../data/extra_results/"
 
 def write_fen(fen_string, fname):
     fname = fname[:-4]
