@@ -7,11 +7,11 @@ The project is built partly on another chess ocr program that can be found here:
 
 This is what the program does:
 
-Input: 
-![](./data/raw/IMG_4387.JPG)
+### Input: 
+<img src="./data/raw/IMG_4387.JPG" width="400" />
 
-Output:
-![](./example1.png/)
+### Output:
+<img src="./example1.png" width="300"/>
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
@@ -60,12 +60,22 @@ Any piece can be posted on a white (w) or dark (d) square.
 
 If we do not take into account square color, this turns out to be 13 classes.
 
-The script ```hand_label.py``` lets the user hand-label every square image in the accumulated dataset into one of the 13 categories. 
+The script ```hand_labeller.py``` lets the user hand-label every square image in the accumulated dataset into one of the 13 categories. It does something of the following:
 
 Forever:
     show image
     wait for user-input... 
     record label
+
+After labelling, we can train a convolutional neural network to classify the squares. To train the network and save it as a model file, run
+
+```python square_classifyer.py```
+
+Running 
+
+```python classify_boards.py``` 
+
+in the __src__ directory classifies all the extracted board images and outputs svg files of the chess position. 
 
 ## Some references
 
