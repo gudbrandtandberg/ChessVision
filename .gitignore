@@ -2,4 +2,6 @@ __pycache__
 .ipynb_checkpoints
 .DS_Store
 data/extra_*
+data/fail_cases
+data/fail_boards
 
