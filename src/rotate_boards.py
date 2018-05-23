@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from util import listdir_nohidden
+import argparse
 
 def extract_corners(img):    
 # Assuming downward-pointing y-axis, corners are numbered as:
@@ -30,7 +31,18 @@ def sum_corners(c):
 if __name__ == "__main__":
     # Rotate all rotated board-images
     print("Rotating boards...")
-    board_dir = "../data/extra_boards/"
+
+    ## Parse args
+    parser = argparse.ArgumentParser(description='A chess OCR application.')
+
+    parser.add_argument('-d', metavar='indir', type=str, nargs='+',
+                        help='The dir to process.')
+
+    args = parser.parse_args()
+
+    board_dir = args.d[0]
+    
+
     board_filenames = listdir_nohidden(board_dir)
     filenames = [f for f in board_filenames]
     board_imgs = [cv2.imread(board_dir+f, 0) for f in filenames]
