@@ -28,6 +28,17 @@ def sum_corners(c):
         sums.append(corner_sum / max_sum)
     return sums
 
+def rotate_board(b):
+    corners = extract_corners(b)
+    corner_sums = sum_corners(corners)
+    ind = np.argmax(corner_sums)
+
+    if ind == 1 or ind == 2:
+        w,h = b.shape
+        M = cv2.getRotationMatrix2D((h/2,w/2),-90,1)
+        rot = cv2.warpAffine(b,M,(h,w))
+    return rot
+
 if __name__ == "__main__":
     # Rotate all rotated board-images
     print("Rotating boards...")

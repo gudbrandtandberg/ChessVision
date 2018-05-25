@@ -87,9 +87,18 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            print("Received file, sending response..")
-            return "Heck yes."
+            file_loc = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_loc)
+            
+            # The file is now saved to the upload directory
+            # Next, we invoke the main program in src using the file as argument
+            res = os.system("../src/main.py {}".format(file_loc))
+            print(res) # 0
+            fenfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4] + "_fen.txt")
+            with open(fenfilename, "r") as f:
+                FEN = f.readline()
+            print("Received file, sending response: {}".format(FEN))
+            return FEN
             #return redirect(url_for('uploaded_file',
             #                        filename=filename))
     return '''
