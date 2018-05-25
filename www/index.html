@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>ChessVision</title>
+        <meta charset="UTF8" />
+        <link rel="stylesheet" href="css/chessboard-0.3.0.css" />
+    </head>
+    <body>
+        <h1>Welcome to ChessVision</h1>
+
+        <form method="POST" name="form" action="classify_upload.py" id="theform" enctype="multipart/form-data">
+            <input id="imageinput" type="file" name="image" accept="image/*">
+            <input type="submit">
+            <!--<input type="button" name="submit" value="Submit" onclick="submitForm()">-->
+        </form>
+        
+        <div id="board" style="width: 400px"></div>¨
+
+        <div style="width: 400px">
+            <img id="inputpreview" src="#" width="400"> 
+        </div>
+
+        <!--        SCRIPTS             -->
+        <script src="js/json3.js"></script>
+        <script src="js/jquery-1.11.1.min.js"></script>
+        <script src="js/chessboard-0.3.0.js"></script>
+        <script>
+        var init = function() {
+            
+            var board = ChessBoard('board', 'start');
+            
+            $("#theform").on("submit", function(event) {
+                event.preventDefault()
+                var file = document.getElementById("imageinput").files[0]
+                // TODO input check. 
+
+                var reader = new FileReader();
+                reader.onload = function(data) {
+                    var imageData = data.target.result
+                    // Show preview of uploaded image
+                    document.getElementById("inputpreview").src = imageData
+                    // Send base64 encoded image to backend..
+                    formData = {"image": imageData}
+                    $.ajax({url: "/", method: "POST", data: formData}).done(function(data) {
+                        console.log("Success!")
+                    })
+                }
+                reader.readAsDataURL(file);
+        })
+
+
+        }; // end init()
+
+        var setFEN = function() {
+            var cfg = {
+            position: 'r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R'
+            };
+    
+            var board = ChessBoard('board', cfg);
+        }
+            
+        $(document).ready(init);
+        </script>
+    </body>
+</html>
