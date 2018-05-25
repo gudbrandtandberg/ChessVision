@@ -11,7 +11,7 @@ This is what the program does:
 <img src="./data/raw/IMG_4387.JPG" width="400" />
 
 ### Output:
-<img src="./example1.png" width="300"/>
+<img src="./img/example1.png" width="300"/>
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
