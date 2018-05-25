@@ -25,9 +25,9 @@ def largestContour(contours):
 def ignoreContours(img,
                    contours,
                    hierarchy=None,
-                   min_ratio_bounding=0.6,
-                   min_area_percentage=0.01,
-                   max_area_percentage=0.40):
+                   min_ratio_bounding=0.5,
+                   min_area_percentage=0.05,
+                   max_area_percentage=0.7):
     """Filters a contour list based on some rules. If hierarchy != None,
     only top-level contours are considered.
     :param img: source image
@@ -84,8 +84,9 @@ def extractBoards(img, w, h):
 
     _,contours,hierarchy = cv2.findContours(im_bw,  cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
 
+    old_len = len(contours)
     contour_ids = ignoreContours(im_bw, contours, hierarchy)
-
+    print("Found {} contours, filtered to {} contours".format(old_len, len(contour_ids)))
     boards = []
     
     #print("Have {} contours after filtering".format(len(contour_ids)))
@@ -97,17 +98,33 @@ def extractBoards(img, w, h):
     #if len(contour_ids) > 1:
     #    print("Found more than one candidate contour in image, aborting..")
     #    return
+    print("There are {} contours".format(len(contour_ids)))
+    cv2.drawContours(img, filtered_contours, -1, (255, 0, 0), thickness=10)
+    plt.imshow(img)
+    #plt.show()
+    plt.axis("off")
+    return []
 
-
+    print("There are {} contours".format(len(contour_ids)))
     for i in contour_ids:
         cnt = contours[i]
-
-        epsilon = 0.1*cv2.arcLength(cnt,True)
+        exactness = 0.05
+        arclen = cv2.arcLength(cnt,True)
+        epsilon = exactness * arclen
         approx = cv2.approxPolyDP(cnt,epsilon,True)
+        while len(approx) > 4:
+            print("Too many points in approx: {}".format(len(approx)))
+            exactness += 0.001
+            epsilon = exactness * arclen
+            approx = cv2.approxPolyDP(cnt,epsilon,True)
 
-        #cv2.drawContours(img, [approx], -1, (0, 0, 255), thickness=10)
+        cv2.drawContours(img, [approx], -1, (0, 0, 255), thickness=10)
         #print(len(approx))
         if len(approx) != 4:
+            print("Approx len: {}".format(len(approx)))
+            # plt.imshow(img)
+            # plt.show()
+            # plt.axis("off")
             print("Oddly shaped contour.. skipping")
             continue
 

@@ -4,4 +4,9 @@ __pycache__
 data/extra_*
 data/fail_cases
 data/fail_boards
+data/training_data
+data/clean_boards
+data/extra_results
+data/training_data/*
+data/training_data
 

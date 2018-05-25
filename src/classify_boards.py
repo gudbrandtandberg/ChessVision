@@ -21,7 +21,7 @@ board_filenames = listdir_nohidden(board_dir)
 board_filenames = [b for b in board_filenames]
 board_imgs = [cv2.imread(board_dir+f, 0) for f in board_filenames]
 
-model = load_model('square_classifier_v1.h5')
+model = load_model('square_classifier_v2.h5')
 
 for board_img, fname in zip(board_imgs, board_filenames):
     
@@ -34,7 +34,8 @@ for board_img, fname in zip(board_imgs, board_filenames):
     predictions = model.predict(squares)
     predictions = np.argmax(predictions, axis=1)
 
-    label_names = ["R", "r", "K", "k", "Q", "q", "N", "n", "P", "p", "B", "b", "f"]
+    #label_names = ["R", "r", "K", "k", "Q", "q", "N", "n", "P", "p", "B", "b", "f"]
+    label_names  = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']
 
     board = chess.BaseBoard(board_fen=None)
     
