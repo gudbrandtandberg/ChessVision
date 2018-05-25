@@ -9,4 +9,5 @@ data/clean_boards
 data/extra_results
 data/training_data/*
 data/training_data
-
+webroot/uploads
+webroot/uploads/*
