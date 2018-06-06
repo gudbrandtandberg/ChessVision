@@ -1,7 +1,9 @@
-# Chess Vision - a computer vision chess project
+# Chess Vision - a computer vision chess project (work in progress)
 
 This repository contains code and resources for extracting chess positions from images using computer vision algorithms. 
 The project is built partly on another chess ocr program that can be found here: https://github.com/npcardoso/chessocr
+
+A web app that uses the project can be found at https://github.com/gudbrandtandberg/CVWeb.
 
 ## Example
 
