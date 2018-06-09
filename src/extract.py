@@ -26,8 +26,8 @@ def ignoreContours(img,
                    contours,
                    hierarchy=None,
                    min_ratio_bounding=0.6,
-                   min_area_percentage=0.01,
-                   max_area_percentage=0.40):
+                   min_area_percentage=0.5,
+                   max_area_percentage= 1.0):
     """Filters a contour list based on some rules. If hierarchy != None,
     only top-level contours are considered.
     :param img: source image
@@ -82,7 +82,10 @@ def extractBoards(img, w, h):
 
     (thresh, im_bw) = cv2.threshold(im_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
-    contours,hierarchy = cv2.findContours(im_bw,  cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+    print(im_bw.shape)
+    print(im_bw)
+
+    _, contours,hierarchy = cv2.findContours(im_bw,  cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
 
     old_len = len(contours)
     contour_ids = ignoreContours(im_bw, contours, hierarchy)
@@ -105,7 +108,6 @@ def extractBoards(img, w, h):
     # plt.axis("off")
     #return []
 
-    print("There are {} contours".format(len(contour_ids)))
     for i in contour_ids:
         cnt = contours[i]
         exactness = 0.1
@@ -143,6 +145,7 @@ def extractBoards(img, w, h):
         #plt.imshow(b)
         #plt.show()
         boards.append(b)
+        break
 
     return boards
 

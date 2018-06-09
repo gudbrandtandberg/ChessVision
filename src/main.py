@@ -6,8 +6,7 @@ from keras.models import load_model
 from extract_squares import extract_squares
 import numpy as np
 import chess
-from extract import extractBoards
-from rotate_boards import rotate_board
+from board_extractor_v2 import extract_board
 
 def write_fen(fen_string, fname):
     fname = fname[:-4]
@@ -17,15 +16,17 @@ def write_fen(fen_string, fname):
 
 print("Initiating main function")
 
-filename = sys.argv[1]    #something like './uploads/img.jpg'
-img = cv2.imread("../webroot/" + filename)
+#usage: main.py ../data/Segmentation/hi_res_raw/filename.jpg 
 
-boards = extractBoards(img, 512, 512)
-board_img = boards[0]
-board_img = rotate_board(board_img)
+path = sys.argv[1]    #something like './uploads/img.jpg'
+filename = path.split("/")[-1]
+print("Extracting board from {}".format(filename))
+img = cv2.imread(path)
 
 #cv2.imwrite("test.jpg", board_img)
-model = load_model('../src/square_classifier_v2.h5')
+model = load_model('square_classifier_v2.h5')
+
+board_img = extract_board(img)
 
 squares, names = extract_squares(board_img)
 squares = np.array(squares)
@@ -52,4 +53,5 @@ for pred, sq in zip(predictions, names):
     board.set_piece_at(square, piece, promoted=False)
         
 FEN = board.board_fen(promoted=False)
-write_fen(FEN, "../webroot/" + filename)
+write_fen(FEN, "../data/Segmentation/FEN/" + filename)
+print(FEN)

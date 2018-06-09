@@ -4,11 +4,14 @@ from keras.models import Sequential
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 import sys
 import data
+import numpy as np
+from model.square_classifier import build_square_classifier
 
-batch_size = 32
 num_classes = 13
+batch_size = 32
 epochs = 12
 
 # input image dimensions
@@ -17,8 +20,13 @@ input_shape = (64, 64, 1)
 # the data, split between train and test sets
 
 train_datagen = ImageDataGenerator(
-        rescale=1./255
+        rescale=1./255,
+        validation_split=0.2
         )
+
+#train_datagen.fit()
+#from keras.utils import plot_model
+#plot_model(model, to_file='model.png')
 
 train_generator = train_datagen.flow_from_directory(
         '../data/training_data',
@@ -29,29 +37,30 @@ train_generator = train_datagen.flow_from_directory(
 
 # Build the model
 
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
-                 input_shape=input_shape))
-model.add(Conv2D(64, (3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-model.add(Flatten())
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='softmax'))
+model = build_square_classifier()
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-model.fit_generator(
-        train_generator,
-        steps_per_epoch=2000,
-        epochs=12)
 
-#score = model.evaluate(x_test, y_test, verbose=0)
-#print('Test loss:', score[0])
-#print('Test accuracy:', score[1])
+callbacks = [EarlyStopping(monitor='loss',
+                           patience=8,
+                           verbose=1,
+                           min_delta=1e-4),
+             ReduceLROnPlateau(monitor='loss',
+                               factor=0.1,
+                               patience=4,
+                               verbose=1,
+                               min_delta=1e-4),
+             ModelCheckpoint(monitor='loss',
+                             filepath='../weights/best_weights_square.hdf5',
+                             save_best_only=True,
+                             save_weights_only=True),
+             TensorBoard(log_dir='../logs/square_logs/')]
 
-model.save("square_classifier_v2.h5")
+model.fit_generator(generator=train_generator,
+                    steps_per_epoch=np.ceil(5216./32.),
+                    epochs=100,
+                    verbose=1,
+                    callbacks=callbacks)

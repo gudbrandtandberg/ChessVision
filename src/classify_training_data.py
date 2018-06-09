@@ -7,22 +7,17 @@ from extract_squares import extract_squares
 import numpy as np
 from util import listdir_nohidden
 
-board_dir = "../data/clean_boards/"
-out_dir = "../data/training_data/"
+board_dir = "../data/Segmentation/boards/"
+out_dir = "../data/extra_training_data/"
 label_names = ["R", "r", "K", "k", "Q", "q", "N", "n", "P", "p", "B", "b", "f"]
 dir_names = ["R", "_r", "K", "_k", "Q", "_q", "N", "_n", "P", "_p", "B", "_b", "f"]
 
-def write_fen(fen_string, fname):
-    fname = fname[:-4]
-    
-    with open(out_dir +fname + "_fen.txt", "w") as f:
-        f.write(fen_string)
 
 board_filenames = listdir_nohidden(board_dir)
 board_filenames = [b for b in board_filenames]
 board_imgs = [cv2.imread(board_dir+f, 0) for f in board_filenames]
 
-model = load_model('square_classifier_v1.h5')
+model = load_model('square_classifier_v2.h5')
 
 for board_img, fname in zip(board_imgs, board_filenames):
     
@@ -39,5 +34,3 @@ for board_img, fname in zip(board_imgs, board_filenames):
         dir_name = dir_names[pred]
         filename = name + "_" + fname
         cv2.imwrite(out_dir + dir_name + "/" + filename, sq)
-    
-    
