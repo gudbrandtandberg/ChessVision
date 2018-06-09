@@ -9,5 +9,9 @@ data/clean_boards
 data/extra_results
 data/training_data/*
 data/training_data
+data/squares/*
 webroot/uploads
 webroot/uploads/*
+weights/*
+data/Segmentation/*
+

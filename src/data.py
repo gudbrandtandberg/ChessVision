@@ -41,6 +41,14 @@ def load_data():
 
     return (x_train, y_train), (x_test, y_test)
 
+def load_image_and_mask_ids():
+    filenames = [f[:-4] for f in listdir_nohidden("../data/Segmentation/images/")]
+    return filenames
+
+def load_image_ids():
+    filenames = [f[:-4] for f in listdir_nohidden("../data/Segmentation/images/")]
+    return filenames
+
 
 if __name__ == "__main__":
 

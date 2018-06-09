@@ -53,6 +53,7 @@ def main(argv):
         for b in boards: 
             cv2.imwrite(outdir + "/x{}_".format(i) + filename, b)
             i += 1
+        break
 
 
 if __name__ == "__main__":
