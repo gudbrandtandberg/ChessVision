@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <title>ChessVision</title>
+        <meta charset="UTF8" />
+        <link rel="stylesheet" href="css/chessboard-0.3.0.css" />
+    </head>
+    <body>
+        <h1>Welcome to ChessVision</h1>
+        <h2>{{x}}</h2>
+        <p>
+                <!--http://40.113.134.197:8080-->
+                <!--40.91.195.137-->
+        </p>
+        <form method="POST" name="form" id="theform" enctype="multipart/form-data">
+            <input id="imageinput" type="file" name="file" accept="image/*">
+            <input type="submit">
+            <!--<input type="button" name="submit" value="Submit" onclick="submitForm()">-->
+        </form>
+        
+        <div id="container" style="width: 900px; border: 1px solid black; overflow: hidden;">
+            <div id="board" style="width: 400px; float: left"></div>¨
+            <img id="inputpreview" src="#" width="400" style="rotate: 90; overflow: hidden; image-orientation: from-image;"> 
+        </div>
+        <!--        SCRIPTS             -->
+        <script src="js/json3.js"></script>
+        <script src="js/jquery-1.11.1.min.js"></script>
+        <script src="js/chessboard-0.3.0.js"></script>
+        <script>
+        var init = function() {
+            
+            var board = ChessBoard('board', 'start');
+            
+            $("form#theform").submit(function(event) {
+                event.preventDefault()
+                var file = document.getElementById("imageinput").files[0]
+                // TODO input check. 
+
+                var formData = new FormData(this);
+                
+                $.ajax({
+                    url: "http://40.91.195.137:8080/",
+                    method: "POST", 
+                    data: formData,
+                    success: function (data) {
+                        setFEN(data)
+                    },
+                    error: function(msg) {
+                        console.log(msg)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false})
+
+                var reader = new FileReader();
+                reader.onload = function(data) {
+                    var imageData = data.target.result
+                    // Show preview of uploaded image
+                    document.getElementById("inputpreview").src = imageData
+                    $('#inputpreview').css('transform','rotate(90 deg)');
+                    // Send base64 encoded image to backend..
+                }
+                reader.readAsDataURL(file);
+        })
+
+
+        }; // end init()
+
+        var setFEN = function(fenstring) {
+            var cfg = {
+            position: fenstring
+            };
+    
+            var board = ChessBoard('board', cfg);
+        }
+            
+        $(document).ready(init);
+        </script>
+    </body>
+</html>
