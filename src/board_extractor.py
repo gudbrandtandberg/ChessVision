@@ -98,6 +98,8 @@ def find_quadrangle(mask):
 
     for i in range(len(contours)):
         cnt = contours[i]
+        area = cv2.contourArea(cnt)
+        print("Contour area: {}".format(area))
         arclen = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.1*arclen, True)
         print(len(approx))

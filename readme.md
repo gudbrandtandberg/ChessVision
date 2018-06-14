@@ -14,7 +14,22 @@ This is what the program does:
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
-## Board extraction
+##Project Structure
+
+- src
+- data
+- webroot (seperate git repo)
+- computeroot
+
+### Architecture 
+
+2 nodes: 
+  - web node (serves static content)
+  - compute node (handles POST requests to classify boards)
+
+## Algorithm details
+
+### Board extraction
 
 Step 1 is to extract square chessboards from raw photographs of chess positions.
 
@@ -34,7 +49,7 @@ Running
 
 in the __src__ directory sorts this out. 
 
-## Square extraction
+### Square extraction
 
 Square extraction is simply done by cutting the board images into 64 equal sized sub-images. 
 Running 
@@ -44,7 +59,7 @@ Running
 in the __src__ directory populates __data/squares__ with square images.
 
 
-## Square classification
+### Square classification
 
 
 We classify squares by retraining a pretrained CNN on a hand-labelled dataset.
@@ -74,7 +89,44 @@ Running
 
 ```python classify_boards.py``` 
 
-in the __src__ directory classifies all the extracted board images and outputs svg files of the chess position. 
+in the __src__ directory classifies all the extracted board images and outputs svg files of the chess position.
+
+##Deployment Data Flow:
+
+As more user data is uploaded to the compute node, the data is stored to further improve the models
+The compute node follows roughly the following flow on user upload and user feedback
+
+On new image: POST {file: "..."} to /cv_algo (checked on frontend)
+  - give image unique_id
+  - extract board
+  if success:
+    - save raw in ./user_uploads/raw_success/
+  else:
+    - save raw in ./user_uploads/raw_fail/
+    - return {error: "msg"} to user
+  - classify pieces (+ logic)
+  - return {result: "fen", id: "..."} to user (front end produces feedback button)
+  - save board in ./user_uploads/unlabelled/boards/
+  - save predictions in ./user_uploads/unlabelled/predictions/ (same id + .json)
+
+On new feedback event: POST to /feedback {id: "...", correct: true}
+  if correct:
+    - save all squares in board from ./user_uploads/unlabelled/boards/id to ./user_uploads/squares/<b, n, ...>/
+  else: 
+    - copy board from ./user_uploads/unlabelled/boards/id ./user_uploads/failboards/
+    - delete board from ./user_uploads/unlabelled/boards/id
+
+## Todo:
+
+Position Logic Checks
+- most likely king
+- bishop on color
+- not pawn on first rank
+
+- more piece imgs from test data
+- more raw imgs to retrain mask-cnn
+
+- more robust contour approximation
 
 ## Some references
 
