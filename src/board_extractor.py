@@ -79,32 +79,33 @@ def find_quadrangle(mask):
     #plt.figure()
     #plt.imshow(mask, cmap="gray")
     #plt.show()
-
-    print(mask.shape)
     
-    mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
-    for i in range(len(contours)):
-        cv2.drawContours(mask, contours, i, randomColor(), thickness=4)
+    #mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
+    #for i in range(len(contours)):
+    #    cv2.drawContours(mask, contours, i, randomColor(), thickness=4)
 
     #plt.figure()
     #plt.imshow(mask)
     #plt.show()
 
-    i = 0
-    print(len(contours))
+    mask_area = float(mask.shape[0]*mask.shape[1])
+    contour_areas = np.array(map(lambda x: cv2.contourArea(x), contours))
+    contour_areas /= mask_area
+    print("Found {} contours".format(len(contours)))
+    print("Contour areas: {}".format(contour_areas))
+
     #contours = ignore_contours(mask, contours)
-    #print(len(contours))
+    
     approx = None
 
     for i in range(len(contours)):
         cnt = contours[i]
         area = cv2.contourArea(cnt)
-        print("Contour area: {}".format(area))
+        
         arclen = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.1*arclen, True)
         print(len(approx))
         if len(approx) != 4:
-            i += 1
             continue
 
         approx = rotate_quadrangle(approx)

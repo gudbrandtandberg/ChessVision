@@ -58,7 +58,7 @@ for pred, sq in zip(predictions, names):
     board.set_piece_at(square, piece, promoted=False)
         
 FEN = board.board_fen(promoted=False)
-write_fen(FEN, "../computeroot/uploads/" + filename)
+write_fen(FEN, "../computeroot/user_uploads/" + filename)
 
 print("\rExtracting board from {} ...DONE".format(filename))
 print(FEN)

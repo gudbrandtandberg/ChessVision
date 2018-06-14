@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from datetime import timedelta
 from functools import update_wrapper
+import uuid 
 
 app = Flask(__name__)
 
@@ -60,7 +61,7 @@ def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
     return decorator
 
 
-UPLOAD_FOLDER = './uploads/'
+UPLOAD_FOLDER = './user_uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
@@ -71,54 +72,66 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/cv_algo/', methods=['POST'])
 @crossdomain(origin='*')
-def upload_file():
+def predict_img():
     print("Upload invoked")
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            print("no file")
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            print("file not present")
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file_loc = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_loc)
-            print(file_loc)
-            
-            # The file is now saved to the upload directory
-            # Next, we invoke the main program in src using the file as argument
-            res = os.system("../src/main.py -f {} -o unused".format(file_loc))
-            print(res) # 0
-            fenfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4] + "_fen.txt")
-            with open(fenfilename, "r") as f:
-                FEN = f.readline()
-            print("Received file, sending response: {}".format(FEN))
-            return FEN
-            #return redirect(url_for('uploaded_file',
-            #                        filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+    
+    file = read_file_from_formdata()
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+    if file is not None:
+        raw_id = str(uuid.uuid4())
+        filename = secure_filename(raw_id) + ".JPG"
+        file_loc = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        # The file is now saved to the upload directory
+        # Next, we invoke the main program in src using the file as argument
+        #res = os.system("../src/main.py -f {} -o unused".format(file_loc))
+
+        
+
+        #file.save(file_loc)
+        
+
+        fenfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4] + "_fen.txt")
+        
+        with open(fenfilename, "r") as f:
+            FEN = f.readline()
+        
+        
+        ret = '{{ "FEN": "{0}", "id": "{1}" }}'.format(FEN, raw_id)
+
+        print("Received file, sending response: {}".format(ret))
+        return ret
+    return '{error: true}'
+
+@app.route('/feedback/', methods=['POST'])
+@crossdomain(origin='*')
+def receive_feedback():
+    res = "{success: false}"
+
+    raw_id = request.form['id']
+    feedback = request.form['feedback']
+
+    print("{0}, {1}".format(raw_id, feedback))
+    res = '{success: true}'
+    return res
+
+def read_file_from_formdata():
+    # check if the post request has the file part
+    
+    if 'file' not in request.files:
+        print("No file")
+        return None
+
+    file = request.files['file']
+    
+    if file.filename == '' or not allowed_file(file.filename:
+        print("No legal file selected")
+        return None
+    
+    return file
+
 
 if __name__ == '__main__':
   app.run(host='127.0.0.1', port=7777)

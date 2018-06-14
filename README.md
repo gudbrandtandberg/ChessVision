@@ -128,6 +128,8 @@ Position Logic Checks
 
 - more robust contour approximation
 
+- UI - status/progress, hidden fields,  
+
 ## Some references
 
 + https://github.com/ChessCV/chess
