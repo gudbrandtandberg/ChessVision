@@ -14,7 +14,7 @@ This is what the program does:
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
-##Project Structure
+## Project Structure
 
 - src
 - data
@@ -91,7 +91,7 @@ Running
 
 in the __src__ directory classifies all the extracted board images and outputs svg files of the chess position.
 
-##Deployment Data Flow:
+## Deployment Data Flow:
 
 As more user data is uploaded to the compute node, the data is stored to further improve the models
 The compute node follows roughly the following flow on user upload and user feedback
