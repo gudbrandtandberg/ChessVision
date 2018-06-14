@@ -2,11 +2,45 @@ import cv2
 import numpy as np
 import random
 import os
+import argparse
+
+
 
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if not f.startswith('.'):
             yield f
+
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', metavar='indir', type=str, nargs='+',
+                        help='The dir to process.')
+    parser.add_argument('-f', metavar='infile', type=str, nargs='+',
+                        help='The dir to process.')
+    parser.add_argument('-o', metavar='outdir', type=str, nargs='+',
+                        help='The dir to process.')
+    args = parser.parse_args()
+    
+    indir = None
+    infile = None
+    outfile = None 
+
+    if args.d is not None:
+        indir = args.d[0]
+        infile = None
+    elif args.f is not None:
+        infile = args.f[0]
+        indir = None    
+    
+    if args.o is not None:
+        outdir = args.o[0]
+    else:
+        raise Exception("Usage: must supply outdir (flag -o) to run this command!")
+    
+    if indir == None and infile == None:
+        raise Exception("Usage: must supply either indir (-d) or infile (-f) to run this command!")
+
+    return (infile, indir, outdir)
 
 def writeDocumentationImage(image, name):
     cv2.imwrite("images/" + name + ".png", image)
@@ -22,7 +56,7 @@ def drawLine(image, a, b, color, thickness=1):
     cv2.line(image, tuple(a), tuple(b), color, thickness)
 
 
-def drawContour(image, contour, color, thickness=4):
+def draw_contour(image, contour, color, thickness=4):
     for i in range(len(contour)):
         p1 = tuple(contour[i])
         p2 = tuple(contour[int((i+1) % len(contour))])

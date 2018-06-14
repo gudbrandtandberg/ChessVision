@@ -15,3 +15,4 @@ webroot/uploads
 webroot/uploads/*
 weights/*
 
+**/*.pyc

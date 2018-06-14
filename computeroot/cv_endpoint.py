@@ -5,6 +5,8 @@ from flask import send_from_directory
 from datetime import timedelta
 from functools import update_wrapper
 
+app = Flask(__name__)
+
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
     """Decorator function that allows crossdomain requests.
@@ -72,6 +74,7 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def upload_file():
+    print("Upload invoked")
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -89,10 +92,11 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_loc = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_loc)
+            print(file_loc)
             
             # The file is now saved to the upload directory
             # Next, we invoke the main program in src using the file as argument
-            res = os.system("../src/main.py {}".format(file_loc))
+            res = os.system("../src/main.py -f {} -o unused".format(file_loc))
             print(res) # 0
             fenfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4] + "_fen.txt")
             with open(fenfilename, "r") as f:
@@ -115,3 +119,6 @@ def upload_file():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
+if __name__ == '__main__':
+  app.run(host='127.0.0.1', port=7777)
