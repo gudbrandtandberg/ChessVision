@@ -1,6 +1,9 @@
 var init = function() {
         
     var board = ChessBoard('board', 'start');
+
+    var cv_algo_url = "http://40.113.67.136:8080/cv_algo/"
+    var feedback_url = "http://40.113.67.136:8080/feedback/"
     
     $("form#theform").submit(function(event) {
         event.preventDefault()
@@ -9,7 +12,7 @@ var init = function() {
         var formData = new FormData(this);
         
         $.ajax({
-            url: "http://localhost:7777/cv_algo/",
+            url: cv_algo_url,
             method: "POST", 
             data: formData,
             cache: false,
@@ -45,7 +48,7 @@ var init = function() {
         var formData = new FormData(this);
     
         $.ajax({
-            url: "http://localhost:7777/feedback/",
+            url: feedback_url,
             method: "POST",
             data: formData, 
             cache: false,
