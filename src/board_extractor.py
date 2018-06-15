@@ -28,13 +28,11 @@ def load_extractor():
 
 def extract_board(image, orig, model):
     
-    #model = load_extractor()
     #predict chessboard-mask:
     print("Extracting board...")
     image_batch = np.array([image], np.float32) / 255
     
     predicted_mask_batch = model.predict(image_batch)
-    del model
 
     predicted_mask = predicted_mask_batch[0].reshape(SIZE)
     mask = fix_mask(predicted_mask)
@@ -91,7 +89,13 @@ def find_quadrangle(mask):
     #plt.show()
 
     _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
-
+    
+    print("Found {} contour(s)".format(len(contours)))
+    contours = ignore_contours(mask, contours)
+    print("Filtered to {} contour(s)".format(len(contours)))
+    if len(contours) == 0:
+        return None
+    
     #plt.figure()
     #plt.imshow(mask, cmap="gray")
     #plt.show()
@@ -103,14 +107,6 @@ def find_quadrangle(mask):
     #plt.figure()
     #plt.imshow(mask)
     #plt.show()
-
-    mask_area = float(mask.shape[0]*mask.shape[1])
-    contour_areas = np.array(map(lambda x: cv2.contourArea(x), contours))
-    contour_areas /= mask_area
-    print("Found {} contour(s)".format(len(contours)))
-    print("Contour area(s): {}".format(contour_areas))
-
-    #contours = ignore_contours(mask, contours)
     
     approx = None
 
@@ -145,48 +141,22 @@ def extract_perspective(image, perspective, w, h):
 
 def ignore_contours(img,
                    contours,
-                   hierarchy=None,
                    min_ratio_bounding=0.6,
-                   min_area_percentage=0.01,
-                   max_area_percentage=0.40):
-    """Filters a contour list based on some rules. If hierarchy != None,
-    only top-level contours are considered.
-    :param img: source image
-    :param contours: list of contours
-    :param hierarchy: contour hierarchy
-    :param min_ratio_bounding: minimum contour area vs. bounding box area ratio
-    :param min_area_percentage: minimum contour vs. image area percentage
-    :param max_area_percentage: maximum contour vs. image area percentage
-    :returns: a list with the unfiltered countour ids
-    """
+                   min_area_percentage=0.35,
+                   max_area_percentage=0.95):
 
     ret = []
-    i = -1
+    mask_area = float(img.shape[0]*img.shape[1])
 
-    if hierarchy is not None:
-        while len(hierarchy.shape) > 2:
-            hierarchy = np.squeeze(hierarchy, 0)
-    img_area = img.shape[0] * img.shape[1]
-
-    for c in contours:
-        i += 1
-
-        if hierarchy is not None and \
-           not hierarchy[i][2] == -1:
-            continue
-
-        _,_,w,h = tmp = cv2.boundingRect(c)
+    for i in range(len(contours)):
+        ca = cv2.contourArea(contours[i])
+        ca /= mask_area
+        if ca < min_area_percentage or ca > max_area_percentage:
+            continue        
+        _, _, w, h = tmp = cv2.boundingRect(contours[i])
         if ratio(h,w) < min_ratio_bounding:
             continue
-
-        contour_area = cv2.contourArea(c)
-        img_contour_ratio = ratio(img_area, contour_area)
-        if img_contour_ratio < min_area_percentage:
-            continue
-        if img_contour_ratio > max_area_percentage:
-            continue
-
-        ret.append(c)
+        ret.append(contours[i])
 
     return ret
 

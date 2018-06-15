@@ -119,7 +119,14 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
 
 ## Todo:
 
-- fix 2-model bug
+- fix 2-model bug (theano kinda fixes)
+  - https://github.com/keras-team/keras/issues/2397
+  - https://github.com/llSourcell/how_to_deploy_a_keras_model_to_production/blob/master/app.py
+  - https://medium.com/@burgalon/deploying-your-keras-model-35648f9dc5fb
+  - https://gitlab.com/fast-science/background-removal-server
+  - https://blog.keras.io/building-a-simple-keras-deep-learning-rest-api.html
+  - https://github.com/mtobeiyf/keras-flask-deploy-webapp
+
 
 Position Logic Checks
 - most likely king
