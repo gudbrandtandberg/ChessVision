@@ -4,7 +4,15 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from datetime import timedelta
 from functools import update_wrapper
-import uuid 
+import uuid
+import chessvision
+import cv2
+import numpy as np
+#import u_net as unet
+#from square_classifier import build_square_classifier
+
+from util import BoardExtractionError
+
 
 app = Flask(__name__)
 
@@ -62,60 +70,93 @@ def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
 
 
 UPLOAD_FOLDER = './user_uploads/'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TMP_FOLDER'] = "./tmp/"
 app.secret_key = 'super secret key'
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @app.route('/cv_algo/', methods=['POST'])
 @crossdomain(origin='*')
 def predict_img():
-    print("Upload invoked")
+    print("CV-Algo invoked")
     
     file = read_file_from_formdata()
 
     if file is not None:
         raw_id = str(uuid.uuid4())
         filename = secure_filename(raw_id) + ".JPG"
-        file_loc = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        tmp_loc = os.path.join(app.config['TMP_FOLDER'], filename)
         
-        # The file is now saved to the upload directory
-        # Next, we invoke the main program in src using the file as argument
-        #res = os.system("../src/main.py -f {} -o unused".format(file_loc))
+        #print("Will classfiy file stored at {}".format(tmp_loc))
+        file.save(tmp_loc)
+        try:
+            board_img, predictions, FEN = chessvision.classify_raw(os.path.abspath(tmp_loc))
+            #move file to success raw folder
+            os.rename(tmp_loc, os.path.join("./user_uploads/raw_success/", filename))
+            cv2.imwrite("./user_uploads/unlabelled/boards/x_" + filename, board_img)
+            np.save("./user_uploads/unlabelled/predictions/"+raw_id+".npy", predictions)
+        except BoardExtractionError as e:
+            #move file to success raw folder
+            os.rename(tmp_loc, os.path.join("./user_uploads/raw_fail/", filename))
+            return e.json_string()
 
-        
+        ret = '{{ "FEN": "{0}", "id": "{1}", "error": "false" }}'.format(FEN, raw_id)
 
-        #file.save(file_loc)
-        
-
-        fenfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4] + "_fen.txt")
-        
-        with open(fenfilename, "r") as f:
-            FEN = f.readline()
-        
-        
-        ret = '{{ "FEN": "{0}", "id": "{1}" }}'.format(FEN, raw_id)
-
-        print("Received file, sending response: {}".format(ret))
         return ret
-    return '{error: true}'
+    
+    return '{"error": "true", "errorMsg": "Fuck!"}'
+
 
 @app.route('/feedback/', methods=['POST'])
 @crossdomain(origin='*')
 def receive_feedback():
-    res = "{success: false}"
+    res = '{"success": "false"}'
 
     raw_id = request.form['id']
     feedback = request.form['feedback']
+    
+    board_filename = "x_" + raw_id + ".JPG"
+    pred_filename = raw_id + ".npy"
 
-    print("{0}, {1}".format(raw_id, feedback))
-    res = '{success: true}'
+    board_src = os.path.join("./user_uploads/unlabelled/boards/", board_filename)
+    pred_src = os.path.join("./user_uploads/unlabelled/predictions/", pred_filename)
+    
+    try:
+        if feedback == "correct":
+            board_dst = os.path.join("./user_uploads/labelled/boards/", board_filename)
+            pred_dst = os.path.join("./user_uploads/labelled/predictions/", pred_filename)        
+        elif feedback == "incorrect":
+            board_dst = os.path.join("./user_uploads/failboards/", board_filename)
+            pred_dst = None # don't save incorrect predictions
+        else:
+            return '{"success": "false"}'
+
+        ## Move unlabelled board
+        print("Moving {} to {}".format(board_src, board_dst))
+        os.rename(board_src, board_dst)
+        
+        ## Move or delete predictions file
+        if pred_dst is None:
+            print("Deleting {}".format(pred_src))
+            os.remove(pred_src)
+        else:
+            print("Moving {} to {}".format(pred_src, pred_dst))
+            os.rename(pred_src, pred_dst)
+        
+        res = '{"success": "true"}'
+
+    except OSError as e:
+        return res
+
     return res
+
 
 def read_file_from_formdata():
     # check if the post request has the file part
@@ -126,7 +167,7 @@ def read_file_from_formdata():
 
     file = request.files['file']
     
-    if file.filename == '' or not allowed_file(file.filename:
+    if file.filename == '' or not allowed_file(file.filename):
         print("No legal file selected")
         return None
     
