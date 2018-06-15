@@ -6,30 +6,11 @@ import board_classifier
 
 import matplotlib.pyplot as plt
 
-from square_classifier import build_square_classifier
-from u_net import get_unet_256
+#from square_classifier import build_square_classifier
+#from u_net import get_unet_256
 
 #import tensorflow as tf
 
-def load_classifier():
-    print("Loading square model..")
-     
-    model = build_square_classifier()
-    model.load_weights('../weights/best_weights_square.hdf5', by_name=True)
-    model._make_predict_function()
-    
-    print("Loading square model.. DONE")
-    return model
-
-def load_extractor():
-    print("Loading board extraction model..")
-    
-    model = get_unet_256()
-    model.load_weights('../weights/best_weights.hdf5', by_name=True)
-    model._make_predict_function()
-
-    print("Loading board extraction model.. DONE")
-    return model
 
 SIZE = (256, 256)
 
@@ -46,25 +27,23 @@ def classify_raw(path):
     
     ## Extract board using CNN model and contour approximation
     
-    
-    board_model = load_extractor()
-    board_img = board_extractor.extract_board(comp_image, img, board_model)
-    del board_model
+    board_img = board_extractor.extract_board(comp_image, img)
+    #del board_model
     ###############################   STEP 2    #########################################
     
     
-    sq_model = load_classifier()
-    FEN, predictions = board_classifier.classify_board(board_img, sq_model)
-    del sq_model
+    
+    FEN, predictions, squares = board_classifier.classify_board(board_img)
+    #del sq_model
     print("Classifying board {} ...DONE".format(filename))
     
-    return board_img, predictions, FEN
+    return board_img, predictions, FEN, squares
 
 if __name__ == "__main__":
 
     infile = "../data/raw/IMG_4386.JPG"
-    board_img, _, FEN = classify_raw(infile)
-    plt.imshow(board_img)
+    board_img, _, FEN, squares = classify_raw(infile)
+
     print(FEN)
     plt.show()
 

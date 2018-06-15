@@ -8,7 +8,6 @@ Usage:
 python board_extractor.py -d ../data/images/ -o ./data/boards/
 """
 
-import u_net as unet
 from util import listdir_nohidden, ratio, draw_contour, randomColor, parse_arguments, BoardExtractionError
 import numpy as np
 import cv2
@@ -17,13 +16,21 @@ from tensorflow import Graph, Session
 
 SIZE = (256, 256)
 
+def load_extractor():
+    print("Loading board extraction model..")
+    from u_net import get_unet_256
+    model = get_unet_256()
+    model.load_weights('../weights/best_weights.hdf5', by_name=True)
+    #model._make_predict_function()
 
+    print("Loading board extraction model.. DONE")
+    return model
 
-def extract_board(image, orig, model):
-
+def extract_board(image, orig):
+    model = load_extractor()
     #model = load_extractor()
     #predict chessboard-mask:
-
+    print("Extracting board...")
     image_batch = np.array([image], np.float32) / 255
     
     predicted_mask_batch = model.predict(image_batch)
@@ -47,7 +54,7 @@ def extract_board(image, orig, model):
 
     board = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
     board = cv2.flip(board, 1)
-
+    print("Extracting board... DONE")
     return board
 
 def fix_mask(mask):

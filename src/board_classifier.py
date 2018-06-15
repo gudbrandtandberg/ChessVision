@@ -4,14 +4,26 @@ from extract_squares import extract_squares
 import numpy as np
 from util import listdir_nohidden, parse_arguments, BoardExtractionError
 import chess
+
 #from square_classifier import build_square_classifier
 
+def load_classifier():
+    
+    from square_classifier import build_square_classifier
+    print("Loading square model..")
+     
+    model = build_square_classifier()
+    model.load_weights('../weights/best_weights_square.hdf5', by_name=True)
+    #model._make_predict_function()
+    
+    print("Loading square model.. DONE")
+    return model
 
-def classify_board(board_img, model):
+def classify_board(board_img):
 
     ## Build the model
     #model = load_classifier()
-
+    model = load_classifier()
     squares, names = extract_squares(board_img)
     
     predictions = model.predict(squares)
@@ -21,7 +33,7 @@ def classify_board(board_img, model):
         
     FEN = chessboard.board_fen(promoted=False)
     
-    return FEN, predictions
+    return FEN, predictions, squares
 
 def classification_logic(predictions, names):
     predictions = np.argmax(predictions, axis=1)
