@@ -97,7 +97,7 @@ def predict_img():
         #print("Will classfiy file stored at {}".format(tmp_loc))
         file.save(tmp_loc)
         try:
-            board_img, predictions, FEN = chessvision.classify_raw(os.path.abspath(tmp_loc))
+            board_img, predictions, FEN, _ = chessvision.classify_raw(os.path.abspath(tmp_loc))
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw_success/", filename))
             cv2.imwrite("./user_uploads/unlabelled/boards/x_" + filename, board_img)

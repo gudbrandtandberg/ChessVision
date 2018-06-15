@@ -45,5 +45,5 @@ if __name__ == "__main__":
     board_img, _, FEN, squares = classify_raw(infile)
 
     print(FEN)
-    plt.show()
+    
 

@@ -20,7 +20,7 @@ def load_extractor():
     print("Loading board extraction model..")
     from u_net import get_unet_256
     model = get_unet_256()
-    model.load_weights('../weights/best_weights.hdf5', by_name=True)
+    model.load_weights('../weights/best_weights.hdf5')
     #model._make_predict_function()
 
     print("Loading board extraction model.. DONE")

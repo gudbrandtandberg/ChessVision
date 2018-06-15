@@ -19,7 +19,7 @@ def build_square_classifier():
         model.add(Dropout(0.5))
         model.add(Dense(num_classes, activation='softmax'))
         
-        model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
-              metrics=['accuracy'])
+        #model.compile(loss=keras.losses.categorical_crossentropy,
+        #      optimizer=keras.optimizers.Adadelta(),
+        #      metrics=['accuracy'])
         return model
