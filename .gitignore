@@ -1,17 +1,11 @@
 __pycache__
 .ipynb_checkpoints
+.vscode
+*.py.class
+*.pyc
 .DS_Store
-data/extra_*
-data/fail_cases
-data/fail_boards
-data/training_data
-data/clean_boards
-data/extra_results
-data/training_data/*
-data/training_data
-data/squares/*
-webroot/uploads
-webroot/uploads/*
+.env
+env
+
 weights/*
-data/Segmentation/*
 
