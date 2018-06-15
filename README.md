@@ -137,6 +137,11 @@ Position Logic Checks
 - more raw imgs to retrain mask-cnn
 
 - more robust contour approximation (filter by area)
+  - http://cs.joensuu.fi/~koles/approximation/Ch3_3.html
+  - https://github.com/geissdoerfer/polyprox
+
+- Recognize board rotation state! 
+- Crop/resize user upload image
 
 - UI - status/progress, hidden fields,  
 
