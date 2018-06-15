@@ -4,7 +4,10 @@ import random
 import os
 import argparse
 
-
+class BoardExtractionError(Exception):
+    def json_string(self):
+        return '{"error": "true", "errorMsg": "Board extraction failed!"}'
+    
 
 def listdir_nohidden(path):
     for f in os.listdir(path):
@@ -23,7 +26,7 @@ def parse_arguments():
     
     indir = None
     infile = None
-    outfile = None 
+    outdir = None 
 
     if args.d is not None:
         indir = args.d[0]

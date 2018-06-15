@@ -1,6 +1,7 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+import keras
 
 input_shape = (64, 64, 1)
 num_classes = 13
@@ -18,4 +19,7 @@ def build_square_classifier():
         model.add(Dropout(0.5))
         model.add(Dense(num_classes, activation='softmax'))
         
+        model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.Adadelta(),
+              metrics=['accuracy'])
         return model

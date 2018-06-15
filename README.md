@@ -113,10 +113,13 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
   if correct:
     - save all squares in board from ./user_uploads/unlabelled/boards/id to ./user_uploads/squares/<b, n, ...>/
   else: 
-    - copy board from ./user_uploads/unlabelled/boards/id ./user_uploads/failboards/
+    - copy board from ./user_uploads/unlabelled/boards/id ./user_uploads/fail/boards/id
+    - copy prediction from ./user_uploads/unlabelled/predictions/id ./user_uploads/fail/predictions/id
     - delete board from ./user_uploads/unlabelled/boards/id
 
 ## Todo:
+
+- fix 2-model bug
 
 Position Logic Checks
 - most likely king
@@ -126,7 +129,7 @@ Position Logic Checks
 - more piece imgs from test data
 - more raw imgs to retrain mask-cnn
 
-- more robust contour approximation
+- more robust contour approximation (filter by area)
 
 - UI - status/progress, hidden fields,  
 
@@ -137,3 +140,5 @@ Position Logic Checks
 + http://www.raspberryturk.com/details/vision.html
 + http://vision.soic.indiana.edu/b657/sp2016/projects/rkanchib/paper.pdf
 + http://indigenousengineering.com/index.php/16-ie-project/10-extract-chess-position-from-an-image-using-image-processing-algorithms
+
+

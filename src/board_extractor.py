@@ -9,34 +9,35 @@ python board_extractor.py -d ../data/images/ -o ./data/boards/
 """
 
 import u_net as unet
-from util import listdir_nohidden, ratio, draw_contour, randomColor
-import argparse
+from util import listdir_nohidden, ratio, draw_contour, randomColor, parse_arguments, BoardExtractionError
 import numpy as np
 import cv2
-import sys
-import matplotlib.pyplot as plt
-
+from tensorflow import Graph, Session
+#import matplotlib.pyplot as plt
 
 SIZE = (256, 256)
 
-def fix_mask(mask):
-    mask *= 255
-    mask = mask.astype(np.uint8)
-    mask[mask > 80] = 255
-    mask[mask <= 80] = 0
-    return mask
+
 
 def extract_board(image, orig, model):
+
+    #model = load_extractor()
     #predict chessboard-mask:
 
     image_batch = np.array([image], np.float32) / 255
-
+    
     predicted_mask_batch = model.predict(image_batch)
+    del model
+
     predicted_mask = predicted_mask_batch[0].reshape(SIZE)
     mask = fix_mask(predicted_mask)
     
     #approximate chessboard-mask with a quadrangle
     approx = find_quadrangle(mask)
+
+    if approx is None:
+        print("Contour approximation failed!")
+        raise BoardExtractionError()
     
     orig_size = (orig.shape[0], orig.shape[1])
     approx = scale_approx(approx, orig_size) 
@@ -48,6 +49,14 @@ def extract_board(image, orig, model):
     board = cv2.flip(board, 1)
 
     return board
+
+def fix_mask(mask):
+    mask *= 255
+    mask = mask.astype(np.uint8)
+    mask[mask > 80] = 255
+    mask[mask <= 80] = 0
+    return mask
+
 
 def scale_approx(approx, orig_size):
     sf = orig_size[0]/256.0
@@ -74,7 +83,7 @@ def find_quadrangle(mask):
     #plt.imshow(mask, cmap="gray")
     #plt.show()
 
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+    _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
 
     #plt.figure()
     #plt.imshow(mask, cmap="gray")
@@ -91,8 +100,8 @@ def find_quadrangle(mask):
     mask_area = float(mask.shape[0]*mask.shape[1])
     contour_areas = np.array(map(lambda x: cv2.contourArea(x), contours))
     contour_areas /= mask_area
-    print("Found {} contours".format(len(contours)))
-    print("Contour areas: {}".format(contour_areas))
+    print("Found {} contour(s)".format(len(contours)))
+    print("Contour area(s): {}".format(contour_areas))
 
     #contours = ignore_contours(mask, contours)
     
@@ -104,7 +113,7 @@ def find_quadrangle(mask):
         
         arclen = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.1*arclen, True)
-        print(len(approx))
+        
         if len(approx) != 4:
             continue
 
@@ -174,20 +183,9 @@ def ignore_contours(img,
 
     return ret
 
-def main(argv):
+def main():
 
-    model = unet.get_unet_256()
-    model.load_weights('../weights/best_weights.hdf5')
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d', metavar='indir', type=str, nargs='+',
-                        help='The dir to process.')
-    parser.add_argument('-o', metavar='outdir', type=str, nargs='+',
-                        help='The dir to process.')
-    args = parser.parse_args()
-
-    image_dir = args.d[0]
-    board_dir = args.o[0]
+    _, image_dir, board_dir = parse_arguments()
 
     for f in listdir_nohidden(image_dir):
 
@@ -208,4 +206,4 @@ def main(argv):
         print("--SUCCESS!!")
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

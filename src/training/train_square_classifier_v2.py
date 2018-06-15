@@ -39,9 +39,9 @@ train_generator = train_datagen.flow_from_directory(
 
 model = build_square_classifier()
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
-              metrics=['accuracy'])
+#model.compile(loss=keras.losses.categorical_crossentropy,
+#              optimizer=keras.optimizers.Adadelta(),
+#              metrics=['accuracy'])
 
 
 callbacks = [EarlyStopping(monitor='loss',

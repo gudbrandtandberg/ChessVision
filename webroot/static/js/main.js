@@ -18,10 +18,15 @@ var init = function() {
             success: function(data) {
                 //parse data = {FEN: "...", id: "..."}
                 res = JSON.parse(data)
-                setFEN(res.FEN)
-                //$("#feedback_pane").css("visibility", "visible")
-                document.getElementById("raw-id-input").value = res.id
-                //document.getElementById("feedback_pane").style.visibility = "visible"
+                
+                if (res.error == "false") {
+                    setFEN(res.FEN)
+                    //$("#feedback_pane").css("visibility", "visible")
+                    document.getElementById("raw-id-input").value = res.id
+                    //document.getElementById("feedback_pane").style.visibility = "visible"
+                } else {
+                    alert(res.errMsg)
+                }
             },
             error: function(xmlHttpRequest, textStatus, errorThrown) {
                 if(xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
@@ -47,7 +52,13 @@ var init = function() {
             contentType: false,
             processData: false,
             success: function(data) {
-                alert("Thanks for your feedback!")
+                res = JSON.parse(data)
+                console.log(res)
+                if (res.success == "true") {
+                    alert("Thanks for your feedback!")
+                } else {
+                    alert("Your feedback was not taken into consideration")
+                    }              
                 },
             error: function(data) {
                 alert(data)
@@ -81,6 +92,5 @@ var init = function() {
 var setFEN = function(fen) {
     var board = ChessBoard('board', fen);
 }
-
 
 $(document).ready(init);
