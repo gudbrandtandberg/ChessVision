@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>ChessVision</title>
+        <meta charset="UTF8" />
+        <link rel="stylesheet" href="static/css/chessboard-0.3.0.css" />
+    </head>
+    <body>
+        
+        <h1>Welcome to ChessVision {{x}}</h1>
+    
+        <form id="theform" enctype="multipart/form-data">
+            <input id="imageinput" type="file" name="file" accept="image/*">
+            <input type="submit">
+            <!--<input type="button" name="submit" value="Submit" onclick="submitForm()">-->
+        </form>
+        
+        <div id="container" style="width: 900px; overflow: hidden;">
+            <div id="board" style="width: 400px; float: left"></div>¨
+            <img alt="Placeholder" id="inputpreview" src="#" width="400" style="rotate: 90; overflow: hidden; image-orientation: from-image;">
+        </div>
+        
+        <div id="feedback_pane" style="visibility: visible">
+            <p>Please provide feedback:</p>
+            <form method="POST" id="feedback_form">
+                <input type="radio" name="feedback" value="correct" checked> Correct <br>
+                <input type="radio" name="feedback" value="incorrect"> Incorrect <br>
+                <input type="text" name="id" value="raw_id_input" id="raw-id-input">
+                <input type="submit">
+            </form>
+        </div>
+
+        <!--        SCRIPTS             -->
+        <script src="static/js/json3.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+        <script src="static/js/chessboard-0.3.0.js"></script>
+        <script src="static/js/main.js"></script>
+    </body>
+</html>
