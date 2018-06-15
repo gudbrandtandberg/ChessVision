@@ -17,11 +17,11 @@ def load_classifier():
     print("Loading square model.. DONE")
     return model
 
-def classify_board(board_img):
+def classify_board(board_img, model):
     
     ## Build the model
     #model = load_classifier()
-    model = load_classifier()
+    
     print("Classifying board..")
     squares, names = extract_squares(board_img)
     

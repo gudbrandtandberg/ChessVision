@@ -8,11 +8,11 @@ import uuid
 import chessvision
 import cv2
 import numpy as np
-#import u_net as unet
-#from square_classifier import build_square_classifier
+
+from board_extractor import load_extractor
+from board_classifier import load_classifier
 
 from util import BoardExtractionError
-
 
 app = Flask(__name__)
 
@@ -97,7 +97,7 @@ def predict_img():
         #print("Will classfiy file stored at {}".format(tmp_loc))
         file.save(tmp_loc)
         try:
-            board_img, predictions, FEN, _ = chessvision.classify_raw(os.path.abspath(tmp_loc))
+            board_img, predictions, FEN, _ = chessvision.classify_raw(os.path.abspath(tmp_loc), board_model, sq_model)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw_success/", filename))
             cv2.imwrite("./user_uploads/unlabelled/boards/x_" + filename, board_img)
@@ -174,5 +174,15 @@ def read_file_from_formdata():
     return file
 
 
+def load_models():
+    global sq_model, board_model
+
+    sq_model = load_classifier()
+    board_model = load_extractor()
+
+    return board_model, sq_model
+
 if __name__ == '__main__':
-  app.run(host='127.0.0.1', port=7777)
+
+    board_model, sq_model = load_models()
+    app.run(host='127.0.0.1', port=7777)
