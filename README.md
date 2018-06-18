@@ -11,7 +11,7 @@ This is what the program does:
 <p float="left">
 <img src="./img/example_raw.JPG" width="200" />
 <img src="./img/example1.png" width="200"/>
-<img src="./img/example2.png" width="320"/>
+<img src="./img/example2.png" width="200"/>
 </p>
 
 The above example mis-classifies a few squares, but does an OK job for now..
