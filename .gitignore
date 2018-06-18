@@ -9,3 +9,5 @@ env
 
 weights/*
 
+data/raw/*
+computeroot/user_uploads/*
