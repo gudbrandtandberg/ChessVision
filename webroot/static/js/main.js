@@ -2,9 +2,12 @@ var init = function() {
         
     var board = ChessBoard('board', 'start');
 
-    var cv_algo_url = "http://40.113.67.136:8080/cv_algo/"
-    var feedback_url = "http://40.113.67.136:8080/feedback/"
+    var cv_algo_url = "http://localhost:7777/cv_algo/"
+    var feedback_url = "http://localhost:7777/feedback/"
     
+    //var cv_algo_url = "http://40.113.67.136:8080/cv_algo/"
+    //var feedback_url = "http://40.113.67.136:8080/feedback/"
+
     $("form#theform").submit(function(event) {
         event.preventDefault()
         var file = document.getElementById("imageinput").files[0]
