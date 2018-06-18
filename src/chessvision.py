@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
-
+from util import BoardExtractionError
 import board_extractor
 import board_classifier
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 #from square_classifier import build_square_classifier
 #from u_net import get_unet_256
@@ -25,8 +25,10 @@ def classify_raw(path, board_model, sq_model):
     comp_image = cv2.resize(img, SIZE, interpolation=cv2.INTER_LINEAR)
     
     ## Extract board using CNN model and contour approximation
-    
-    board_img = board_extractor.extract_board(comp_image, img, board_model)
+    try:    
+        board_img = board_extractor.extract_board(comp_image, img, board_model)
+    except BoardExtractionError as e:
+        raise e
     #del board_model
     ###############################   STEP 2    #########################################
     

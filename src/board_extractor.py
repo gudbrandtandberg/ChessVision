@@ -115,12 +115,12 @@ def find_quadrangle(mask):
         area = cv2.contourArea(cnt)
         
         arclen = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.1*arclen, True)
+        app = cv2.approxPolyDP(cnt, 0.1*arclen, True)
         
-        if len(approx) != 4:
+        if len(app) != 4:
             continue
 
-        approx = rotate_quadrangle(approx)
+        approx = rotate_quadrangle(app)
         break
 
     return approx
