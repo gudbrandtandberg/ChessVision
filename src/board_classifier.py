@@ -20,7 +20,10 @@ def load_classifier():
 def classify_board(board_img, model):
     print("Classifying board..")
     squares, names = extract_squares(board_img)
-    
+    #hack to compy with theano's channels_first
+    squares = np.array(squares) 
+    squares = np.expand_dims(squares, -1)
+    print(squares.shape)
     predictions = model.predict(squares)
     
     chessboard = classification_logic(predictions, names)

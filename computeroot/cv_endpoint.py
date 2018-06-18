@@ -185,4 +185,4 @@ def load_models():
 if __name__ == '__main__':
 
     board_model, sq_model = load_models()
-    app.run(host='127.0.0.1', port=7777)
+    app.run(host='0.0.0.0', port=8080)
