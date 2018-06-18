@@ -1,0 +1,69 @@
+az ml admin node setup --onebox --admin-password 1teitPassord_ --confirm-password 1teitPassord_
+
+pip3 install azure-ml-api-sdk
+
+git rm -r --cached <file>
+
+git reset HEAD
+
+export PYTHONPATH=$PYTHONPATH:$HOME/ChessVision/
+export PYTHONPATH=$PYTHONPATH:$HOME/ChessVision/src/
+export PYTHONPATH=$PYTHONPATH:$HOME/ChessVision/src/model/
+
+
+conda create --name chessvision python=3.5
+conda install opencv keras flask theano
+
+pip install python-chess
+
+
+mkdir tmp
+mkdir user_uploads
+mkdir user_uploads/failboards
+mkdir user_uploads/labelled
+mkdir user_uploads/labelled/predictions
+mkdir user_uploads/raw_fail
+mkdir user_uploads/raw_success
+mkdir user_uploads/unlabelled
+mkdir user_uploads/unlabelled/boards
+mkdir user_uploads/unlabelled/predictions
+
+as epsilon grows, n gets smaller
+
+Switch keras backend
+$HOME/.keras/keras.json
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux
+
+ssh gudbrand@40.113.67.136
+
+THEANO_FLAGS=device=cuda python cv_endpoint.py
+THEANO_FLAGS=device=cpu python test_theano.py
+
+export MKL_THREADING_LAYER=GNU
+
+When HEAD is detatched
+git checkout -b temp
+git checkout -B master temp
+
+scp -r gudbrand@40.113.67.136:ChessVision/computeroot/user_uploads .
+
+Deployment
+
+On Azure DSVM:
+  - pull ChessVision repo
+  - scp weights/*.h5
+  -  install requirements
+  - add chessvision to PYTHONPATH (or install chessvision as a module)
+  - cd computeroot
+  - python cv_endpoint.py (on 8080)
+  - (make sure 8080 is open)
+  - (eventually; automatically start server (ssh times out))
+
+On local:
+  - cd webroot
+  - git checkout web (the branch where URLs are not local)
+  - git push azure master
+
+
+https://packaging.python.org/tutorials/packaging-projects/
