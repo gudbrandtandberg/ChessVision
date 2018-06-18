@@ -31,7 +31,8 @@ var init = function() {
                     document.getElementById("raw-id-input").value = res.id
                     //document.getElementById("feedback_pane").style.visibility = "visible"
                 } else {
-                    alert(res.errMsg)
+                    console.log(res)
+                    alert("fail")
                 }
             },
             error: function(xmlHttpRequest, textStatus, errorThrown) {
