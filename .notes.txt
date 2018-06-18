@@ -6,13 +6,16 @@ git rm -r --cached <file>
 
 git reset HEAD
 
-export PYTHONPATH=$PYTHONPATH:/home/gudbrand/ChessVision/src/
+export PYTHONPATH=$PYTHONPATH:$HOME/ChessVision/
+export PYTHONPATH=$PYTHONPATH:$HOME/ChessVision/src/
+export PYTHONPATH=$PYTHONPATH:$HOME/ChessVision/src/model/
 
-conda install opencv
-conda install flask
+
+conda create --name chessvision python=3.5
+conda install opencv keras flask theano
+
 pip install python-chess
-conda install keras
-conda install theano
+
 
 mkdir tmp
 mkdir user_uploads
