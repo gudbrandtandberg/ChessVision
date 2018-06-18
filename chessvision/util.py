@@ -10,9 +10,11 @@ class BoardExtractionError(Exception):
     
 
 def listdir_nohidden(path):
+    files = []
     for f in os.listdir(path):
         if not f.startswith('.'):
-            yield f
+            files.append(f)
+    return files
 
 def parse_arguments():
     parser = argparse.ArgumentParser()

@@ -152,5 +152,11 @@ Position Logic Checks
 + http://www.raspberryturk.com/details/vision.html
 + http://vision.soic.indiana.edu/b657/sp2016/projects/rkanchib/paper.pdf
 + http://indigenousengineering.com/index.php/16-ie-project/10-extract-chess-position-from-an-image-using-image-processing-algorithms
++ https://vision.fe.uni-lj.si/cvww2016/proceedings/papers/21.pdf
++ https://ieeexplore.ieee.org/document/489004/
++ https://arxiv.org/pdf/1708.03898.pdf
++ https://ieeexplore.ieee.org/document/5967178/
++ https://web.stanford.edu/class/ee368/Project_Spring_1415/Reports/Danner_Kafafy.pdf
 
 
++ https://towardsdatascience.com/estimating-optimal-learning-rate-for-a-deep-neural-network-ce32f2556ce0
