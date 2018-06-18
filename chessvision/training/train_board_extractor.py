@@ -1,7 +1,7 @@
 import keras
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
-import model.u_net as unet
-from model.augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
+import u_net as unet
+from augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
 import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
@@ -9,8 +9,8 @@ import data
 import numpy as np
 import cv2 
 
-image_dir = "../data/Segmentation/images/"
-mask_dir = "../data/Segmentation/masks/"
+image_dir = "../data/board_extraction/images/"
+mask_dir = "../data/board_extraction/masks/"
 
 input_size = 256
 SIZE = (256, 256)
@@ -18,6 +18,7 @@ batch_size = 16
 epochs = 100
 
 model = unet.get_unet_256()
+model.load_weights("../weights/best_weights.hdf5")
 
 ids_train = data.load_image_and_mask_ids()
 ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
@@ -82,7 +83,7 @@ callbacks = [EarlyStopping(monitor='val_loss',
                                verbose=1,
                                min_delta=1e-4),
              ModelCheckpoint(monitor='val_loss',
-                             filepath='../weights/best_weights.hdf5',
+                             filepath='../weights/new_best_weights.hdf5',
                              save_best_only=True,
                              save_weights_only=True),
              TensorBoard(log_dir='../logs/segmentation_logs/')]

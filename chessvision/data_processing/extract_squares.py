@@ -18,7 +18,7 @@ def extract_squares(board):
             names.append(ranks[j]+files[7-i])
     
     squares = np.array(squares)
-    squares = squares.reshape(squares.shape[0], 64, 64, 1)
+    #squares = squares.reshape(squares.shape[0], 64, 64, 1)
     
     return squares, names
 
