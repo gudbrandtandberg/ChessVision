@@ -39,7 +39,7 @@ def extract_board(image, orig, model):
     
     #approximate chessboard-mask with a quadrangle
     approx = find_quadrangle(mask)
-
+    
     if approx is None:
         print("Contour approximation failed!")
         raise BoardExtractionError()

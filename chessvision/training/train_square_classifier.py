@@ -1,14 +1,14 @@
 from __future__ import print_function
 import keras
-from keras.models import Sequential
+#from keras.models import Sequential
 from keras.preprocessing.image import ImageDataGenerator
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
+#from keras.layers import Dense, Dropout, Flatten
+#from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
-import sys
-import data
+#import sys
+#import chessvision.data
 import numpy as np
-from model.square_classifier import build_square_classifier
+from square_classifier import build_square_classifier
 
 num_classes = 13
 batch_size = 32
@@ -29,7 +29,7 @@ train_datagen = ImageDataGenerator(
 #plot_model(model, to_file='model.png')
 
 train_generator = train_datagen.flow_from_directory(
-        '../data/training_data',
+        '../data/squares_gen2',
         target_size=(64, 64),
         color_mode='grayscale',
         batch_size=32,
@@ -42,7 +42,6 @@ model.load_weights("../weights/best_weights_square.hdf5")
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
-
 
 callbacks = [EarlyStopping(monitor='loss',
                            patience=8,
@@ -60,7 +59,7 @@ callbacks = [EarlyStopping(monitor='loss',
              TensorBoard(log_dir='../logs/square_logs/')]
 
 model.fit_generator(generator=train_generator,
-                    steps_per_epoch=np.ceil(5216./32.),
+                    steps_per_epoch=np.ceil(6266./32.),
                     epochs=100,
                     verbose=1,
                     callbacks=callbacks)
