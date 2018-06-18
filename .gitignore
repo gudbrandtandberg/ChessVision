@@ -10,4 +10,5 @@ env
 weights/*
 
 data/raw/*
+data/.DS_Store
 computeroot/user_uploads/*
