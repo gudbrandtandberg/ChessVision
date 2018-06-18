@@ -128,10 +128,6 @@ def extract_perspective(image, perspective, w, h):
     
     dest = ((0,0), (w, 0), (w,h), (0, h))
 
-    if perspective is None:
-        im_w, im_h,_ = image.shape
-        perspective = ((0,0), (im_w, 0), (im_w,im_h), (0, im_h))
-
     perspective = np.array(perspective, np.float32)
     dest = np.array(dest, np.float32)
 

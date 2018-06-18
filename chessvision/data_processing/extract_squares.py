@@ -19,10 +19,15 @@ def extract_squares(board):
     
     squares = np.array(squares)
     squares = squares.reshape(squares.shape[0], 64, 64, 1)
-    squares = squares.astype('float32')
-    squares /= 255
     
     return squares, names
+
+def normalize_squares(squares):
+    squares = np.array(squares)
+    squares = squares.reshape(squares.shape[0], 64, 64, 1)
+    squares = squares.astype('float32')
+    squares /= 255
+    return squares
 
 if __name__ == "__main__":
     # Extract all squares from all boards
