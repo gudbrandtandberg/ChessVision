@@ -7,7 +7,7 @@ This repository contains code and resources for extracting chess positions from 
 This is what the program does:
 
 ### Input: 
-<img src="./data/raw/IMG_4387.JPG" width="400" />
+<img src="./img/example_raw.JPG" width="300" />
 
 ### Output:
 <img src="./img/example1.png" width="300"/>
@@ -28,6 +28,11 @@ The above example mis-classifies a few squares, but does an OK job for now..
   - compute node (handles POST requests to classify boards)
 
 ## Algorithm details
+
+593s 49s/step
+167s 13s/step
+
+almost 4x faster training.
 
 ### Board extraction
 
@@ -118,6 +123,8 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
     - delete board from ./user_uploads/unlabelled/boards/id
 
 ## Todo:
+
+- make endpoint for mask viewing
 
 - fix 2-model bug (theano kinda fixes)
   - https://github.com/keras-team/keras/issues/2397
