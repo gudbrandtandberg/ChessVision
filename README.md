@@ -7,18 +7,20 @@ This repository contains code and resources for extracting chess positions from 
 This is what the program does:
 
 ### Input: 
-<img src="./img/example_raw.JPG" width="300" />
 
-### Output:
-<img src="./img/example1.png" width="300"/>
+<p float="left">
+<img src="./img/example_raw.JPG" width="200" />
+<img src="./img/example1.png" width="200"/>
+<img src="./img/example2.png" width="200"/>
+</p>
 
 The above example mis-classifies a few squares, but does an OK job for now..
 
 ## Project Structure
 
-- src
+- chessvision
 - data
-- webroot (seperate git repo)
+- webroot (also seperate git repo)
 - computeroot
 
 ### Architecture 
@@ -29,8 +31,8 @@ The above example mis-classifies a few squares, but does an OK job for now..
 
 ## Algorithm details
 
-593s 49s/step
-167s 13s/step
+CPU: 593s 49s/step
+GPU: 167s 13s/step
 
 almost 4x faster training.
 
@@ -44,15 +46,6 @@ The command
 
 populates the directory __outdirname__ with extracted board images. 
 
-## Board rotation
-
-The previous step leaves some of the extracted boards in a rotated orientation. 
-
-Running 
-
-```python rotate_boards.py```
-
-in the __src__ directory sorts this out. 
 
 ### Square extraction
 
