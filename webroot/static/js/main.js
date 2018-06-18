@@ -8,9 +8,9 @@ var init = function() {
     //var cv_algo_url = "http://40.113.67.136:8080/cv_algo/"
     //var feedback_url = "http://40.113.67.136:8080/feedback/"
 
-    $("form#theform").submit(function(event) {
+    $("#upload-form").submit(function(event) {
         event.preventDefault()
-        var file = document.getElementById("imageinput").files[0]
+        var file = document.getElementById("image-input").files[0]
         // TODO input check. 
         var formData = new FormData(this);
         
@@ -29,10 +29,10 @@ var init = function() {
                     setFEN(res.FEN)
                     //$("#feedback_pane").css("visibility", "visible")
                     document.getElementById("raw-id-input").value = res.id
-                    //document.getElementById("feedback_pane").style.visibility = "visible"
+                    document.getElementById("feedback-pane").style.display = "block"
                 } else {
                     console.log(res)
-                    alert("fail")
+                    alert(res.errorMsg)
                 }
             },
             error: function(xmlHttpRequest, textStatus, errorThrown) {
@@ -46,7 +46,7 @@ var init = function() {
         })
     })
 
-    $("form#feedback_form").submit(function(event) {
+    $("#feedback-form").submit(function(event) {
     
         event.preventDefault()
         var formData = new FormData(this);
@@ -60,19 +60,19 @@ var init = function() {
             processData: false,
             success: function(data) {
                 res = JSON.parse(data)
-                console.log(res)
                 if (res.success == "true") {
+                    document.getElementById("feedback-pane").style.display = "none"
                     alert("Thanks for your feedback!")
                 } else {
                     alert("Your feedback was not taken into consideration")
-                    }              
+                    }           
                 },
             error: function(data) {
                 alert(data)
                 }
             })
         })
-    document.getElementById('imageinput').onchange = function (evt) {
+    document.getElementById('image-input').onchange = function (evt) {
         var tgt = evt.target || window.event.srcElement,
             files = tgt.files;
 
@@ -82,7 +82,7 @@ var init = function() {
             fr.onload = function(data) {
                 var imageData = data.target.result
                 // Show preview of uploaded image
-                document.getElementById("inputpreview").src = imageData
+                document.getElementById("input-preview").src = imageData
             }
             fr.readAsDataURL(files[0]);
         }
