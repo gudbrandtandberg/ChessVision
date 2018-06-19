@@ -76,40 +76,19 @@ def rotate_quadrangle(approx):
 
 def find_quadrangle(mask):
 
-    #plt.figure()
-    #plt.imshow(mask, cmap="gray")
-    #plt.show()
-
-    #(_, mask) = cv2.threshold(mask, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
-    #_, contours, _ = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
-    #plt.figure()
-    #plt.imshow(mask, cmap="gray")
-    #plt.show()
-
     _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
     
-    print("Found {} contour(s)".format(len(contours)))
-    contours = ignore_contours(mask, contours)
-    print("Filtered to {} contour(s)".format(len(contours)))
+    if len(contours) > 1:
+        print("Found {} contour(s)".format(len(contours)))
+        contours = ignore_contours(mask, contours)
+        print("Filtered to {} contour(s)".format(len(contours)))
+
     if len(contours) == 0:
         return None
     
-    #plt.figure()
-    #plt.imshow(mask, cmap="gray")
-    #plt.show()
-    
-    #mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
-    #for i in range(len(contours)):
-    #    cv2.drawContours(mask, contours, i, randomColor(), thickness=4)
-
-    #plt.figure()
-    #plt.imshow(mask)
-    #plt.show()
-    
     approx = None
 
+    # try to approximate and hope for a quad
     for i in range(len(contours)):
         cnt = contours[i]
         

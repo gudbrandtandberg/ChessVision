@@ -1,12 +1,6 @@
-from __future__ import print_function
 import keras
-#from keras.models import Sequential
 from keras.preprocessing.image import ImageDataGenerator
-#from keras.layers import Dense, Dropout, Flatten
-#from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
-#import sys
-#import chessvision.data
 import numpy as np
 from square_classifier import build_square_classifier
 
