@@ -26,7 +26,7 @@ def get_model():
     return 
 
 
-def train_generator(ids_train_split):
+def train_generator(ids_train_split, batch_size=batch_size):
     
     while True:
         for start in range(0, len(ids_train_split), batch_size):
@@ -55,7 +55,7 @@ def train_generator(ids_train_split):
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
 
-def valid_generator(ids_valid_split):
+def valid_generator(ids_valid_split, batch_size=batch_size):
     while True:
         for start in range(0, len(ids_valid_split), batch_size):
             x_batch = []

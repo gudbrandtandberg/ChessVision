@@ -9,6 +9,7 @@ env
 
 weights/*
 
+.notes.txt
 data/raw/*
 data/.DS_Store
 computeroot/user_uploads/*
