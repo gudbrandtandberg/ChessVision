@@ -1,20 +1,28 @@
 # Chess Vision - a computer vision chess project
 
-This repository contains code and resources for extracting chess positions from images using computer vision. 
+This repository contains code and resources for extracting chess positions from images using computer vision.
+
+18/6/2018: WORK IN PROGRESS!
 
 ## Example
 
 This is what the program does:
 
-### Input: 
-
 <p float="left">
-<img src="./img/example_raw.JPG" width="200" />
-<img src="./img/example1.png" width="200"/>
-<img src="./img/example2.png" width="200"/>
+  <div>
+    <span>Raw input:</span>
+    <img src="./img/example_raw.JPG" width="250" />
+  </div>
+  <div>
+  <span>First generation models:</span>
+    <img src="./img/example1.png" width="250"/>
+  </div>
+  <div>
+  <span>Second generation models:</span>
+    <img src="./img/example2.png" width="250"/>
+  </div>
 </p>
 
-The above example mis-classifies a few squares, but does an OK job for now..
 
 ## Project Structure
 
