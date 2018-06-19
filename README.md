@@ -10,15 +10,15 @@ This is what the program does:
 
 <p float="left">
   <div>
-    Raw input:
+    <span>Raw input:</span>
     <img src="./img/example_raw.JPG" width="250" />
   </div>
   <div>
-    First generation models:
+  <span>First generation models:</span>
     <img src="./img/example1.png" width="250"/>
   </div>
   <div>
-    Second generation models:
+  <span>Second generation models:</span>
     <img src="./img/example2.png" width="250"/>
   </div>
 </p>
