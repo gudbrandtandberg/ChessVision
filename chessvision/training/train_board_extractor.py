@@ -8,25 +8,26 @@ from sklearn.model_selection import train_test_split
 import data
 import numpy as np
 import cv2 
-
-image_dir = "../data/board_extraction/images/"
-mask_dir = "../data/board_extraction/masks/"
+from parameters import *
+from util import listdir_nohidden
 
 input_size = 256
 SIZE = (256, 256)
 batch_size = 16
 epochs = 100
 
-model = unet.get_unet_256()
-model.load_weights("../weights/best_weights.hdf5")
+def load_image_and_mask_ids():
+    filenames = [f[:-4] for f in listdir_nohidden(image_dir)]
+    return filenames
 
-ids_train = data.load_image_and_mask_ids()
-ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
+def get_model():
+    model = unet.get_unet_256()
+    model.load_weights("../weights/best_weights.hdf5")
+    return 
 
-print('Training on {} samples'.format(len(ids_train_split)))
-print('Validating on {} samples'.format(len(ids_valid_split)))
 
-def train_generator():
+def train_generator(ids_train_split):
+    
     while True:
         for start in range(0, len(ids_train_split), batch_size):
             x_batch = []
@@ -54,7 +55,7 @@ def train_generator():
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
 
-def valid_generator():
+def valid_generator(ids_valid_split):
     while True:
         for start in range(0, len(ids_valid_split), batch_size):
             x_batch = []
@@ -73,25 +74,36 @@ def valid_generator():
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
 
-callbacks = [EarlyStopping(monitor='val_loss',
-                           patience=8,
-                           verbose=1,
-                           min_delta=1e-4),
-             ReduceLROnPlateau(monitor='val_loss',
-                               factor=0.1,
-                               patience=4,
-                               verbose=1,
-                               min_delta=1e-4),
-             ModelCheckpoint(monitor='val_loss',
-                             filepath='../weights/new_best_weights.hdf5',
-                             save_best_only=True,
-                             save_weights_only=True),
-             TensorBoard(log_dir='../logs/segmentation_logs/')]
 
-model.fit_generator(generator=train_generator(),
-                    steps_per_epoch=np.ceil(float(len(ids_train_split)) / float(batch_size)),
-                    epochs=epochs,
-                    verbose=1,
-                    callbacks=callbacks,
-                    validation_data=valid_generator(),
-                    validation_steps=np.ceil(float(len(ids_valid_split)) / float(batch_size)))
+if __name__ == "__main__":
+
+    ids_train = load_image_and_mask_ids()
+    ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
+
+    print('Training on {} samples'.format(len(ids_train_split)))
+    print('Validating on {} samples'.format(len(ids_valid_split)))
+
+    model = get_model()
+
+    callbacks = [EarlyStopping(monitor='val_loss',
+                            patience=8,
+                            verbose=1,
+                            min_delta=1e-4),
+                ReduceLROnPlateau(monitor='val_loss',
+                                factor=0.1,
+                                patience=4,
+                                verbose=1,
+                                min_delta=1e-4),
+                ModelCheckpoint(monitor='val_loss',
+                                filepath='../weights/new_best_weights.hdf5',
+                                save_best_only=True,
+                                save_weights_only=True),
+                TensorBoard(log_dir='../logs/segmentation_logs/')]
+
+    model.fit_generator(generator=train_generator(ids_train_split),
+                        steps_per_epoch=np.ceil(float(len(ids_train_split)) / float(batch_size)),
+                        epochs=epochs,
+                        verbose=1,
+                        callbacks=callbacks,
+                        validation_data=valid_generator(ids_valid_split),
+                        validation_steps=np.ceil(float(len(ids_valid_split)) / float(batch_size)))
