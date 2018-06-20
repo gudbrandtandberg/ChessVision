@@ -11,7 +11,7 @@ def load_classifier():
     print("Loading square model..")
     from square_classifier import build_square_classifier
     model = build_square_classifier()
-    model.load_weights('../weights/best_weights_square.hdf5')
+    model.load_weights('/Users/gudbrand/Programming/Chess/ChessVision/weights/best_weights_square.hdf5')
     #model._make_predict_function()
     
     print("Loading square model.. DONE")
@@ -33,13 +33,12 @@ def classify_board(board_img, model):
 
 def classification_logic(probs, names):
     
-    predictions = np.argmax(probs, axis=1)
+    initial_predictions = np.argmax(probs, axis=1)
 
     #label_names = ["R", "r", "K", "k", "Q", "q", "N", "n", "P", "p", "B", "b", "f"]
     label_names  = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']
-    
 
-    pred_labels = [label_names[p] for p in predictions]
+    pred_labels = [label_names[p] for p in initial_predictions]
 
     pred_labels = check_multiple_kings(pred_labels, probs)
     pred_labels = check_bishops(pred_labels, probs, names)

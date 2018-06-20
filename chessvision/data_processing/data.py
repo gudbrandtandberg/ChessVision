@@ -2,6 +2,7 @@ from util import listdir_nohidden
 import numpy as np
 import cv2
 import csv
+from parameters import *
 
 train_test_split = 0.8
 
@@ -42,11 +43,12 @@ def load_data():
     return (x_train, y_train), (x_test, y_test)
 
 def load_image_and_mask_ids():
-    filenames = [f[:-4] for f in listdir_nohidden("../data/board_extraction/images/")]
+    print(image_dir)
+    filenames = [f[:-4] for f in listdir_nohidden(image_dir)]
     return filenames
 
 def load_image_ids():
-    filenames = [f[:-4] for f in listdir_nohidden("../data/board_extraction/images/")]
+    filenames = [f[:-4] for f in listdir_nohidden(image_dir)]
     return filenames
 
 

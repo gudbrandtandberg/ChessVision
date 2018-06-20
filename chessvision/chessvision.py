@@ -8,11 +8,6 @@ import board_classifier
 
 #import matplotlib.pyplot as plt
 
-#from square_classifier import build_square_classifier
-#from u_net import get_unet_256
-
-#import tensorflow as tf
-
 SIZE = (256, 256)
 
 def classify_raw(path, board_model, sq_model):
@@ -24,7 +19,7 @@ def classify_raw(path, board_model, sq_model):
 
     ## Resize image
     img = cv2.imread(path)
-    comp_image = cv2.resize(img, SIZE, interpolation=cv2.INTER_LINEAR)
+    comp_image = cv2.resize(img, SIZE, interpolation=cv2.INTER_AREA)
     
     ## Extract board using CNN model and contour approximation
     try: 
@@ -42,6 +37,15 @@ def classify_raw(path, board_model, sq_model):
     print("Processing image {}.. DONE".format(filename))
     
     return board_img, predictions, FEN, squares
+
+def load_models():
+    global sq_model, board_model
+
+    board_model = board_extractor.load_extractor()
+    sq_model = board_classifier.load_classifier()
+
+    return board_model, sq_model
+
 
 if __name__ == "__main__":
 
