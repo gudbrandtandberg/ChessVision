@@ -14,7 +14,7 @@ the ChessVision algorithm recognizes, extracts, and classifies any chessboard co
 
 Two generations of the ChessVision algorithm give the following two outputs to the example above
 
-<p float="left>
+<p float="left">
     <img src="./img/example1.png" width="200"/>
     <img src="./img/example2.png" width="200"/>
 </p>
