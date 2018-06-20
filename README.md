@@ -97,3 +97,7 @@ Data, plans...
 + https://arxiv.org/pdf/1708.03898.pdf
 + https://ieeexplore.ieee.org/document/5967178/
 + https://web.stanford.edu/class/ee368/Project_Spring_1415/Reports/Danner_Kafafy.pdf
++ http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#4d4e495354
++ https://yashk2810.github.io/Applying-Convolutional-Neural-Network-on-the-MNIST-dataset/
++ http://sci2s.ugr.es/keel/pdf/algorithm/articulo/knnAdaptive.pdf
++ https://stackoverflow.com/questions/19126994/what-is-the-cleanest-way-to-get-the-progress-of-jquery-ajax-request
