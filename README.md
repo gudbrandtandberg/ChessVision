@@ -9,20 +9,15 @@ This repository contains code and resources for extracting chess positions from 
 This is what the program does:
 
 <p float="left">
-  <div>
-    <span>Raw input:</span>
     <img src="./img/example_raw.JPG" width="250" />
-  </div>
-  <div>
-  <span>First generation models:</span>
     <img src="./img/example1.png" width="250"/>
-  </div>
-  <div>
-  <span>Second generation models:</span>
     <img src="./img/example2.png" width="250"/>
-  </div>
 </p>
 
+<img src="./img/training_extraction.png" />
+<img src="./img/test_extraction.png" />
+<img src="./img/training_classification1.png" />
+<img src="./img/test_classification.png" />
 
 ## Project Structure
 
@@ -168,3 +163,21 @@ Position Logic Checks
 
 
 + https://towardsdatascience.com/estimating-optimal-learning-rate-for-a-deep-neural-network-ce32f2556ce0
+
+
+
+### Similar Projects
+
++ ChessFigRdrLite - http://www.kgrothapps.com/
++ https://www.chess.com/forum/view/chess-equipment/chessfigrdrlite---android-ocr-program-for-chess-figures
++ https://www.reddit.com/r/chess/comments/856pjh/is_there_a_way_to_get_a_fen_from_an_image_of_the/
++ https://www.chess.com/forum/view/endgames/convert-pngimage-file-to-pgn-or-fen
++ http://www.chessgrabber.nicolaas.net/
++ https://github.com/metterklume/chessputzer
++ https://www.ocf.berkeley.edu/~abhishek/putz/run.fcgi/upload
++ https://play.google.com/store/apps/details?id=com.fimetech.chessfimee
++ https://github.com/Elucidation/tensorflow_chessbot
++ https://chessify.me/
+
+
+
