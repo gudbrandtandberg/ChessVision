@@ -15,8 +15,8 @@ the ChessVision algorithm recognizes, extracts, and classifies any chessboard co
 Two generations of the ChessVision algorithm give the following two outputs to the example above
 
 <p float="left">
-    <img src="./img/example1.png" width="200"/>
-    <img src="./img/example2.png" width="200"/>
+    <img src="./img/example1.png" width="320"/>
+    <img src="./img/example2.png" width="320"/>
 </p>
 
 ## Earlier work
@@ -31,14 +31,16 @@ The following two links point to internet discussions about the problem at hand
 The next links point to existing implementations
 
 + [chessputzer](https://github.com/metterklume/chessputzer) [(try)](https://www.ocf.berkeley.edu/~abhishek/putz/run.fcgi/upload)
-+ ChessFigRdrLite - http://www.kgrothapps.com/
++ [ChessFigRdrLite](http://www.kgrothapps.com/)
 + [chessgrabber](http://www.chessgrabber.nicolaas.net/)
 + [tensorflow_chessbot](https://github.com/Elucidation/tensorflow_chessbot)
 + [chessify](https://chessify.me/)
 
 ## ChessVision
 
-The goal of ChessVision is to be able to correctly classify as many as possible different, valid inoputs. Already the performance of the algorithm is not very bad. Since ChessVision is based on machine learning, in particular deep learning, the hope is that the performance of ChessVision will improve as more training data comes in.
+The goal of ChessVision is to be able to correctly classify as many as possible different, valid inputs. Already the performance of the algorithm is not very bad. Since ChessVision is based on machine learning, in particular deep learning, the hope is that the performance of ChessVision will improve as more training data comes in.
+
+We impose as few constraints on the inputs as possible, in principle any photograph of a 2D representation of a chess board should be identifyable by the algorithm. In particular, different formats such as books, screenshots, photos of screens, etc. should be allowable, under any lighting and small scale and rotational deviations. However, the input image must be square, at least 512 pixels wide, and contain exactly one chessboard filling at least 35% of the image area.
 
 ## Algorithm details
 
@@ -54,26 +56,21 @@ Board extraction is done in two steps, first the image is resized to 256x256 and
 
 ### Board classification
 
-The next step is to cut the board image into 64 little 64x64-pixel squares, with accompanying square-names, in order to take into account board orientation. We classify squares using a small convolutional network trained on a hand-collected, hand-labelled dataset.
+The next step is to cut the board image into 64 little 64x64-pixel squares, with accompanying square-names (in order account for board orientation). We classify squares using a small convolutional network.
 
-The performance of the current generation of ChessVision is excellent, the next image shows the performance on a batch of training data. 
+The performance of the current generation of square classifiers is promising; the next image shows the results on a batch of training data (99.6% accuracy)
 
 <img src="./img/training_classification1.png" />
 
-However, on unseen test data the algorithm fares worse, as the following figure shows. 
+However, on unseen test data the algorithm fares worse, as the following figure shows
 
 <img src="./img/test_classification.png" />
 
-## Todo:
+## Data, plans
 
-- fix 2-model bug (theano kinda fixes)
-  - https://github.com/keras-team/keras/issues/2397
-- come up with best deployment model
-  - https://github.com/llSourcell/how_to_deploy_a_keras_model_to_production/blob/master/app.py
-  - https://medium.com/@burgalon/deploying-your-keras-model-35648f9dc5fb
-  - https://gitlab.com/fast-science/background-removal-server
-  - https://blog.keras.io/building-a-simple-keras-deep-learning-rest-api.html
-  - https://github.com/mtobeiyf/keras-flask-deploy-webapp
+Data, plans...
+
+## Todo:
 
 - Position Logic Checks
   - no more than two knights, bishops, rooks, kings
@@ -82,6 +79,11 @@ However, on unseen test data the algorithm fares worse, as the following figure 
 - Recognize board rotation state! 
 - Crop/resize user upload image
 - UI - status/progress, hidden fields,  
+
+- fix 2-model bug (theano kinda fixes)
+  - https://github.com/keras-team/keras/issues/2397
+
+- come up with best deployment model
 
 ## Some references
 
@@ -95,6 +97,3 @@ However, on unseen test data the algorithm fares worse, as the following figure 
 + https://arxiv.org/pdf/1708.03898.pdf
 + https://ieeexplore.ieee.org/document/5967178/
 + https://web.stanford.edu/class/ee368/Project_Spring_1415/Reports/Danner_Kafafy.pdf
-
-+ https://towardsdatascience.com/estimating-optimal-learning-rate-for-a-deep-neural-network-ce32f2556ce0
-
