@@ -1,0 +1,7 @@
+
+
+input-preview {
+    rotate: 90; 
+    overflow: hidden; 
+    image-orientation: from-image;
+}

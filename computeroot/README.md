@@ -1,5 +1,12 @@
 ## Deployment
 
+  - https://github.com/llSourcell/how_to_deploy_a_keras_model_to_production/blob/master/app.py
+  - https://medium.com/@burgalon/deploying-your-keras-model-35648f9dc5fb
+  - https://gitlab.com/fast-science/background-removal-server
+  - https://blog.keras.io/building-a-simple-keras-deep-learning-rest-api.html
+  - https://github.com/mtobeiyf/keras-flask-deploy-webapp
+
+
 CPU: 593s 49s/step
 GPU: 167s 13s/step
 
