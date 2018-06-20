@@ -21,7 +21,7 @@ model = unet.get_unet_256()
 model.load_weights("../weights/best_weights.hdf5")
 
 ids_train = data.load_image_and_mask_ids()
-ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
+ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.1, random_state=42)
 
 print('Training on {} samples'.format(len(ids_train_split)))
 print('Validating on {} samples'.format(len(ids_valid_split)))
@@ -81,7 +81,7 @@ callbacks = [EarlyStopping(monitor='val_loss',
                                factor=0.1,
                                patience=4,
                                verbose=1,
-                               min_delta=1e-4),
+                               epsilon=1e-4),
              ModelCheckpoint(monitor='val_loss',
                              filepath='../weights/new_best_weights.hdf5',
                              save_best_only=True,
