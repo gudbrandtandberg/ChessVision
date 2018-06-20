@@ -11,8 +11,7 @@ python board_extractor.py -d ../data/images/ -o ./data/boards/
 from util import listdir_nohidden, ratio, draw_contour, randomColor, parse_arguments, BoardExtractionError
 import numpy as np
 import cv2
-#from tensorflow import Graph, Session
-#import matplotlib.pyplot as plt
+import cv_globals
 
 SIZE = (256, 256)
 
@@ -20,7 +19,7 @@ def load_extractor():
     print("Loading board extraction model..")
     from u_net import get_unet_256
     model = get_unet_256()
-    model.load_weights('/Users/gudbrand/Programming/Chess/ChessVision/weights/best_weights.hdf5')
+    model.load_weights(cv_globals.board_weights)
     print("Loading board extraction model.. DONE")
     return model
 
