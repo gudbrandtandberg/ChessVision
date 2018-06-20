@@ -20,9 +20,7 @@ def load_extractor():
     print("Loading board extraction model..")
     from u_net import get_unet_256
     model = get_unet_256()
-    model.load_weights('../weights/best_weights.hdf5')
-    #model._make_predict_function()
-
+    model.load_weights('/Users/gudbrand/Programming/Chess/ChessVision/weights/best_weights.hdf5')
     print("Loading board extraction model.. DONE")
     return model
 
@@ -76,40 +74,19 @@ def rotate_quadrangle(approx):
 
 def find_quadrangle(mask):
 
-    #plt.figure()
-    #plt.imshow(mask, cmap="gray")
-    #plt.show()
-
-    #(_, mask) = cv2.threshold(mask, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
-    #_, contours, _ = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
-    #plt.figure()
-    #plt.imshow(mask, cmap="gray")
-    #plt.show()
-
-    _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+    _, contours, _ = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
     
-    print("Found {} contour(s)".format(len(contours)))
-    contours = ignore_contours(mask, contours)
-    print("Filtered to {} contour(s)".format(len(contours)))
+    if len(contours) > 1:
+        print("Found {} contour(s)".format(len(contours)))
+        contours = ignore_contours(mask, contours)
+        print("Filtered to {} contour(s)".format(len(contours)))
+
     if len(contours) == 0:
         return None
     
-    #plt.figure()
-    #plt.imshow(mask, cmap="gray")
-    #plt.show()
-    
-    #mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
-    #for i in range(len(contours)):
-    #    cv2.drawContours(mask, contours, i, randomColor(), thickness=4)
-
-    #plt.figure()
-    #plt.imshow(mask)
-    #plt.show()
-    
     approx = None
 
+    # try to approximate and hope for a quad
     for i in range(len(contours)):
         cnt = contours[i]
         
@@ -155,27 +132,5 @@ def ignore_contours(img,
 
     return ret
 
-def main():
-
-    _, image_dir, board_dir = parse_arguments()
-
-    for f in listdir_nohidden(image_dir):
-
-        print("Extracting board from {}.....".format(f))
-
-        image = cv2.imread(image_dir + f)
-        
-        comp_image = cv2.resize(image, (256,256), interpolation=cv2.INTER_LINEAR)
-
-        try:
-            board = extract_board(comp_image, image)
-
-        except Exception as e:
-            print("Board extraction failed due to unexpected error '{}'.. \nMoving on!".format(e))
-            continue
-        
-        cv2.imwrite(board_dir + "/x_" + f, board)
-        print("--SUCCESS!!")
-
 if __name__ == "__main__":
-    main()
+    pass

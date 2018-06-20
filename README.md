@@ -1,149 +1,89 @@
 # Chess Vision - a computer vision chess project
 
-This repository contains code and resources for extracting chess positions from images using computer vision. 
+This repository contains code and resources for extracting chess positions from images using computer vision.
+
+18/6/2018: WORK IN PROGRESS!
 
 ## Example
 
-This is what the program does:
+From *any* square input image (png, jpg, etc.), such as this one:
 
-### Input: 
-<img src="./data/raw/IMG_4387.JPG" width="400" />
+<img src="./img/example_raw.JPG" width="400" />
 
-### Output:
-<img src="./img/example1.png" width="300"/>
+the ChessVision algorithm recognizes, extracts, and classifies any chessboard contained in the image.
 
-The above example mis-classifies a few squares, but does an OK job for now..
+Two generations of the ChessVision algorithm give the following two outputs to the example above
 
-## Project Structure
+<p float="left">
+    <img src="./img/example1.png" width="320"/>
+    <img src="./img/example2.png" width="320"/>
+</p>
 
-- src
-- data
-- webroot (seperate git repo)
-- computeroot
+## Earlier work
 
-### Architecture 
+Several solutions to the chess-extraction-and-classification problem have been posed. Most rely on a combination of computer vision and machine learning, however, many different approaches are possible.
 
-2 nodes: 
-  - web node (serves static content)
-  - compute node (handles POST requests to classify boards)
+The following two links point to internet discussions about the problem at hand
+
++ https://www.chess.com/forum/view/endgames/convert-pngimage-file-to-pgn-or-fen
++ https://www.reddit.com/r/chess/comments/856pjh/is_there_a_way_to_get_a_fen_from_an_image_of_the/
+
+The next links point to existing implementations
+
++ [chessputzer](https://github.com/metterklume/chessputzer) [(try)](https://www.ocf.berkeley.edu/~abhishek/putz/run.fcgi/upload)
++ [ChessFigRdrLite](http://www.kgrothapps.com/)
++ [chessgrabber](http://www.chessgrabber.nicolaas.net/)
++ [tensorflow_chessbot](https://github.com/Elucidation/tensorflow_chessbot)
++ [chessify](https://chessify.me/)
+
+## ChessVision
+
+The goal of ChessVision is to be able to correctly classify as many as possible different, valid inputs. Already the performance of the algorithm is not very bad. Since ChessVision is based on machine learning, in particular deep learning, the hope is that the performance of ChessVision will improve as more training data comes in.
+
+We impose as few constraints on the inputs as possible, in principle any photograph of a 2D representation of a chess board should be identifyable by the algorithm. In particular, different formats such as books, screenshots, photos of screens, etc. should be allowable, under any lighting and small scale and rotational deviations. However, the input image must be square, at least 512 pixels wide, and contain exactly one chessboard filling at least 35% of the image area.
 
 ## Algorithm details
 
 ### Board extraction
 
-Step 1 is to extract square chessboards from raw photographs of chess positions.
+The first step is to extact square chessboards from raw photographs, the following plot shows the algorithms performance on a batch of test data. 
 
-The command
+<img src="./img/test_extraction.png" />
 
-```python board_extractor.py -d <indirname> -o <outdirname>```
+Board extraction is done in two steps, first the image is resized to 256x256 and fed into a deep convolutional neural network (the [unet](https://github.com/zhixuhao/unet) architecture) upon which a mask is produced, labelling each pixel as either chessboard, or not a chessboard. Next, a contour approximation algorithm approximates the mask using four points. The board is extracted from the raw image using these four points, appropriately scaled. The next image illustrates the trained models performance on a batch of training data. 
 
-populates the directory __outdirname__ with extracted board images. 
+<img src="./img/training_extraction.png" />
 
-## Board rotation
+### Board classification
 
-The previous step leaves some of the extracted boards in a rotated orientation. 
+The next step is to cut the board image into 64 little 64x64-pixel squares, with accompanying square-names (in order account for board orientation). We classify squares using a small convolutional network.
 
-Running 
+The performance of the current generation of square classifiers is promising; the next image shows the results on a batch of training data (99.6% accuracy)
 
-```python rotate_boards.py```
+<img src="./img/training_classification1.png" />
 
-in the __src__ directory sorts this out. 
+However, on unseen test data the algorithm fares worse, as the following figure shows
 
-### Square extraction
+<img src="./img/test_classification.png" />
 
-Square extraction is simply done by cutting the board images into 64 equal sized sub-images. 
-Running 
+## Data, plans
 
-```python extract_squares.py```
-
-in the __src__ directory populates __data/squares__ with square images.
-
-
-### Square classification
-
-
-We classify squares by retraining a pretrained CNN on a hand-labelled dataset.
-
-There are 12 different pieces on a chess board. They are:
-
-  white: R, N, B, Q, K, P 
-  black: r, n, b, q, k, p 
-
-In addition, any square can be free (f).
-Any piece can be posted on a white (w) or dark (d) square.
-
-If we do not take into account square color, this turns out to be 13 classes.
-
-The script ```hand_labeller.py``` lets the user hand-label every square image in the accumulated dataset into one of the 13 categories. It does something of the following:
-
-Forever:
-    show image
-    wait for user-input... 
-    record label
-
-After labelling, we can train a convolutional neural network to classify the squares. To train the network and save it as a model file, run
-
-```python square_classifyer.py```
-
-Running 
-
-```python classify_boards.py``` 
-
-in the __src__ directory classifies all the extracted board images and outputs svg files of the chess position.
-
-## Deployment Data Flow:
-
-As more user data is uploaded to the compute node, the data is stored to further improve the models
-The compute node follows roughly the following flow on user upload and user feedback
-
-On new image: POST {file: "..."} to /cv_algo (checked on frontend)
-  - give image unique_id
-  - extract board
-  if success:
-    - save raw in ./user_uploads/raw_success/
-  else:
-    - save raw in ./user_uploads/raw_fail/
-    - return {error: "msg"} to user
-  - classify pieces (+ logic)
-  - return {result: "fen", id: "..."} to user (front end produces feedback button)
-  - save board in ./user_uploads/unlabelled/boards/
-  - save predictions in ./user_uploads/unlabelled/predictions/ (same id + .json)
-
-On new feedback event: POST to /feedback {id: "...", correct: true}
-  if correct:
-    - save all squares in board from ./user_uploads/unlabelled/boards/id to ./user_uploads/squares/<b, n, ...>/
-  else: 
-    - copy board from ./user_uploads/unlabelled/boards/id ./user_uploads/fail/boards/id
-    - copy prediction from ./user_uploads/unlabelled/predictions/id ./user_uploads/fail/predictions/id
-    - delete board from ./user_uploads/unlabelled/boards/id
+Data, plans...
 
 ## Todo:
 
-- fix 2-model bug (theano kinda fixes)
-  - https://github.com/keras-team/keras/issues/2397
-  - https://github.com/llSourcell/how_to_deploy_a_keras_model_to_production/blob/master/app.py
-  - https://medium.com/@burgalon/deploying-your-keras-model-35648f9dc5fb
-  - https://gitlab.com/fast-science/background-removal-server
-  - https://blog.keras.io/building-a-simple-keras-deep-learning-rest-api.html
-  - https://github.com/mtobeiyf/keras-flask-deploy-webapp
-
-
-Position Logic Checks
-- most likely king
-- bishop on color
-- not pawn on first rank
-
-- more piece imgs from test data
-- more raw imgs to retrain mask-cnn
-
-- more robust contour approximation (filter by area)
-  - http://cs.joensuu.fi/~koles/approximation/Ch3_3.html
-  - https://github.com/geissdoerfer/polyprox
+- Position Logic Checks
+  - no more than two knights, bishops, rooks, kings
+  - not pawn on first rank
 
 - Recognize board rotation state! 
 - Crop/resize user upload image
-
 - UI - status/progress, hidden fields,  
+
+- fix 2-model bug (theano kinda fixes)
+  - https://github.com/keras-team/keras/issues/2397
+
+- come up with best deployment model
 
 ## Some references
 
@@ -157,6 +97,3 @@ Position Logic Checks
 + https://arxiv.org/pdf/1708.03898.pdf
 + https://ieeexplore.ieee.org/document/5967178/
 + https://web.stanford.edu/class/ee368/Project_Spring_1415/Reports/Danner_Kafafy.pdf
-
-
-+ https://towardsdatascience.com/estimating-optimal-learning-rate-for-a-deep-neural-network-ce32f2556ce0

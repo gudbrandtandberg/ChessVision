@@ -96,8 +96,16 @@ def predict_img():
         
         #print("Will classfiy file stored at {}".format(tmp_loc))
         file.save(tmp_loc)
+        tmp_path = os.path.abspath(tmp_loc)
+
+        # check if input image is flipped (from black's perspective)
+        flip = False
+        if "reversed" in request.form:
+            flip = True
+        print(flip)
         try:
-            board_img, predictions, FEN, _ = chessvision.classify_raw(os.path.abspath(tmp_loc), board_model, sq_model)
+            
+            board_img, predictions, FEN, _ = chessvision.classify_raw(tmp_path, board_model, sq_model)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw_success/", filename))
             cv2.imwrite("./user_uploads/unlabelled/boards/x_" + filename, board_img)
