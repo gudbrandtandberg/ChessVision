@@ -60,8 +60,8 @@ var init = function() {
             processData: false,
             success: function(data) {
                 res = JSON.parse(data)
+                document.getElementById("feedback-pane").style.display = "none"
                 if (res.success == "true") {
-                    document.getElementById("feedback-pane").style.display = "none"
                     alert("Thanks for your feedback!")
                 } else {
                     alert("Your feedback was not taken into consideration")
