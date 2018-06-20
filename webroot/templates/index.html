@@ -2,7 +2,11 @@
     <head>
         <title>ChessVision</title>
         <meta charset="UTF8" />
+        <meta name="author" content="Gudbrand Tandberg" />
+        <meta name="description" content="Extract chessboards free online" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="static/css/chessboard-0.3.0.css" />
+        <link rel="stylesheet" href="static/css/main.css" />
     </head>
     <body>
         
@@ -10,14 +14,16 @@
     
         <form id="upload-form" enctype="multipart/form-data">
             <input id="image-input" type="file" name="file" accept="image/*">
-            <input id="reversed-input" type="checkbox" name="reversed"> Reversed
+            <input id="reversed-input" type="checkbox" name="reversed"> Reversed <br>
+            <input type="radio" name="move" value="white" checked> White to move
+            <input type="radio" name="move" value="black"> Black to move <br>
             <input type="submit">
             <!--<input type="button" name="submit" value="Submit" onclick="submitForm()">-->
         </form>
         
         <div id="container" style="width: 900px; overflow: hidden;">
             <div id="board" style="width: 400px; float: left"></div>¨
-            <img alt="Placeholder" id="input-preview" src="#" width="400" style="rotate: 90; overflow: hidden; image-orientation: from-image;">
+            <img alt="Placeholder" id="input-preview" src="#" width="400">
         </div>
         
         <div id="feedback-pane" style="display: none">
@@ -25,7 +31,7 @@
             <form method="POST" id="feedback-form">
                 <input type="radio" name="feedback" value="correct" checked> Correct <br>
                 <input type="radio" name="feedback" value="incorrect"> Incorrect <br>
-                <input type="text" name="id" value="raw_id_input" id="raw-id-input" style="display: none;">
+                <input type="text" name="id" value="" id="raw-id-input" style="display: none;">
                 <input type="submit">
             </form>
         </div>
