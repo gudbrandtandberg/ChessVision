@@ -38,6 +38,15 @@ def classify_raw(path, board_model, sq_model):
     
     return board_img, predictions, FEN, squares
 
+def load_models():
+    global sq_model, board_model
+
+    board_model = board_extractor.load_extractor()
+    sq_model = board_classifier.load_classifier()
+
+    return board_model, sq_model
+
+
 if __name__ == "__main__":
 
     infile = "../data/raw/IMG_4386.JPG"

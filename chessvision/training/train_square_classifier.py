@@ -15,7 +15,6 @@ input_shape = (64, 64, 1)
 
 train_datagen = ImageDataGenerator(
         rescale=1./255,
-        validation_split=0.2
         )
 
 #train_datagen.fit()

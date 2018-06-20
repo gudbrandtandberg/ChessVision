@@ -11,7 +11,7 @@ def load_classifier():
     print("Loading square model..")
     from square_classifier import build_square_classifier
     model = build_square_classifier()
-    model.load_weights('../weights/best_weights_square.hdf5')
+    model.load_weights('/Users/gudbrand/Programming/Chess/ChessVision/weights/best_weights_square.hdf5')
     #model._make_predict_function()
     
     print("Loading square model.. DONE")
