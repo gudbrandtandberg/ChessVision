@@ -20,9 +20,7 @@ def load_extractor():
     print("Loading board extraction model..")
     from u_net import get_unet_256
     model = get_unet_256()
-    model.load_weights('../weights/best_weights.hdf5')
-    #model._make_predict_function()
-
+    model.load_weights('/Users/gudbrand/Programming/Chess/ChessVision/weights/best_weights.hdf5')
     print("Loading board extraction model.. DONE")
     return model
 
@@ -76,7 +74,7 @@ def rotate_quadrangle(approx):
 
 def find_quadrangle(mask):
 
-    _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+    _, contours, _ = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
     
     if len(contours) > 1:
         print("Found {} contour(s)".format(len(contours)))
@@ -134,27 +132,5 @@ def ignore_contours(img,
 
     return ret
 
-def main():
-
-    _, image_dir, board_dir = parse_arguments()
-
-    for f in listdir_nohidden(image_dir):
-
-        print("Extracting board from {}.....".format(f))
-
-        image = cv2.imread(image_dir + f)
-        
-        comp_image = cv2.resize(image, (256,256), interpolation=cv2.INTER_LINEAR)
-
-        try:
-            board = extract_board(comp_image, image)
-
-        except Exception as e:
-            print("Board extraction failed due to unexpected error '{}'.. \nMoving on!".format(e))
-            continue
-        
-        cv2.imwrite(board_dir + "/x_" + f, board)
-        print("--SUCCESS!!")
-
 if __name__ == "__main__":
-    main()
+    pass
