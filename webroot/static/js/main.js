@@ -93,7 +93,11 @@ var init = function() {
     }; // end init()
 
 var setFEN = function(fen) {
-    var board = ChessBoard('board', fen);
+    var cfg = {
+        orientation: 'white',
+        position: fen
+      };
+    var board = ChessBoard('board', cfg);
 }
 
 $(document).ready(init);
