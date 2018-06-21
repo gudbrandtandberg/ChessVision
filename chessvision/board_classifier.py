@@ -17,6 +17,7 @@ def load_classifier():
 
 def classify_board(board_img, model):
     print("Classifying board..")
+    
     squares, names = extract_squares(board_img)
     
     predictions = model.predict(squares)
