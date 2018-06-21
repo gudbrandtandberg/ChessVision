@@ -8,7 +8,7 @@ Usage:
 python board_extractor.py -d ../data/images/ -o ./data/boards/
 """
 
-from util import listdir_nohidden, ratio, draw_contour, randomColor, parse_arguments, BoardExtractionError
+from util import listdir_nohidden, ratio, parse_arguments, BoardExtractionError
 import numpy as np
 import cv2
 import cv_globals
@@ -29,11 +29,12 @@ def extract_board(image, orig, model):
     print("Extracting board...")
     image_batch = np.array([image], np.float32) / 255
     
+    print("Predicting mask...")
     predicted_mask_batch = model.predict(image_batch)
-
-    predicted_mask = predicted_mask_batch[0].reshape(SIZE)
+    predicted_mask = predicted_mask_batch[0].reshape(cv_globals.INPUT_SIZE)
     mask = fix_mask(predicted_mask)
-    
+    print("Predicting mask... DONE")
+
     #approximate chessboard-mask with a quadrangle
     approx = find_quadrangle(mask)
     
@@ -41,22 +42,23 @@ def extract_board(image, orig, model):
         print("Contour approximation failed!")
         raise BoardExtractionError()
     
+    #scale approcimation to input image size
     orig_size = (orig.shape[0], orig.shape[1])
     approx = scale_approx(approx, orig_size) 
     
     #extract board
-    board = extract_perspective(orig, approx, 512, 512)
+    board = extract_perspective(orig, approx, cv_globals.BOARD_SIZE)
 
     board = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
     board = cv2.flip(board, 1)
     print("Extracting board... DONE")
     return board
 
-def fix_mask(mask):
+def fix_mask(mask, threshold=80):
     mask *= 255
     mask = mask.astype(np.uint8)
-    mask[mask > 80] = 255
-    mask[mask <= 80] = 0
+    mask[mask > threshold] = 255
+    mask[mask <= threshold] = 0
     return mask
 
 
@@ -77,7 +79,7 @@ def find_quadrangle(mask):
     
     if len(contours) > 1:
         print("Found {} contour(s)".format(len(contours)))
-        contours = ignore_contours(mask, contours)
+        contours = ignore_contours(mask.shape, contours)
         print("Filtered to {} contour(s)".format(len(contours)))
 
     if len(contours) == 0:
@@ -90,34 +92,37 @@ def find_quadrangle(mask):
         cnt = contours[i]
         
         arclen = cv2.arcLength(cnt, True)
-        app = cv2.approxPolyDP(cnt, 0.1*arclen, True)
+        approx = cv2.approxPolyDP(cnt, 0.1*arclen, True)
         
-        if len(app) != 4:
+        if len(approx) != 4:
             continue
 
-        approx = rotate_quadrangle(app)
+        approx = rotate_quadrangle(approx)
         break
 
     return approx
 
-def extract_perspective(image, perspective, w, h):
+def extract_perspective(image, approx, out_size):
+
+    w, h = out_size[0], out_size[1]
     
     dest = ((0,0), (w, 0), (w,h), (0, h))
 
-    perspective = np.array(perspective, np.float32)
+    approx = np.array(approx, np.float32)
     dest = np.array(dest, np.float32)
 
-    coeffs = cv2.getPerspectiveTransform(perspective, dest)
-    return cv2.warpPerspective(image, coeffs, (w, h))
+    coeffs = cv2.getPerspectiveTransform(approx, dest)
 
-def ignore_contours(img,
+    return cv2.warpPerspective(image, coeffs, out_size)
+
+def ignore_contours(img_shape,
                    contours,
                    min_ratio_bounding=0.6,
                    min_area_percentage=0.35,
-                   max_area_percentage=0.95):
+                   max_area_percentage=0.99):
 
     ret = []
-    mask_area = float(img.shape[0]*img.shape[1])
+    mask_area = float(img_shape[0]*img_shape[1])
 
     for i in range(len(contours)):
         ca = cv2.contourArea(contours[i])

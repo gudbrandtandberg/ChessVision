@@ -1,18 +1,15 @@
 import keras
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
-import u_net as unet
-from augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
-import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
+from augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
 import data
 import numpy as np
 import cv2 
-from parameters import *
+import cv_globals
 from util import listdir_nohidden
+import board_extractor
 
-input_size = 256
-SIZE = (256, 256)
 batch_size = 16
 epochs = 100
 
@@ -22,16 +19,7 @@ def load_image_and_mask_ids():
 
 ids_train = data.load_image_and_mask_ids()
 ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.1, random_state=42)
-=======
-def get_model():
-    model = unet.get_unet_256()
-    model.load_weights("../weights/best_weights.hdf5")
-    return 
->>>>>>> ec822fa3d3b61723cffb2b328ad5951929bcdb09
-
-
 def train_generator(ids_train_split, batch_size=batch_size):
-    
     while True:
         for start in range(0, len(ids_train_split), batch_size):
             x_batch = []
@@ -39,10 +27,8 @@ def train_generator(ids_train_split, batch_size=batch_size):
             end = min(start + batch_size, len(ids_train_split))
             ids_train_batch = ids_train_split[start:end]
             for id in ids_train_batch:
-                img = cv2.imread('{}{}.JPG'.format(image_dir, id))
-                img = cv2.resize(img, (input_size, input_size))
-                mask = cv2.imread('{}{}.JPG'.format(mask_dir, id), cv2.IMREAD_GRAYSCALE)
-                mask = cv2.resize(mask, (input_size, input_size))
+                img = cv2.imread('{}{}.JPG'.format(cv_globals.image_dir, id))
+                mask = cv2.imread('{}{}.JPG'.format(cv_globals.mask_dir, id), cv2.IMREAD_GRAYSCALE)
                 img = randomHueSaturationValue(img,
                                                hue_shift_limit=(-50, 50),
                                                sat_shift_limit=(-5, 5),
@@ -67,10 +53,8 @@ def valid_generator(ids_valid_split, batch_size=batch_size):
             end = min(start + batch_size, len(ids_valid_split))
             ids_valid_batch = ids_valid_split[start:end]
             for id in ids_valid_batch:
-                img = cv2.imread('{}{}.JPG'.format(image_dir, id))
-                img = cv2.resize(img, (input_size, input_size))
-                mask = cv2.imread('{}{}.JPG'.format(mask_dir, id), cv2.IMREAD_GRAYSCALE)
-                mask = cv2.resize(mask, (input_size, input_size))
+                img = cv2.imread('{}{}.JPG'.format(cv_globals.image_dir, id))
+                mask = cv2.imread('{}{}.JPG'.format(cv_globals.mask_dir, id), cv2.IMREAD_GRAYSCALE)
                 mask = np.expand_dims(mask, axis=2)
                 x_batch.append(img)
                 y_batch.append(mask)
@@ -81,13 +65,13 @@ def valid_generator(ids_valid_split, batch_size=batch_size):
 
 if __name__ == "__main__":
 
-    ids_train = load_image_and_mask_ids()
+    ids_train = data.load_image_and_mask_ids()
     ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
 
     print('Training on {} samples'.format(len(ids_train_split)))
     print('Validating on {} samples'.format(len(ids_valid_split)))
 
-    model = get_model()
+    model = board_extractor.load_extractor()
 
     callbacks = [EarlyStopping(monitor='val_loss',
                             patience=8,
