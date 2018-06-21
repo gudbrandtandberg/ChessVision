@@ -1,28 +1,25 @@
-import cv2
-from keras.models import load_model
-from extract_squares import extract_squares
+"""
+Classify a 512x512 image of a chessboard.
+"""
 import numpy as np
-from util import listdir_nohidden, parse_arguments, BoardExtractionError
 import chess
+from extract_squares import extract_squares
+from util import listdir_nohidden, parse_arguments, BoardExtractionError
 import cv_globals
-
-#from square_classifier import build_square_classifier
 
 def load_classifier():
     print("Loading square model..")
     from square_classifier import build_square_classifier
     model = build_square_classifier()
     model.load_weights(cv_globals.square_weights)
-    #model._make_predict_function()
-    
     print("Loading square model.. DONE")
     return model
 
 def classify_board(board_img, model):
     print("Classifying board..")
+    
     squares, names = extract_squares(board_img)
     
-    squares = np.expand_dims(squares, -1)
     predictions = model.predict(squares)
     
     chessboard = classification_logic(predictions, names)
@@ -36,7 +33,6 @@ def classification_logic(probs, names):
     
     initial_predictions = np.argmax(probs, axis=1)
 
-    #label_names = ["R", "r", "K", "k", "Q", "q", "N", "n", "P", "p", "B", "b", "f"]
     label_names  = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']
 
     pred_labels = [label_names[p] for p in initial_predictions]
@@ -91,7 +87,6 @@ def build_board_from_labels(labels, names):
 
 if __name__ == "__main__":
     print("No main fn implemented")
-
 
     # _, board_dir, svg_dir = parse_arguments()
 
