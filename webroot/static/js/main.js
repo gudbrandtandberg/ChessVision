@@ -1,12 +1,12 @@
 var init = function() {
-        
+    
+    // The displayed chessboard (chess.js)
     var board = ChessBoard('board', 'start');
 
-    var cv_algo_url = "http://localhost:7777/cv_algo/"
-    var feedback_url = "http://localhost:7777/feedback/"
+    var endpoint = document.getElementById("endpoint").innerHTML
     
-    //var cv_algo_url = "http://40.113.67.136:8080/cv_algo/"
-    //var feedback_url = "http://40.113.67.136:8080/feedback/"
+    var cv_algo_url = endpoint + "cv_algo/"
+    var feedback_url = endpoint + "feedback/"
 
     $("#upload-form").submit(function(event) {
         event.preventDefault()
@@ -27,17 +27,15 @@ var init = function() {
                 
                 if (res.error == "false") {
                     setFEN(res.FEN)
-                    //$("#feedback_pane").css("visibility", "visible")
                     document.getElementById("raw-id-input").value = res.id
                     document.getElementById("feedback-pane").style.display = "block"
                 } else {
                     console.log(res)
-                    alert(res.errorMsg)
                 }
             },
             error: function(xmlHttpRequest, textStatus, errorThrown) {
-                if(xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
-                    alert("prematurely aborting ajax request..")
+                if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
+                    alert("Connection to ChessVision server failed. It is probably sleeping..")
                     return
                 } else {
                     alert(textStatus)
@@ -69,6 +67,7 @@ var init = function() {
                 },
             error: function(data) {
                 alert(data)
+                console.log(data)
                 }
             })
         })
@@ -86,11 +85,8 @@ var init = function() {
             }
             fr.readAsDataURL(files[0]);
         }
-
-        // Not supported
         else {
-            // fallback -- perhaps submit the input to an iframe and temporarily store
-            // them on the server until the user's session ends.
+            alert("Your browser must implement file uploading.")
         }
     }
 
