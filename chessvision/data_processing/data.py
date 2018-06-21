@@ -19,4 +19,4 @@ def load_image_ids():
 
 if __name__ == "__main__":
 
-    (x_train, y_train), (x_test, y_test) = load_data()
+    pass
