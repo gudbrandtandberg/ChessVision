@@ -18,25 +18,21 @@ def load_extractor():
     from u_net import get_unet_256
     model = get_unet_256()
     model.load_weights(cv_globals.board_weights)
-    print("Loading board extraction model.. DONE")
+    print("\rLoading board extraction model.. DONE")
     return model
 
 def extract_board(image, orig, model):
     
     #predict chessboard-mask:
-    print("Extracting board...")
+    print("Extracting board..")
     image_batch = np.array([image], np.float32) / 255
     
-    print("Predicting mask...")
     predicted_mask_batch = model.predict(image_batch)
     predicted_mask = predicted_mask_batch[0].reshape(cv_globals.INPUT_SIZE)
     mask = fix_mask(predicted_mask)
-    print("Predicting mask... DONE")
 
     #approximate chessboard-mask with a quadrangle
-    print("Approximating contour...")
     approx = find_quadrangle(mask)
-    print("Approximating contour... DONE")
     if approx is None:
         print("Contour approximation failed!")
         raise BoardExtractionError()
@@ -50,7 +46,7 @@ def extract_board(image, orig, model):
 
     board = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
     board = cv2.flip(board, 1)
-    print("Extracting board... DONE")
+    print("\rExtracting board.. DONE")
     return board
 
 def fix_mask(mask, threshold=80):
