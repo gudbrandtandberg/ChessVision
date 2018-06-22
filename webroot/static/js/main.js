@@ -17,6 +17,7 @@ var init = function() {
     
     var cv_algo_url = endpoint + "cv_algo/"
     var feedback_url = endpoint + "feedback/"
+    var analyze_url = endpoint + "analyze/"
 
     $("#upload-form").submit(function(event) {
         event.preventDefault()
@@ -62,7 +63,7 @@ var init = function() {
 
         var formData = new FormData(this);
         formData.append("position", JSON.stringify(position))
-        
+
         flip = document.getElementById("reversed-input").checked ? "true" : "false"
         formData.append("flip", flip)
     
@@ -88,6 +89,34 @@ var init = function() {
                 }
             })
         })
+
+    $("#analyze-form").submit(function(event) {
+        event.preventDefault()
+        var formData = new FormData(this);
+
+        // get valid fen from board + input tags.
+
+        formData.append("FEN", "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R")
+
+        $.ajax({
+            url: analyze_url,
+            method: "POST",
+            data: formData, 
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                //res = JSON.parse(data)
+                alert(data)
+                console.log(data)       
+                },
+            error: function(data) {
+                alert(data)
+                console.log(data)
+                }
+            })
+    })
+
     document.getElementById('image-input').onchange = function (evt) {
         var tgt = evt.target || window.event.srcElement,
             files = tgt.files;
