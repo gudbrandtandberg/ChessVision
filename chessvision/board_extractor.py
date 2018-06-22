@@ -13,8 +13,6 @@ import numpy as np
 import cv2
 import cv_globals
 
-SIZE = (256, 256)
-
 def load_extractor():
     print("Loading board extraction model..")
     from u_net import get_unet_256
