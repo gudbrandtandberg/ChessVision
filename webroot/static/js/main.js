@@ -62,6 +62,9 @@ var init = function() {
 
         var formData = new FormData(this);
         formData.append("position", JSON.stringify(position))
+        
+        flip = document.getElementById("reversed-input").checked ? "true" : "false"
+        formData.append("flip", flip)
     
         $.ajax({
             url: feedback_url,

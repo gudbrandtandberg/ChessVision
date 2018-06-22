@@ -8,7 +8,7 @@ import board_extractor
 import board_classifier
 
 
-def classify_raw(path, board_model, sq_model):
+def classify_raw(path, board_model, sq_model, flip=False):
 
     filename = path.split("/")[-1]
     print("Processing image {}".format(filename))
@@ -27,7 +27,7 @@ def classify_raw(path, board_model, sq_model):
     ###############################   STEP 2    #########################################
     
     
-    FEN, predictions, squares = board_classifier.classify_board(board_img, sq_model)
+    FEN, predictions, squares = board_classifier.classify_board(board_img, sq_model, flip=False)
     #del sq_model
     print("Processing image {}.. DONE".format(filename))
     
