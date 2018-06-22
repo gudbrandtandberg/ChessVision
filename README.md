@@ -68,27 +68,62 @@ However, on unseen test data the algorithm fares worse, as the following figure 
 
 ## Install
 
-Prerequisites: anaconda
+Prerequisites: MacOS or Linux with anaconda and conda installed
 
-Running
+First, download this repository:
+
+```
+git clone https://github.com/gudbrandtandberg/ChessVision
+cd ChessVision
+```
+
+Next, run
 
 `./install.sh`
 
-will install all the dependencies. 
+to create a python environment named `chessvision` and install all the dependencies.
 
+To use chessvision, add the following to your `~/.bash_profile`:
 
-## Data, plans...
+```
+export CVROOT="<path-to-ChessVision-folder>"
+export PYTHONPATH=$PYTHONPATH:$CVROOT/chessvision/
+export PYTHONPATH=$PYTHONPATH:$CVROOT/chessvision/model/
+export PYTHONPATH=$PYTHONPATH:$CVROOT/chessvision/data_processing/
+export PYTHONPATH=$PYTHONPATH:$CVROOT/chessvision/training/
+```
+
+and run 
+
+`source ~/.bash_profile`.
+
+Now open two terminal windows and activate the `chessvision` environment: `source activate chessvision`.
+
+After running 
+
+``` 
+cd computeroot
+python cv_endpoint.py
+````
+
+and 
+
+```
+cd webroot
+python main.py
+```
+
+the ChessVision web server will be listening on `localhost:5000/`. Enjoy!
+
 
 ## Todo:
 
 - Position Logic Checks
   - no more than two knights, bishops, rooks, kings
   - not pawn on first rank
-
-- Recognize board rotation state! 
+ 
 - Crop/resize user upload image
-- UI - status/progress, hidden fields,  
-- Use tensorflow
+- UI - status/progress, hidden fields, feedback flow
 
 ## Some references
 
