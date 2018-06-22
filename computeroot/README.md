@@ -7,10 +7,15 @@
   - https://github.com/mtobeiyf/keras-flask-deploy-webapp
 
 
-CPU: 593s 49s/step
-GPU: 167s 13s/step
+Board extraction:
+  CPU: 593s 49s/step
+  GPU: 167s 13s/step
 
-almost 4x faster training.
+Square classifier: 
+  CPU: 75s 480ms/step
+  GPU: 15s 94ms/step
+
+~4x faster training!
 
 ### Architecture 
 
