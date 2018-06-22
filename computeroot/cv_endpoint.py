@@ -167,7 +167,6 @@ def analyze():
     fen = request.form["FEN"]
 
     # check input is legal
-
     stockfish = Stockfish("./stockfish-9-64")
     try: 
         stockfish.set_fen_position(fen)
