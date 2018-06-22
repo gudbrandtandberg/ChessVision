@@ -47,3 +47,6 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
     - copy board from ./user_uploads/unlabelled/boards/id ./user_uploads/fail/boards/id
     - copy prediction from ./user_uploads/unlabelled/predictions/id ./user_uploads/fail/predictions/id
     - delete board from ./user_uploads/unlabelled/boards/id
+
+
+    https://github.com/zhelyabuzhsky/stockfish

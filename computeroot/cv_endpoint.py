@@ -5,6 +5,7 @@ from datetime import timedelta
 from functools import update_wrapper
 import uuid
 import json
+import platform
 
 import chessvision
 import cv_globals
@@ -164,10 +165,24 @@ def receive_feedback():
 @crossdomain(origin='*')
 def analyze():
 
-    fen = request.form["FEN"]
+    if "FEN" not in request.form:
+        print("No FEN in the form data...")
+        return "Ouch."
 
+    fen = request.form["FEN"]
+    print(fen)
     # check input is legal
-    stockfish = Stockfish("./stockfish-9-64")
+
+    plat = platform.system()
+    if plat == "Linux":
+        sf_binary = "./stockfish-9-64_linux"
+    elif plat == "Darwin":
+        sf_binary = "./stockfish-9-64_mac"
+    else:
+        print("No support for windows..")
+        return "Nope!"
+
+    stockfish = Stockfish(sf_binary)
     try: 
         stockfish.set_fen_position(fen)
     except:
@@ -175,11 +190,11 @@ def analyze():
         return "FUCK"
     try:
         best_move = stockfish.get_best_move()
+        print("Best move is: {}".format(best_move))
     except:
         print("STOCKFISH FAILED")
         return "FUCK!!"
     
-    print(best_move)
     return best_move
 
 def read_file_from_formdata():
