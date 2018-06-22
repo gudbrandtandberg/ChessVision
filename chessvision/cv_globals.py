@@ -2,6 +2,12 @@ import os
 
 CVROOT = os.getenv("CVROOT")
 
+compute_root = CVROOT + "computeroot/"
+user_uploads = computeroot + "user_uploads/"
+
+squares_train_dir = CVROOT + "data/squares/training/"
+squares_validation_dir = CVROOT + "data/squares/validation/"
+
 image_dir = CVROOT + "/data/board_extraction/images/"
 mask_dir = CVROOT + "/data/board_extraction/masks/"
 

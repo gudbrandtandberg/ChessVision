@@ -66,9 +66,18 @@ However, on unseen test data the algorithm fares worse, as the following figure 
 
 <img src="./img/test_classification.png" />
 
-## Data, plans
+## Install
 
-Data, plans...
+Prerequisites: anaconda
+
+Running
+
+`./install.sh`
+
+will install all the dependencies. 
+
+
+## Data, plans...
 
 ## Todo:
 
@@ -79,11 +88,7 @@ Data, plans...
 - Recognize board rotation state! 
 - Crop/resize user upload image
 - UI - status/progress, hidden fields,  
-
-- fix 2-model bug (theano kinda fixes)
-  - https://github.com/keras-team/keras/issues/2397
-
-- come up with best deployment model
+- Use tensorflow
 
 ## Some references
 

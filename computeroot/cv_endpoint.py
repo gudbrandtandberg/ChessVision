@@ -1,13 +1,13 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, make_response, current_app
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
 from datetime import timedelta
 from functools import update_wrapper
 import uuid
+
 import chessvision
 import cv2
-import numpy as np
+import stockfish 
 
 from board_extractor import load_extractor
 from board_classifier import load_classifier
@@ -102,14 +102,14 @@ def predict_img():
         flip = False
         if "reversed" in request.form:
             flip = True
-        print(flip)
+        
         try:
             
             board_img, predictions, FEN, _ = chessvision.classify_raw(tmp_path, board_model, sq_model)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw_success/", filename))
             cv2.imwrite("./user_uploads/unlabelled/boards/x_" + filename, board_img)
-            np.save("./user_uploads/unlabelled/predictions/"+raw_id+".npy", predictions)
+            #np.save("./user_uploads/unlabelled/predictions/"+raw_id+".npy", predictions)
         except BoardExtractionError as e:
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw_fail/", filename))
@@ -167,6 +167,28 @@ def receive_feedback():
 
     return res
 
+@app.route('/analyze/', methods=['POST'])
+@crossdomain(origin='*')
+def analyze():
+
+    fen = request.form["FEN"]
+
+    # check input is legal
+
+    stockfish = Stockfish("./stockfish-9-64")
+    try: 
+        stockfish.set_fen_position(fen)
+    except:
+        print("BOARD ILLEGAL!")
+        return "FUCK"
+    try:
+        best_move = stockfish.get_best_move()
+    except:
+        print("STOCKFISH FAILED")
+        return "FUCK!!"
+    
+    print(best_move)
+    return best_move
 
 def read_file_from_formdata():
     # check if the post request has the file part
