@@ -1034,6 +1034,7 @@ function isXYOnSquare(x, y) {
     if (SQUARE_ELS_OFFSETS.hasOwnProperty(i) !== true) continue;
 
     var s = SQUARE_ELS_OFFSETS[i];
+    
     if (x >= s.left && x < s.left + SQUARE_SIZE &&
         y >= s.top && y < s.top + SQUARE_SIZE) {
       return i;
@@ -1504,6 +1505,9 @@ function touchstartSquare(e) {
   if (cfg.draggable !== true) return;
 
   var square = $(this).attr('data-square');
+  console.log("Touched square:")
+  console.log(square)
+  console.log(CURRENT_POSITION[square])
 
   // no piece on this square
   if (validSquare(square) !== true ||

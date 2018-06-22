@@ -1,7 +1,17 @@
+cfg = {position: "start",
+           dropOffBoard: "trash",
+           orientation: "white",
+           sparePieces: true,
+           showErrors: "console"
+        }
+
+var board = ChessBoard('board', cfg);
+
 var init = function() {
-    
-    // The displayed chessboard (chess.js)
-    var board = ChessBoard('board', 'start');
+
+    // The displayed chessboard (chessboard.js)
+
+    //var board = ChessBoard('board', cfg);
 
     var endpoint = document.getElementById("endpoint").innerHTML
     
@@ -47,7 +57,11 @@ var init = function() {
     $("#feedback-form").submit(function(event) {
     
         event.preventDefault()
+        var position = board.position()
+        console.log(position)
+
         var formData = new FormData(this);
+        formData.append("position", JSON.stringify(position))
     
         $.ajax({
             url: feedback_url,
@@ -86,18 +100,18 @@ var init = function() {
             fr.readAsDataURL(files[0]);
         }
         else {
-            alert("Your browser must implement file uploading.")
+            console.log("Cancelled load..")
         }
     }
 
     }; // end init()
 
 var setFEN = function(fen) {
-    var cfg = {
-        orientation: 'white',
-        position: fen
-      };
-    var board = ChessBoard('board', cfg);
+    
+    orientation = document.getElementById("reversed-input").checked ? "black" : "white"
+    board.orientation(orientation)
+    board.position(fen, true)
+    
 }
 
 $(document).ready(init);

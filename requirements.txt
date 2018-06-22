@@ -10,6 +10,7 @@ keras cv=2.1.4 local=2.2.0
 
 python-chess
 
-# pillow
+# pillow (?)
 
-# if webnode: flask
+flask 0.12.1
+

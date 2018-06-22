@@ -129,6 +129,8 @@ def receive_feedback():
 
     raw_id = request.form['id']
     feedback = request.form['feedback']
+
+    #position = request.form["position"]  # use this dict {"e4": "wP", ...} to classify pieces.
     
     board_filename = "x_" + raw_id + ".JPG"
     pred_filename = raw_id + ".npy"
