@@ -6,6 +6,7 @@
   - https://blog.keras.io/building-a-simple-keras-deep-learning-rest-api.html
   - https://github.com/mtobeiyf/keras-flask-deploy-webapp
 
+https://docs.python.org/2/library/subprocess.html
 
 Board extraction:
   CPU: 593s 49s/step
