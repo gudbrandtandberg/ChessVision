@@ -1,22 +1,21 @@
 # CVweb
-A Web App that uses the ChessVision project
 
-Run 
+A Web App that uses the ChessVision project.
+
+## Running
+
+If you have the [ChessVision](https://github.com/gudbrandtandberg/ChessVision) package installed, make sure have `python cv_endpoint.py` running in a seperate terminal window and run 
 
 ```python main.py```
 
+to start the webserver on `localhost:5000`.
 
-The app assumes a host is listening for __POST__ requests on __http://localhost:5000__.
-The post should contain exactly one image file in the __FILES__ variable.
-The response from this host is either a FEN string containing an extracted chess position, or an error message. 
+If you do not have ChessVision installed, set the line `local = False` in `main.py` and start the server. __Note:__ this will only work when the official ChessVision server is running.
 
 ### Cropping: 
-- https://codepen.io/nakome/pen/vmKwQg
-- https://github.com/jseidelin/pixastic
-- https://foliotek.github.io/Croppie/
-- http://picturecut.tuyoshi.com.br/
-- https://github.com/fengyuanchen/cropper
-- http://odyniec.net/projects/imgareaselect/
+
+- [cropper](https://github.com/fengyuanchen/cropper)
+- [jquery-cropper](https://github.com/fengyuanchen/jquery-cropper)
 
 ### Chess:
-- http://chessboardjs.com/docs
+- [chessboardjs](http://chessboardjs.com/docs)

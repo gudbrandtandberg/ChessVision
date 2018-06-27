@@ -5,45 +5,87 @@
         <meta name="author" content="Gudbrand Tandberg" />
         <meta name="description" content="Extract chessboards free online" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!--           CSS             -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link rel="stylesheet" href="static/css/chessboard-0.3.0.css" />
+        <link rel="stylesheet" href="static/css/cropper.css">
         <link rel="stylesheet" href="static/css/main.css" />
     </head>
     <body>
         
-        <h1>Welcome to ChessVision {{x}}</h1>
-        <span id="endpoint" style="display: none">{{endpoint}}</span>
-        <form id="upload-form" enctype="multipart/form-data">
-            <input id="image-input" type="file" name="file" accept="image/*">
-            <input id="reversed-input" type="checkbox" name="reversed"> Reversed <br>
-            <input type="radio" name="move" value="white" checked> White to move
-            <input type="radio" name="move" value="black"> Black to move <br>
-            <input type="submit">
-           
-        </form>
+        <div id="wrapper" class="container-fluid">
+
+            <div class="row">
+                <div class="col-12"> <h1>Chessvision <img id="logo" src="static/img/ChessVision.png"> </h1> </div>
+            </div>
+
+
+            <div id="preview-container">
+                <canvas id="image-preview" ></canvas>
+            </div>
+
+            <div id="board-container" style="display: none">
+                <div id="board"></div>
+            </div>
+
+            <div id="board-state-pane" class="row" style="display: none">
+                <div class="col-sm-6">
+                    <input type="radio" name="move" value="w" checked> White to move <br>
+                    <input type="radio" name="move" value="b"> Black to move
+                </div>
+
+                <div class="col-sm-6">
+                    <input id="reversed-input" type="checkbox" name="flip"> Flipped
+                </div>
+            </div>
+
+            <div id="upload-pane" class="row">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="col-sm-6">
+                        <label id="image-input-label" class="btn btn-default btn-file  btn-block">
+                            Choose file
+                            <input id="image-input" type="file" name="file" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input id="submit-btn" type="submit" class="btn btn-default btn-block" value="Extract">
+                    </div>
+                </form>
+            </div>
+
+            <!--style="display: none"-->
         
-        <div id="container" style="width: 900px; overflow: hidden;">
-            <div id="board" style="width: 400px; float: left"></div>¨
-            <img alt="Placeholder" id="input-preview" src="#" width="400">
-        </div>
-        
-        <div id="feedback-pane" style="display: none">
-            <p>Please provide feedback:</p>
-            <form method="POST" id="feedback-form">
-                <input type="text" name="id" value="" id="raw-id-input" style="display: none;">
-                <input type="submit" value="Submit feedback">
-            </form>
+            <div id="edit-analyze-pane" class="row" style="display: none">
+                <div class="col-sm-6">
+                    <input id="edit-btn" type="button" class="btn btn-default btn-block" value="Edit">   
+                </div>
+                <div class="col-sm-6">
+                    <input id="analyze-btn" type="submit" class="btn btn-default btn-block" value="Best move">
+                </div>
+            </div>
+
+            <div id="feedback-pane" style="display: none">
+                <p>Please provide feedback:</p>
+                <form method="POST" id="feedback-form">
+                    <input type="text" name="id" value="" id="raw-id-input" style="display: none;">
+                    <input id="reversed-input" type="checkbox" name="flip"> I promise the information provided is correct
+                    <input type="submit" class="btn btn-block btn-default" value="Submit feedback">
+                </form>
+            </div>
+
         </div>
 
-        <div>
-            <form id="analyze-form">
-                <input type="submit" value="Analyze!">
-            </form>
-        </div>
+        <!--        HIDDEN              -->
+        <span id="endpoint" style="display: none">{{endpoint}}</span>
+        <input type="text" name="id" value="" id="raw-id-input" style="display: none;">
 
         <!--        SCRIPTS             -->
         <script src="static/js/json3.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
         <script src="static/js/chessboard-0.3.0.js"></script>
+        <script src="static/js/cropper.js"></script><!-- Cropper.js is required -->
+        <script src="static/js/jquery-cropper.js"></script>
         <script src="static/js/main.js"></script>
     </body>
 </html>

@@ -6,6 +6,9 @@ from functools import update_wrapper
 import uuid
 import json
 import platform
+import numpy as np
+import base64 
+import matplotlib.pyplot as plt
 
 import chessvision
 import cv_globals
@@ -84,35 +87,36 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 @app.route('/cv_algo/', methods=['POST'])
 @crossdomain(origin='*')
 def predict_img():
     print("CV-Algo invoked")
-    
-    file = read_file_from_formdata()
 
-    if file is not None:
+    image = read_image_from_formdata()
+
+    if image is not None:
+        
         raw_id = str(uuid.uuid4())
         filename = secure_filename(raw_id) + ".JPG"
         tmp_loc = os.path.join(app.config['TMP_FOLDER'], filename)
-        file.save(tmp_loc)
+        
         tmp_path = os.path.abspath(tmp_loc)
-
+        cv2.imwrite(tmp_path, image)
+        
         # check if input image is flipped (from black's perspective)
         flip = False
-        if "reversed" in request.form:
-            flip = True
-        
+        if "flip" in request.form:
+            flip = request.form["flip"] == "true"
+
         try:
-            board_img, _, FEN, _ = chessvision.classify_raw(tmp_path, board_model, sq_model, flip=flip)
+            board_img, _, FEN, _ = chessvision.classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw/", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
     
         except BoardExtractionError as e:
             #move file to success raw folder
-            os.rename(tmp_loc, os.path.join("./user_uploads/raw/", filename))
+            os.rename(tmp_loc, os.path.join("./user_uploads/raw_fail/", filename))
             return e.json_string()
 
         ret = '{{ "FEN": "{0}", "id": "{1}", "error": "false" }}'.format(FEN, raw_id)
@@ -139,6 +143,10 @@ def receive_feedback():
 
     board_filename = "x_" + raw_id + ".JPG"
     board_src = os.path.join("./user_uploads/boards/", board_filename)
+
+    if not os.path.isfile(board_src):
+        return res
+
     board = cv2.imread(board_src, 0)
 
     squares, names = extract_squares(board, flip=flip)
@@ -159,15 +167,16 @@ def receive_feedback():
     # remove the board file
     os.remove(board_src)
 
-    return '{"success": "true"}'
+    return '{ "success": "true" }'
 
 @app.route('/analyze/', methods=['POST'])
 @crossdomain(origin='*')
 def analyze():
+    res = '{{ "success": "false" }}'
 
     if "FEN" not in request.form:
         print("No FEN in the form data...")
-        return "Ouch."
+        return res
 
     fen = request.form["FEN"]
     print(fen)
@@ -175,29 +184,35 @@ def analyze():
 
     plat = platform.system()
     if plat == "Linux":
-        sf_binary = "./stockfish-9-64_linux"
+        sf_binary = "./stockfish-9-64-linux"
     elif plat == "Darwin":
-        sf_binary = "./stockfish-9-64_mac"
+        sf_binary = "./stockfish-9-64-mac"
     else:
         print("No support for windows..")
-        return "Nope!"
+        return res
 
-    stockfish = Stockfish(sf_binary)
+    stockfish = Stockfish(sf_binary, depth=10)
     try: 
         stockfish.set_fen_position(fen)
     except:
         print("BOARD ILLEGAL!")
-        return "FUCK"
+        return res
     try:
         best_move = stockfish.get_best_move()
         print("Best move is: {}".format(best_move))
     except:
         print("STOCKFISH FAILED")
-        return "FUCK!!"
+        return res
     
-    return best_move
+    return '{{ "success": "true", "bestMove": "{}" }}'.format(best_move)
 
-def read_file_from_formdata():
+def data_uri_to_cv2_img(uri):
+
+    
+
+    return img
+
+def read_image_from_formdata():
     # check if the post request has the file part
     
     if 'file' not in request.files:
@@ -206,11 +221,15 @@ def read_file_from_formdata():
 
     file = request.files['file']
     
-    if file.filename == '' or not allowed_file(file.filename):
-        print("No legal file selected")
-        return None
+    data = file.read()
     
-    return file
+    nparr = np.frombuffer(data, np.uint8)
+    
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    file.close()
+    
+    return img
 
 
 def load_models():

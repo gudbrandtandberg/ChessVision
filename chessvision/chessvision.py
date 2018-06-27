@@ -8,15 +8,15 @@ import board_extractor
 import board_classifier
 
 
-def classify_raw(path, board_model, sq_model, flip=False):
+def classify_raw(img, filename, board_model, sq_model, flip=False):
 
-    filename = path.split("/")[-1]
+    #filename = path.split("/")[-1]
     print("Processing image {}".format(filename))
-
+    
     ###############################   STEP 1    #########################################
 
     ## Resize image
-    img = cv2.imread(path)
+    #img = cv2.imread(path)
     comp_image = cv2.resize(img, cv_globals.INPUT_SIZE, interpolation=cv2.INTER_AREA)
     
     ## Extract board using CNN model and contour approximation
@@ -26,8 +26,7 @@ def classify_raw(path, board_model, sq_model, flip=False):
         raise e
     ###############################   STEP 2    #########################################
     
-    
-    FEN, predictions, squares = board_classifier.classify_board(board_img, sq_model, flip=False)
+    FEN, predictions, squares = board_classifier.classify_board(board_img, sq_model, flip=flip)
     #del sq_model
     print("Processing image {}.. DONE".format(filename))
     

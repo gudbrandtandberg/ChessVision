@@ -5,19 +5,6 @@ import numpy as np
 from board_classifier import load_classifier
 import cv_globals
 
-def get_validation_generator(batch_size=32):
-        valid_datagen = ImageDataGenerator(
-                rescale=1./255
-                )
-        valid_generator = valid_datagen.flow_from_directory(
-            cv_globals.squares_validation_dir,
-            target_size=cv_globals.PIECE_SIZE,
-            color_mode='grayscale',
-            batch_size=batch_size,
-            class_mode='categorical')
-        
-        return valid_generator
-
 def get_train_generator(batch_size=32):
         train_datagen = ImageDataGenerator(
                 rescale=1./255,
@@ -37,6 +24,19 @@ def get_train_generator(batch_size=32):
                 class_mode='categorical')
         
         return train_generator
+
+def get_validation_generator(batch_size=32):
+        valid_datagen = ImageDataGenerator(
+                rescale=1./255
+                )
+        valid_generator = valid_datagen.flow_from_directory(
+            cv_globals.squares_validation_dir,
+            target_size=cv_globals.PIECE_SIZE,
+            color_mode='grayscale',
+            batch_size=batch_size,
+            class_mode='categorical')
+        
+        return valid_generator
 
 # Build the model
 if __name__ == "__main__":

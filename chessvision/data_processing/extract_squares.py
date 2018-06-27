@@ -3,12 +3,14 @@ import numpy as np
 from util import listdir_nohidden, parse_arguments
 
 def extract_squares(board, flip=False):
+    
     ranks = ["a", "b", "c", "d", "e", "f", "g", "h"]
     files = ["1", "2", "3", "4", "5", "6", "7", "8"]
-
+    
     if flip:
         ranks = list(reversed(ranks))
         files = list(reversed(files))
+
     squares = []
     names = []
     ww, hh = board.shape
