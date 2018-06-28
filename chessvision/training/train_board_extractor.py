@@ -8,7 +8,7 @@ import numpy as np
 import cv2 
 import cv_globals
 from util import listdir_nohidden
-import board_extractor
+from board_extractor import load_extractor
 
 batch_size = 16
 epochs = 100
@@ -19,7 +19,7 @@ def load_image_and_mask_ids():
 
 ids_train = data.load_image_and_mask_ids()
 ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.1, random_state=42)
-def train_generator(ids_train_split, batch_size=batch_size):
+def train_generator(ids_train_split, batch_size=16):
     while True:
         for start in range(0, len(ids_train_split), batch_size):
             x_batch = []
@@ -45,7 +45,7 @@ def train_generator(ids_train_split, batch_size=batch_size):
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
 
-def valid_generator(ids_valid_split, batch_size=batch_size):
+def valid_generator(ids_valid_split, batch_size=16):
     while True:
         for start in range(0, len(ids_valid_split), batch_size):
             x_batch = []
@@ -65,13 +65,17 @@ def valid_generator(ids_valid_split, batch_size=batch_size):
 
 if __name__ == "__main__":
 
+    epochs = 100
+    batch_size = 16
+
     ids_train = data.load_image_and_mask_ids()
     ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
 
     print('Training on {} samples'.format(len(ids_train_split)))
     print('Validating on {} samples'.format(len(ids_valid_split)))
 
-    model = board_extractor.load_extractor()
+    model = load_extractor()
+    print(model.summary())
 
     callbacks = [EarlyStopping(monitor='val_loss',
                             patience=8,
@@ -81,9 +85,9 @@ if __name__ == "__main__":
                                 factor=0.1,
                                 patience=4,
                                 verbose=1,
-                                min_delta=1e-4),
+                                epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
-                                filepath='../weights/new_best_weights.hdf5',
+                                filepath=cv_globals.CVROOT + 'weights/best_weights_new.hdf5',
                                 save_best_only=True,
                                 save_weights_only=True),
                 TensorBoard(log_dir='../logs/segmentation_logs/')]

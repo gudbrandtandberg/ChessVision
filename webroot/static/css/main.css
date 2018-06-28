@@ -1,7 +1,40 @@
+body {
+    background-color: tan;
+    color: black;
+}
 
+#wrapper {
+    width: 50%;
+    margin: 0 auto;    
+}
 
-input-preview {
-    rotate: 90; 
-    overflow: hidden; 
-    image-orientation: from-image;
+#board-container {
+    width: 100%;
+    /*border: solid 2px black;*/
+    margin-bottom: 15px;
+}
+
+#board {
+    width: 100%;
+}
+
+#preview-container {
+    width: 400px;
+    height: 400px;
+    margin-bottom: 15px;
+}
+
+#image-preview {
+    /*rotate: 90; 
+    overflow: hidden; */
+    max-width: 100%;
+    /*image-orientation: from-image;*/
+}
+
+#logo {
+    height: 64px;
+}
+
+.row {
+    margin-bottom: 10px;
 }

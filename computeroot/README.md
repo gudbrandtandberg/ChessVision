@@ -6,6 +6,7 @@
   - https://blog.keras.io/building-a-simple-keras-deep-learning-rest-api.html
   - https://github.com/mtobeiyf/keras-flask-deploy-webapp
 
+https://docs.python.org/2/library/subprocess.html
 
 Board extraction:
   CPU: 593s 49s/step
@@ -46,3 +47,6 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
     - copy board from ./user_uploads/unlabelled/boards/id ./user_uploads/fail/boards/id
     - copy prediction from ./user_uploads/unlabelled/predictions/id ./user_uploads/fail/predictions/id
     - delete board from ./user_uploads/unlabelled/boards/id
+
+
+    https://github.com/zhelyabuzhsky/stockfish
