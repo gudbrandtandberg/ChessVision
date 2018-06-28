@@ -1,14 +1,20 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, make_response, current_app
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
 from datetime import timedelta
 from functools import update_wrapper
 import uuid
-import chessvision
-import cv2
+import json
+import platform
 import numpy as np
+import base64 
+import matplotlib.pyplot as plt
 
+import chessvision
+import cv_globals
+import cv2
+from stockfish import Stockfish
+from extract_squares import extract_squares
 from board_extractor import load_extractor
 from board_classifier import load_classifier
 
@@ -69,47 +75,45 @@ def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
     return decorator
 
 
-UPLOAD_FOLDER = './user_uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = "./user_uploads/"
 app.config['TMP_FOLDER'] = "./tmp/"
+
 app.secret_key = 'super secret key'
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 @app.route('/cv_algo/', methods=['POST'])
 @crossdomain(origin='*')
 def predict_img():
     print("CV-Algo invoked")
-    
-    file = read_file_from_formdata()
 
-    if file is not None:
+    image = read_image_from_formdata()
+
+    if image is not None:
+        
         raw_id = str(uuid.uuid4())
         filename = secure_filename(raw_id) + ".JPG"
         tmp_loc = os.path.join(app.config['TMP_FOLDER'], filename)
         
-        #print("Will classfiy file stored at {}".format(tmp_loc))
-        file.save(tmp_loc)
         tmp_path = os.path.abspath(tmp_loc)
-
+        cv2.imwrite(tmp_path, image)
+        
         # check if input image is flipped (from black's perspective)
         flip = False
-        if "reversed" in request.form:
-            flip = True
-        print(flip)
+        if "flip" in request.form:
+            flip = request.form["flip"] == "true"
+
         try:
-            
-            board_img, predictions, FEN, _ = chessvision.classify_raw(tmp_path, board_model, sq_model)
+            board_img, _, FEN, _ = chessvision.classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
-            os.rename(tmp_loc, os.path.join("./user_uploads/raw_success/", filename))
-            cv2.imwrite("./user_uploads/unlabelled/boards/x_" + filename, board_img)
-            np.save("./user_uploads/unlabelled/predictions/"+raw_id+".npy", predictions)
+            os.rename(tmp_loc, os.path.join("./user_uploads/raw/", filename))
+            cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
+    
         except BoardExtractionError as e:
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join("./user_uploads/raw_fail/", filename))
@@ -121,52 +125,94 @@ def predict_img():
     
     return '{"error": "true", "errorMsg": "Fuck!"}'
 
+piece2dir = {"wR": "R", "bR": "_r", "wK": "K", "bK": "_k", "wQ": "Q", "bQ": "_q",
+ "wN": "N", "bN": "_n", "wP": "P", "bP": "_p", "wB": "B", "bB": "_b", "f": "f"}
 
 @app.route('/feedback/', methods=['POST'])
 @crossdomain(origin='*')
 def receive_feedback():
     res = '{"success": "false"}'
 
-    raw_id = request.form['id']
-    feedback = request.form['feedback']
-    
-    board_filename = "x_" + raw_id + ".JPG"
-    pred_filename = raw_id + ".npy"
-
-    board_src = os.path.join("./user_uploads/unlabelled/boards/", board_filename)
-    pred_src = os.path.join("./user_uploads/unlabelled/predictions/", pred_filename)
-    
-    try:
-        if feedback == "correct":
-            board_dst = os.path.join("./user_uploads/labelled/boards/", board_filename)
-            pred_dst = os.path.join("./user_uploads/labelled/predictions/", pred_filename)        
-        elif feedback == "incorrect":
-            board_dst = os.path.join("./user_uploads/failboards/", board_filename)
-            pred_dst = None # don't save incorrect predictions
-        else:
-            return '{"success": "false"}'
-
-        ## Move unlabelled board
-        print("Moving {} to {}".format(board_src, board_dst))
-        os.rename(board_src, board_dst)
-        
-        ## Move or delete predictions file
-        if pred_dst is None:
-            print("Deleting {}".format(pred_src))
-            os.remove(pred_src)
-        else:
-            print("Moving {} to {}".format(pred_src, pred_dst))
-            os.rename(pred_src, pred_dst)
-        
-        res = '{"success": "true"}'
-
-    except OSError as e:
+    if "id" not in request.form or "position" not in request.form or "flip" not in request.form:
+        print("Missing form data, abort!")
         return res
 
-    return res
+    raw_id = request.form['id']
+    position = json.loads(request.form["position"])
+    flip = request.form["flip"] == "true"
 
+    board_filename = "x_" + raw_id + ".JPG"
+    board_src = os.path.join("./user_uploads/boards/", board_filename)
 
-def read_file_from_formdata():
+    if not os.path.isfile(board_src):
+        return res
+
+    board = cv2.imread(board_src, 0)
+
+    squares, names = extract_squares(board, flip=flip)
+
+    # Save each square using the 'position' variable
+    for sq, name in zip(squares, names):
+        
+        if name not in position:
+            label = "f"
+        else:
+            label = position[name]
+        
+        fname = name + "_" + raw_id + ".JPG"
+        out_dir = "./user_uploads/squares/" + piece2dir[label]
+        outfile = os.path.join(out_dir, fname)
+        cv2.imwrite(outfile, sq)
+        
+    # remove the board file
+    os.remove(board_src)
+
+    return '{ "success": "true" }'
+
+@app.route('/analyze/', methods=['POST'])
+@crossdomain(origin='*')
+def analyze():
+    res = '{{ "success": "false" }}'
+
+    if "FEN" not in request.form:
+        print("No FEN in the form data...")
+        return res
+
+    fen = request.form["FEN"]
+    print(fen)
+    # check input is legal
+
+    plat = platform.system()
+    if plat == "Linux":
+        sf_binary = "./stockfish-9-64-linux"
+    elif plat == "Darwin":
+        sf_binary = "./stockfish-9-64-mac"
+    else:
+        print("No support for windows..")
+        return res
+
+    stockfish = Stockfish(sf_binary, depth=10)
+    try: 
+        stockfish.set_fen_position(fen)
+    except:
+        print("BOARD ILLEGAL!")
+        return res
+    try:
+        best_move = stockfish.get_best_move()
+        print("Best move is: {}".format(best_move))
+    except:
+        print("STOCKFISH FAILED")
+        return res
+    
+    return '{{ "success": "true", "bestMove": "{}" }}'.format(best_move)
+
+def data_uri_to_cv2_img(uri):
+
+    
+
+    return img
+
+def read_image_from_formdata():
     # check if the post request has the file part
     
     if 'file' not in request.files:
@@ -175,11 +221,15 @@ def read_file_from_formdata():
 
     file = request.files['file']
     
-    if file.filename == '' or not allowed_file(file.filename):
-        print("No legal file selected")
-        return None
+    data = file.read()
     
-    return file
+    nparr = np.frombuffer(data, np.uint8)
+    
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    file.close()
+    
+    return img
 
 
 def load_models():

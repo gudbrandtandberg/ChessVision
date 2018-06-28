@@ -12,20 +12,20 @@ def load_classifier():
     from square_classifier import build_square_classifier
     model = build_square_classifier()
     model.load_weights(cv_globals.square_weights)
-    print("Loading square model.. DONE")
+    print("\rLoading square model.. DONE")
     return model
 
-def classify_board(board_img, model):
+def classify_board(board_img, model, flip=False):
     print("Classifying board..")
     
-    squares, names = extract_squares(board_img)
+    squares, names = extract_squares(board_img, flip=flip)
     
     predictions = model.predict(squares)
     
     chessboard = classification_logic(predictions, names)
         
     FEN = chessboard.board_fen(promoted=False)
-    print("Classifying board.. DONE")
+    print("\rClassifying board.. DONE")
     
     return FEN, predictions, squares
 

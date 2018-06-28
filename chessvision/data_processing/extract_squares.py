@@ -1,11 +1,16 @@
 import cv2
 import numpy as np
 from util import listdir_nohidden, parse_arguments
-import matplotlib.pyplot as plt
 
-def extract_squares(board):
+def extract_squares(board, flip=False):
+    
     ranks = ["a", "b", "c", "d", "e", "f", "g", "h"]
     files = ["1", "2", "3", "4", "5", "6", "7", "8"]
+    
+    if flip:
+        ranks = list(reversed(ranks))
+        files = list(reversed(files))
+
     squares = []
     names = []
     ww, hh = board.shape
@@ -22,14 +27,8 @@ def extract_squares(board):
     
     return squares, names
 
-def normalize_squares(squares):
-    squares = np.array(squares)
-    squares = squares.reshape(squares.shape[0], 64, 64, 1)
-    squares = squares.astype('float32')
-    squares /= 255
-    return squares
-
 if __name__ == "__main__":
+
     # Extract all squares from all boards
     print("Extracting squares...")
     
