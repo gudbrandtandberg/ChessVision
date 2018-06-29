@@ -6,7 +6,7 @@ import cv2
 #import matplotlib.pyplot as plt
 import os
 import cv_globals
-#run in chessvision
+
 #python make_masks.py
 
 input_dir = "./data/board_extraction/new_raw_resized/"
