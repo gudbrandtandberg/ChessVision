@@ -6,10 +6,10 @@ import chess
 from extract_squares import extract_squares
 from util import listdir_nohidden, parse_arguments, BoardExtractionError
 import cv_globals
+from square_classifier import build_square_classifier
 
 def load_classifier():
     print("Loading square model..")
-    from square_classifier import build_square_classifier
     model = build_square_classifier()
     model.load_weights(cv_globals.square_weights)
     print("\rLoading square model.. DONE")

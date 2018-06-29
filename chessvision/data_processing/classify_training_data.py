@@ -2,29 +2,32 @@
 in order to generate more data for training NN v2."""
 
 import cv2
-from keras.models import load_model
 from extract_squares import extract_squares
-from square_classifier import build_square_classifier
+from board_classifier import load_classifier
 import numpy as np
 from util import listdir_nohidden
 import os
-import matplotlib.pyplot as plt
 
 # python data_processing/classify_training_data.py
 
 board_dir = "../data/new_boards/"
-out_dir = "../data/squares_gen3/"
-label_names = ["R", "r", "K", "k", "Q", "q", "N", "n", "P", "p", "B", "b", "f"]
-dir_names = ["R", "_r", "K", "_k", "Q", "_q", "N", "_n", "P", "_p", "B", "_b", "f"]
+out_dir = "../data/new_squares/"
+label_names = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']            
+dir_names = ["B", "K", "N", "P", "Q", "R", "_b", "_k", "_n", "_p", "_q", "_r", "f"]
+
+for d in dir_names:
+    if not os.path.isdir(out_dir + d):
+        os.mkdir(out_dir + d)
+
 num_examples = {}
+
 for lbl in label_names:
     num_examples[lbl] = 0
 
 board_filenames = listdir_nohidden(board_dir)
 board_imgs = [cv2.imread(board_dir+f, 0) for f in board_filenames]
 
-model = build_square_classifier()
-model.load_weights('../weights/best_weights_square.hdf5')
+model = load_classifier()
 
 for board_img, fname in zip(board_imgs, board_filenames):
     
@@ -38,7 +41,9 @@ for board_img, fname in zip(board_imgs, board_filenames):
     predictions = np.argmax(predictions, axis=1)
 
     for pred, sq, name in zip(predictions, squares, names):
+        
         num_examples[label_names[pred]] += 1
+        
         dir_name = dir_names[pred]
         path = os.path.join(out_dir, dir_name)
         if not os.path.isdir(path):
