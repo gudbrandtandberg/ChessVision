@@ -4,8 +4,12 @@ body {
 }
 
 #wrapper {
-    width: 50%;
-    margin: 0 auto;    
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#header-wrapper {
+    margin-left: 20px;
 }
 
 #board-container {
@@ -19,15 +23,16 @@ body {
 }
 
 #preview-container {
-    width: 400px;
-    height: 400px;
-    margin-bottom: 15px;
+    /*width: 400px;
+    height: 400px;*/
+    padding: 10px;
 }
 
 #image-preview {
     /*rotate: 90; 
     overflow: hidden; */
     max-width: 100%;
+
     /*image-orientation: from-image;*/
 }
 
