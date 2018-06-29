@@ -6,7 +6,7 @@ import uuid
 import os
 import cv_globals
 
-#python chessvision/data_processing/rename_images.py -d data/new_raw -o data/new_resized
+#python chessvision/data_processing/resize_images.py -d data/new_raw -o data/new_resized
 
 _, indir, outdir = parse_arguments()
 
