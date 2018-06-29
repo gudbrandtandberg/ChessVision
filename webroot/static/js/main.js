@@ -6,8 +6,15 @@
 var board, cropper, cropperOptions;
 var input, canvas, context, endpoint;
 
+var sizeCanvas = function() {
+    canvas = document.getElementById("image-preview");
+    canvas.height = canvas.width;
+}
+
 // initialize variables
 var init = function() {
+
+    sizeCanvas()
 
     // Initialize chessboard (chessboard.js)
     board = ChessBoard( 'board', {position: "8/8/8/8/8/8/8/8 w KQkq -",
@@ -88,6 +95,7 @@ var extractBoard = function(event) {
     
     var cv_algo_url = endpoint + "cv_algo/"
 
+    // option: minWidth
     dataURL = cropper.getCroppedCanvas().toDataURL('image/jpeg')
     
     var blobBin = atob(dataURL.split(',')[1]);
@@ -198,6 +206,10 @@ $("#feedback-form").submit(function(event) {
         })
     })
 
+var toggleTurn = function() {
+    $('input[type="radio"]').not(':checked').prop("checked", true);
+};
+
 $("#analyze-btn").on("click", function() {
     
     var analyze_url = endpoint + "analyze/"
@@ -230,6 +242,8 @@ $("#analyze-btn").on("click", function() {
             dst = bestMove.substr(2, 2)
             move = src.concat("-", dst)
             board.move(move)
+            toggleTurn()
+
             },
         error: function(data) {
             alert("error")
