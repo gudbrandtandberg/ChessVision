@@ -59,9 +59,9 @@ def split_dataset_into_test_and_train_sets(all_data_dir, training_data_dir, test
     print("Processed " + str(num_testing_files) + " testing files.")
 
 if __name__ == "__main__":
-    print("Hello")
-    all_data_dir = cv_globals.CVROOT + "data/squares/all/"
-    training_data_dir = cv_globals.CVROOT + "data/squares/training/"
-    testing_data_dir = cv_globals.CVROOT + "data/squares/validation/"
+    
+    all_data_dir = os.path.join(cv_globals.CVROOT, "data/squares/all/")
+    training_data_dir = os.path.join(cv_globals.CVROOT, "data/squares/training/")
+    testing_data_dir = os.path.join(cv_globals.CVROOT, "data/squares/validation/")
 
     split_dataset_into_test_and_train_sets(all_data_dir, training_data_dir, testing_data_dir, 0.2)

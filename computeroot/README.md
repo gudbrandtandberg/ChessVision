@@ -24,10 +24,14 @@ Deeper Square classifier
 Epoch 28/100
 156/156 [==============================] - 9s 60ms/step - loss: 0.0578 - acc: 0.9839 - val_loss: 0.0584 - val_acc: 0.9868
 
+Board Extractor:
+
+Epoch 20/100
+13/13 [==============================] - 175s 13s/step - loss: 0.0739 - dice_coeff: 0.9705 - val_loss: 0.0764 - val_dice_coeff: 0.9703
 
 Board extraction:
   CPU: 593s 49s/step
-  GPU: 167s 13s/step
+  GPU: 175s 13s/step
 
 Square classifier: 
   CPU: 75s 480ms/step

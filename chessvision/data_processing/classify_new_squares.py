@@ -10,11 +10,12 @@ from board_extractor import extract_perspective
 import os 
 import matplotlib.pyplot as plt
 import json
+import cv_globals
 
-input_dir = "../data/new_raw/"
-mask_dir = "../data/board_extraction/masks/"
-out_dir = "../data/new_boards/"
-json_file = "../data/board_extraction/ChessboardSegmentation.json"
+input_dir = os.path.join(cv_globals.CVROOT, "data/raw/")
+#mask_dir = os.path.join(cv_globals.CVROOT, "data/board_extraction/masks/")
+out_dir = os.path.join(cv_globals.CVROOT, "data/new_boards/")
+json_file = os.path.join(cv_globals.CVROOT, "data/board_extraction/new.json")
 
 in_files = listdir_nohidden(input_dir)
 
@@ -36,7 +37,7 @@ for line in lines:  #iterates over all files with masks
         points = [[scale*p[0], scale*p[1]] for p in points[:-1]]
         points = np.array(points, dtype=np.int32)
         
-        board = extract_perspective(img, points, 512, 512)
+        board = extract_perspective(img, points, cv_globals.BOARD_SIZE)
 
         board = cv2.cvtColor(board, cv2.COLOR_RGB2GRAY)
 
