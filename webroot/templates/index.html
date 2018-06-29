@@ -13,19 +13,18 @@
         <link rel="stylesheet" href="static/css/main.css" />
     </head>
     <body>
-        
-        <div id="wrapper" class="container-fluid">
+        <div id="wrapper" class="">
 
             <div class="row">
-                <div class="col-12"> <h1>Chessvision <img id="logo" src="static/img/ChessVision.png"> </h1> </div>
+                <div class="col-12" id="header-wrapper"> <h1>Chessvision <img id="logo" src="static/img/ChessVision.png"> </h1> </div>
             </div>
 
 
-            <div id="preview-container">
-                <canvas id="image-preview" ></canvas>
+            <div id="preview-container" class="row">
+                <canvas id="image-preview" class="col-xs-12"></canvas>
             </div>
 
-            <div id="board-container" style="display: none">
+            <div id="board-container" class="row" style="display: none">
                 <div id="board"></div>
             </div>
 

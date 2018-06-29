@@ -87,7 +87,7 @@ if __name__ == "__main__":
                                 verbose=1,
                                 epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
-                                filepath=cv_globals.CVROOT + 'weights/best_weights_new.hdf5',
+                                filepath=cv_globals.board_weights_training,
                                 save_best_only=True,
                                 save_weights_only=True),
                 TensorBoard(log_dir='../logs/segmentation_logs/')]
