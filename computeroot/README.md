@@ -24,6 +24,10 @@ Deeper Square classifier
 Epoch 28/100
 156/156 [==============================] - 9s 60ms/step - loss: 0.0578 - acc: 0.9839 - val_loss: 0.0584 - val_acc: 0.9868
 
+Epoch 18/100
+156/156 [==============================] - 9s 60ms/step - loss: 0.0489 - acc: 0.9862 - val_loss: 0.0362 - val_acc: 0.9846
+Epoch 00018: early stopping
+
 Board Extractor:
 
 Epoch 20/100
