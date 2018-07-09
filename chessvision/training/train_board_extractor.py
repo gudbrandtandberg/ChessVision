@@ -8,7 +8,7 @@ import numpy as np
 import cv2 
 import cv_globals
 from util import listdir_nohidden
-from board_extractor import load_extractor
+from u_net import load_extractor
 
 def train_generator(ids_train_split, batch_size=16):
     while True:
