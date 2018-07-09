@@ -4,6 +4,7 @@ from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, T
 import numpy as np
 from board_classifier import load_classifier
 import cv_globals
+from square_classifier import build_square_classifier
 
 def get_train_generator(batch_size=32):
         train_datagen = ImageDataGenerator(
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
         # use class_weights!
 
-        model = load_classifier()
+        model = build_square_classifier()
         print(model.summary())
 
         model.compile(loss=keras.losses.categorical_crossentropy,
@@ -64,10 +65,10 @@ if __name__ == "__main__":
                                 verbose=1,
                                 epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
-                                filepath=cv_globals.square_weights_train,
+                                filepath=cv_globals.CVROOT + '/weights/tmp_relu.hdf5',
                                 save_best_only=True,
                                 save_weights_only=True),
-                TensorBoard(log_dir=cv_globals.CVROOT + 'logs/square_logs/')]
+                TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
 
         model.fit_generator(generator=get_train_generator(batch_size=batch_size),
                         steps_per_epoch=np.ceil(4975./batch_size),
