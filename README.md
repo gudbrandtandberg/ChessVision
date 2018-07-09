@@ -121,6 +121,10 @@ the ChessVision web server will be listening on `localhost:5000/`. Enjoy!
 - Position Logic Checks
   - no more than two knights, bishops, rooks, kings
   - not pawn on first rank
+
+scp, rsync, cronjobs
+web overhaul
+logging
  
 - Crop/resize user upload image
 - UI - status/progress, hidden fields, feedback flow
