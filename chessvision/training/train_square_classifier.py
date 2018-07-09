@@ -2,9 +2,8 @@ import keras
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 import numpy as np
-from board_classifier import load_classifier
-import cv_globals
 from square_classifier import build_square_classifier
+import cv_globals
 
 def get_train_generator(batch_size=32):
         train_datagen = ImageDataGenerator(
@@ -25,6 +24,9 @@ def get_train_generator(batch_size=32):
                 class_mode='categorical')
         
         return train_generator
+
+
+# TODO: get num examples programatically
 
 def get_validation_generator(batch_size=32):
         valid_datagen = ImageDataGenerator(
@@ -71,9 +73,9 @@ if __name__ == "__main__":
                 TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
 
         model.fit_generator(generator=get_train_generator(batch_size=batch_size),
-                        steps_per_epoch=np.ceil(4975./batch_size),
+                        steps_per_epoch=np.ceil(5441./batch_size),
                         epochs=epochs,
                         verbose=1,
                         callbacks=callbacks,
                         validation_data=get_validation_generator(batch_size=batch_size),
-                        validation_steps=np.ceil(1291./batch_size))
+                        validation_steps=np.ceil(1423./batch_size))
