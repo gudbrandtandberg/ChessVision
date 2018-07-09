@@ -15,8 +15,8 @@ import cv_globals
 import cv2
 from stockfish import Stockfish
 from extract_squares import extract_squares
-from board_extractor import load_extractor
-from board_classifier import load_classifier
+from u_net import load_extractor
+from square_classifier import load_classifier
 
 from util import BoardExtractionError
 
@@ -91,7 +91,8 @@ def allowed_file(filename):
 @crossdomain(origin='*')
 def predict_img():
     print("CV-Algo invoked")
-
+    
+    #Host, User-Agent, Content-Length, Origin
     image = read_image_from_formdata()
 
     if image is not None:
@@ -111,12 +112,12 @@ def predict_img():
         try:
             board_img, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
-            os.rename(tmp_loc, app.config["UPLOAD_FOLDER"], "raw", filename))
+            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
     
         except BoardExtractionError as e:
             #move file to success raw folder
-            os.rename(tmp_loc, app.config["UPLOAD_FOLDER"], "raw", filename))
+            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             return e.json_string()
 
         ret = '{{ "FEN": "{0}", "id": "{1}", "error": "false" }}'.format(FEN, raw_id)
@@ -206,11 +207,6 @@ def analyze():
     
     return '{{ "success": "true", "bestMove": "{}" }}'.format(best_move)
 
-def data_uri_to_cv2_img(uri):
-
-    
-
-    return img
 
 def read_image_from_formdata():
     # check if the post request has the file part

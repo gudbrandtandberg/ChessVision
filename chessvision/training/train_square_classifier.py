@@ -6,9 +6,11 @@ from square_classifier import build_square_classifier
 import cv_globals
 
 def get_train_generator(batch_size=32):
+        
         train_datagen = ImageDataGenerator(
                 rescale=1./255,
-                samplewise_center=False,
+                samplewise_center=False, # TODO: try using this instead?
+                samplewise_std_normalization=False,
                 rotation_range=5,
                 zoom_range=0.05,
                 width_shift_range=0.1,
@@ -29,9 +31,13 @@ def get_train_generator(batch_size=32):
 # TODO: get num examples programatically
 
 def get_validation_generator(batch_size=32):
+        
         valid_datagen = ImageDataGenerator(
-                rescale=1./255
+                rescale=1./255,
+                samplewise_center=False,
+                samplewise_std_normalization=False,
                 )
+
         valid_generator = valid_datagen.flow_from_directory(
             cv_globals.squares_validation_dir,
             target_size=cv_globals.PIECE_SIZE,
@@ -40,6 +46,11 @@ def get_validation_generator(batch_size=32):
             class_mode='categorical')
         
         return valid_generator
+
+def count_examples(path):
+        #path = "../data/squares/training"
+        pass
+
 
 # Build the model
 if __name__ == "__main__":
@@ -67,7 +78,7 @@ if __name__ == "__main__":
                                 verbose=1,
                                 epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
-                                filepath=cv_globals.CVROOT + '/weights/tmp_relu.hdf5',
+                                filepath=cv_globals.square_weights_train,
                                 save_best_only=True,
                                 save_weights_only=True),
                 TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
