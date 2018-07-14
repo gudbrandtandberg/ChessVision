@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.route('/')
 def home():
   
-  local = True
+  local = False
   
   if local:
     endpoint = "http://localhost:7777/"
