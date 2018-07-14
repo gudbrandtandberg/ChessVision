@@ -35,6 +35,7 @@ The next links point to existing implementations
 + [chessgrabber](http://www.chessgrabber.nicolaas.net/)
 + [tensorflow_chessbot](https://github.com/Elucidation/tensorflow_chessbot)
 + [chessify](https://chessify.me/)
++ [chessocr](https://github.com/npcardoso/chessocr)
 
 ## ChessVision
 
