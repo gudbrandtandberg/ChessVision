@@ -111,12 +111,12 @@ def predict_img():
         try:
             board_img, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
-            os.rename(tmp_loc, app.config["UPLOAD_FOLDER"], "raw", filename))
+            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
     
         except BoardExtractionError as e:
             #move file to success raw folder
-            os.rename(tmp_loc, app.config["UPLOAD_FOLDER"], "raw", filename))
+            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             return e.json_string()
 
         ret = '{{ "FEN": "{0}", "id": "{1}", "error": "false" }}'.format(FEN, raw_id)
