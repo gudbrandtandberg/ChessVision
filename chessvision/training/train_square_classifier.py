@@ -6,6 +6,7 @@ from square_classifier import build_square_classifier
 import cv_globals
 from util import listdir_nohidden
 import os
+import time
 
 def get_train_generator(batch_size=32):
         
@@ -92,6 +93,8 @@ if __name__ == "__main__":
                                 save_weights_only=True),
                 TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
 
+        start = time.time()
+        
         model.fit_generator(generator=get_train_generator(batch_size=batch_size),
                         steps_per_epoch=np.ceil(num_train/batch_size),
                         epochs=epochs,
@@ -99,3 +102,5 @@ if __name__ == "__main__":
                         callbacks=callbacks,
                         validation_data=get_validation_generator(batch_size=batch_size),
                         validation_steps=np.ceil(num_valid/batch_size))
+
+        print("Training the square classifier took {} seconds".format(time.time() - start))
