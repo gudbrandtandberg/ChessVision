@@ -8,7 +8,7 @@ import numpy as np
 import cv2 
 import cv_globals
 from util import listdir_nohidden
-from board_extractor import load_extractor
+from u_net import load_extractor
 
 def train_generator(ids_train_split, batch_size=16):
     while True:
@@ -83,6 +83,7 @@ if __name__ == "__main__":
                                 save_weights_only=True),
                 TensorBoard(log_dir='../logs/segmentation_logs/')]
 
+    start = time.time()
     model.fit_generator(generator=train_generator(ids_train_split),
                         steps_per_epoch=np.ceil(float(len(ids_train_split)) / float(batch_size)),
                         epochs=epochs,
@@ -90,3 +91,4 @@ if __name__ == "__main__":
                         callbacks=callbacks,
                         validation_data=valid_generator(ids_valid_split),
                         validation_steps=np.ceil(float(len(ids_valid_split)) / float(batch_size)))
+    print("Training the board extractor took {} seconds".format(time.time() - start))
