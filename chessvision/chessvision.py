@@ -7,7 +7,6 @@ from util import BoardExtractionError
 import board_extractor
 import board_classifier
 
-
 def classify_raw(img, filename, board_model, sq_model, flip=False):
 
     #filename = path.split("/")[-1]

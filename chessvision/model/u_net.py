@@ -4,6 +4,15 @@ from keras.optimizers import RMSprop
 
 from losses import bce_dice_loss, dice_loss, weighted_bce_dice_loss, weighted_dice_loss, dice_coeff
 
+import cv_globals
+
+def load_extractor():
+    print("Loading board extraction model..")
+    model = get_unet_256()
+    model.load_weights(cv_globals.board_weights)
+    print("\rLoading board extraction model.. DONE")
+    return model
+
 def get_unet_128(input_shape=(128, 128, 3),
                  num_classes=1):
     inputs = Input(shape=input_shape)

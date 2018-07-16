@@ -10,13 +10,13 @@ import numpy as np
 import base64 
 import matplotlib.pyplot as plt
 
-import chessvision
+from chessvision import classify_raw
 import cv_globals
 import cv2
 from stockfish import Stockfish
 from extract_squares import extract_squares
-from board_extractor import load_extractor
-from board_classifier import load_classifier
+from u_net import load_extractor
+from square_classifier import load_classifier
 
 from util import BoardExtractionError
 
@@ -78,8 +78,8 @@ def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "./user_uploads/"
-app.config['TMP_FOLDER'] = "./tmp/"
+app.config['UPLOAD_FOLDER'] = os.path.join(cv_globals.CVROOT, "computeroot/user_uploads/")
+app.config['TMP_FOLDER'] = os.path.join(cv_globals.CVROOT, "computeroot/tmp")
 
 app.secret_key = 'super secret key'
 
@@ -91,7 +91,8 @@ def allowed_file(filename):
 @crossdomain(origin='*')
 def predict_img():
     print("CV-Algo invoked")
-
+    
+    #Host, User-Agent, Content-Length, Origin
     image = read_image_from_formdata()
 
     if image is not None:
@@ -109,14 +110,14 @@ def predict_img():
             flip = request.form["flip"] == "true"
 
         try:
-            board_img, _, FEN, _ = chessvision.classify_raw(image, filename, board_model, sq_model, flip=flip)
+            board_img, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
-            os.rename(tmp_loc, os.path.join("./user_uploads/raw/", filename))
+            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
     
         except BoardExtractionError as e:
             #move file to success raw folder
-            os.rename(tmp_loc, os.path.join("./user_uploads/raw_fail/", filename))
+            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             return e.json_string()
 
         ret = '{{ "FEN": "{0}", "id": "{1}", "error": "false" }}'.format(FEN, raw_id)
@@ -142,7 +143,7 @@ def receive_feedback():
     flip = request.form["flip"] == "true"
 
     board_filename = "x_" + raw_id + ".JPG"
-    board_src = os.path.join("./user_uploads/boards/", board_filename)
+    board_src = os.path.join(app.config["UPLOAD_FOLDER"], "boards/", board_filename)
 
     if not os.path.isfile(board_src):
         return res
@@ -160,7 +161,7 @@ def receive_feedback():
             label = position[name]
         
         fname = name + "_" + raw_id + ".JPG"
-        out_dir = "./user_uploads/squares/" + piece2dir[label]
+        out_dir = os.path.join(app.config["UPLOAD_FOLDER"], "squares/", piece2dir[label])
         outfile = os.path.join(out_dir, fname)
         cv2.imwrite(outfile, sq)
         
@@ -206,11 +207,6 @@ def analyze():
     
     return '{{ "success": "true", "bestMove": "{}" }}'.format(best_move)
 
-def data_uri_to_cv2_img(uri):
-
-    
-
-    return img
 
 def read_image_from_formdata():
     # check if the post request has the file part

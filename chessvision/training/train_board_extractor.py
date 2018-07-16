@@ -8,7 +8,7 @@ import numpy as np
 import cv2 
 import cv_globals
 from util import listdir_nohidden
-from board_extractor import load_extractor
+from u_net import load_extractor
 
 batch_size = 16
 epochs = 100
@@ -87,7 +87,7 @@ if __name__ == "__main__":
                                 verbose=1,
                                 epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
-                                filepath=cv_globals.board_weights_training,
+                                filepath=cv_globals.board_weights_train,
                                 save_best_only=True,
                                 save_weights_only=True),
                 TensorBoard(log_dir='../logs/segmentation_logs/')]
