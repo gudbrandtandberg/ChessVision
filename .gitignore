@@ -13,3 +13,4 @@ weights/*
 data/raw/*
 data/.DS_Store
 computeroot/user_uploads/*
+data/user_uploads/*

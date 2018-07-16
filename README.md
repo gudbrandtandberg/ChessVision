@@ -4,6 +4,11 @@ This repository contains code and resources for extracting chess positions from 
 
 18/6/2018: WORK IN PROGRESS!
 
+## Try it!
+
+The app is up and running from time to time, if you're lucky you might be able to try it out at
+[chessvision.azurewebsites.net](http://chessvision.azurewebsites.net).
+
 ## Example
 
 From *any* square input image (png, jpg, etc.), such as this one:
@@ -35,6 +40,7 @@ The next links point to existing implementations
 + [chessgrabber](http://www.chessgrabber.nicolaas.net/)
 + [tensorflow_chessbot](https://github.com/Elucidation/tensorflow_chessbot)
 + [chessify](https://chessify.me/)
++ [chessocr](https://github.com/npcardoso/chessocr)
 
 ## ChessVision
 
@@ -121,6 +127,10 @@ the ChessVision web server will be listening on `localhost:5000/`. Enjoy!
 - Position Logic Checks
   - no more than two knights, bishops, rooks, kings
   - not pawn on first rank
+
+scp, rsync, cronjobs
+web overhaul
+logging
  
 - Crop/resize user upload image
 - UI - status/progress, hidden fields, feedback flow
