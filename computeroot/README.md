@@ -84,3 +84,9 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
 
 
     https://github.com/zhelyabuzhsky/stockfish
+
+  # Todo: 
+   - switch stockfish backend
+   - new data pipeline improvements
+   - use headers & logging
+   
