@@ -4,6 +4,11 @@ This repository contains code and resources for extracting chess positions from 
 
 18/6/2018: WORK IN PROGRESS!
 
+## Try it!
+
+The app is up and running from time to time, if you're lucky you might be able to try it out at
+[chessvision.azurewebsites.net](http://chessvision.azurewebsites.net).
+
 ## Example
 
 From *any* square input image (png, jpg, etc.), such as this one:
