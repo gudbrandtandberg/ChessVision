@@ -4,6 +4,8 @@ from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, T
 import numpy as np
 from square_classifier import build_square_classifier
 import cv_globals
+from util import listdir_nohidden
+import os
 
 def get_train_generator(batch_size=32):
         
@@ -49,11 +51,18 @@ def get_validation_generator(batch_size=32):
 
 def count_examples(path):
         #path = "../data/squares/training"
-        pass
-
+        sum = 0
+        for d in listdir_nohidden(path):
+                sum += len(listdir_nohidden(os.path.join(path, d)))
+        return sum
 
 # Build the model
 if __name__ == "__main__":
+
+        num_train = count_examples(cv_globals.squares_train_dir)
+        num_valid = count_examples(cv_globals.squares_validation_dir)
+
+        print("Train: {}, valid: {}".format(num_train, num_valid))
 
         batch_size = 32
         num_classes = 13
@@ -84,9 +93,9 @@ if __name__ == "__main__":
                 TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
 
         model.fit_generator(generator=get_train_generator(batch_size=batch_size),
-                        steps_per_epoch=np.ceil(5441./batch_size),
+                        steps_per_epoch=np.ceil(num_train/batch_size),
                         epochs=epochs,
                         verbose=1,
                         callbacks=callbacks,
                         validation_data=get_validation_generator(batch_size=batch_size),
-                        validation_steps=np.ceil(1423./batch_size))
+                        validation_steps=np.ceil(num_valid/batch_size))

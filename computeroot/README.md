@@ -16,22 +16,19 @@
 
 https://docs.python.org/2/library/subprocess.html
 
-Square classifier:
-Epoch 63/100
-156/156 [==============================] - 15s 94ms/step - loss: 0.0928 - acc: 0.9700 - val_loss: 0.0598 - val_acc: 0.9884
+## Best results so far:
 
-Deeper Square classifier
-Epoch 28/100
-156/156 [==============================] - 9s 60ms/step - loss: 0.0578 - acc: 0.9839 - val_loss: 0.0584 - val_acc: 0.9868
+### Square classifier
 
 Epoch 18/100
 156/156 [==============================] - 9s 60ms/step - loss: 0.0489 - acc: 0.9862 - val_loss: 0.0362 - val_acc: 0.9846
 Epoch 00018: early stopping
 
-Board Extractor:
+### Board Extractor
 
 Epoch 20/100
 13/13 [==============================] - 175s 13s/step - loss: 0.0739 - dice_coeff: 0.9705 - val_loss: 0.0764 - val_dice_coeff: 0.9703
+
 
 Board extraction:
   CPU: 593s 49s/step
@@ -89,4 +86,3 @@ On new feedback event: POST to /feedback {id: "...", correct: true}
    - switch stockfish backend
    - new data pipeline improvements
    - use headers & logging
-   
