@@ -13,13 +13,6 @@ import numpy as np
 import cv2
 import cv_globals
 
-def load_extractor():
-    print("Loading board extraction model..")
-    from u_net import get_unet_256
-    model = get_unet_256()
-    model.load_weights(cv_globals.board_weights)
-    print("\rLoading board extraction model.. DONE")
-    return model
 
 def extract_board(image, orig, model):
     
@@ -37,15 +30,14 @@ def extract_board(image, orig, model):
         print("Contour approximation failed!")
         raise BoardExtractionError()
     
-    #scale approcimation to input image size
-    orig_size = (orig.shape[0], orig.shape[1])
-    approx = scale_approx(approx, orig_size) 
+    #scale approximation to input image size
+    approx = scale_approx(approx, (orig.shape[0], orig.shape[1])) 
     
     #extract board
     board = extract_perspective(orig, approx, cv_globals.BOARD_SIZE)
 
     board = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
-    board = cv2.flip(board, 1)
+    board = cv2.flip(board, 1) # TODO: permute approximation instead..
     print("\rExtracting board.. DONE")
     return board
 

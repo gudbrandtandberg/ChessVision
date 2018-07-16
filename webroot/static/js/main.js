@@ -87,6 +87,17 @@ var imageInputChanged = function() {
     }
 };
 
+var setSpinner = function() {
+    var button = $("#submit-btn")
+    button.html('Extracting... <img src="/static/img/spinner.gif" width="20px"/>')
+}
+
+var unsetSpinner = function() {
+    var button = $("#submit-btn")
+    button.html("Extract")
+}
+
+
 // Package image and metadata in a formdata object and send to server
 var extractBoard = function(event) {
     event.preventDefault()
@@ -96,8 +107,14 @@ var extractBoard = function(event) {
     var cv_algo_url = endpoint + "cv_algo/"
 
     // option: minWidth
+    if (cropper == undefined) {
+        alert("Please upload a photo first!");
+        return;
+    }
     dataURL = cropper.getCroppedCanvas().toDataURL('image/jpeg')
     
+    setSpinner()
+
     var blobBin = atob(dataURL.split(',')[1]);
     var array = [];
     for (var i = 0; i < blobBin.length; i++) {
@@ -117,8 +134,10 @@ var extractBoard = function(event) {
         cache: false,
         contentType: false,
         processData: false,
+        timeout: 3000,
         success: uploadSuccess,
         error: function(xmlHttpRequest, textStatus, errorThrown) {
+            unsetSpinner()
             if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
                 alert("Connection to ChessVision server failed. It is probably sleeping..")
                 return
@@ -131,6 +150,8 @@ var extractBoard = function(event) {
 
 var uploadSuccess = function(data) {
     //parse data = {FEN: "...", id: "..."}
+    
+    unsetSpinner()
     res = JSON.parse(data)
     
     if (res.error == "false") {
