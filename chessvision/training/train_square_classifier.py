@@ -13,8 +13,6 @@ def get_train_generator(batch_size=32):
         
         train_datagen = ImageDataGenerator(
                 rescale=1./255,
-                samplewise_center=False, # TODO: try using this instead?
-                samplewise_std_normalization=False,
                 rotation_range=5,
                 zoom_range=0.05,
                 width_shift_range=0.1,
@@ -32,14 +30,10 @@ def get_train_generator(batch_size=32):
         return train_generator
 
 
-# TODO: get num examples programatically
-
 def get_validation_generator(batch_size=32):
         
         valid_datagen = ImageDataGenerator(
                 rescale=1./255,
-                samplewise_center=False,
-                samplewise_std_normalization=False,
                 )
 
         valid_generator = valid_datagen.flow_from_directory(
@@ -52,7 +46,6 @@ def get_validation_generator(batch_size=32):
         return valid_generator
 
 def count_examples(path):
-        #path = "../data/squares/training"
         sum = 0
         for d in listdir_nohidden(path):
                 sum += len(listdir_nohidden(os.path.join(path, d)))
@@ -68,48 +61,48 @@ def get_class_weights(generator):
 # Build the model
 if __name__ == "__main__":
 
-        num_train = count_examples(cv_globals.squares_train_dir)
-        num_valid = count_examples(cv_globals.squares_validation_dir)
+	num_train = count_examples(cv_globals.squares_train_dir)
+	num_valid = count_examples(cv_globals.squares_validation_dir)
 
-        print("Train: {}, valid: {}".format(num_train, num_valid))
+	batch_size = 32
+	num_classes = 13
+	epochs = 100
 
-        batch_size = 32
-        num_classes = 13
-        epochs = 100
+	model = build_square_classifier()
+	train_generator = get_train_generator(batch_size=batch_size)
+	valid_generator = get_validation_generator(batch_size=batch_size)
+	class_weights = get_class_weights(train_generator)
 
-        model = build_square_classifier()
-        train_generator = get_train_generator(batch_size=batch_size)
-        class_weights = get_class_weights(train_generator)
+	print(model.summary())
 
-        print(model.summary())
+	model.compile(loss=keras.losses.categorical_crossentropy,
+		optimizer=keras.optimizers.Adadelta(),
+		metrics=['accuracy'])
 
-        model.compile(loss=keras.losses.categorical_crossentropy,
-                optimizer=keras.optimizers.Adadelta(),
-                metrics=['accuracy'])
+	callbacks = [EarlyStopping(monitor='val_loss',
+				patience=8,
+				verbose=1,
+				min_delta=1e-4),
+		ReduceLROnPlateau(monitor='val_loss',
+				factor=0.1,
+				patience=4,
+				verbose=1,
+				epsilon=1e-4),
+		ModelCheckpoint(monitor='val_loss',
+				filepath=cv_globals.square_weights_train,
+				save_best_only=True,
+				save_weights_only=True),
+		TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
 
-        callbacks = [EarlyStopping(monitor='val_loss',
-                                patience=8,
-                                verbose=1,
-                                min_delta=1e-4),
-                ReduceLROnPlateau(monitor='val_loss',
-                                factor=0.1,
-                                patience=4,
-                                verbose=1,
-                                epsilon=1e-4),
-                ModelCheckpoint(monitor='val_loss',
-                                filepath=cv_globals.square_weights_train,
-                                save_best_only=True,
-                                save_weights_only=True),
-                TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
+	start = time.time()
+	model.fit_generator(generator=train_generator,
+			class_weight=class_weights,
+			steps_per_epoch=np.ceil(num_train/batch_size),
+			epochs=epochs,
+			verbose=1,
+			callbacks=callbacks,
+			validation_data=valid_generator,
+			validation_steps=np.ceil(num_valid/batch_size))
 
-        start = time.time()
-        model.fit_generator(generator=train_generator,
-                        steps_per_epoch=np.ceil(num_train/batch_size),
-                        epochs=epochs,
-                        verbose=1,
-                        callbacks=callbacks,
-                        validation_data=get_validation_generator(batch_size=batch_size),
-                        validation_steps=np.ceil(num_valid/batch_size))
-
-        duration = time.time() - start
-        print("Training the square classifier took {} minutes and {} seconds".format(duration / 60, duration % 60))
+	duration = time.time() - start
+	print("Training the square classifier took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))

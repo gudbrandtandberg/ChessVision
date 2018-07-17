@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+from keras.layers import Conv2D, AveragePooling2D, MaxPooling2D, BatchNormalization
 import keras
 import cv_globals
 
@@ -16,7 +16,7 @@ def load_classifier():
 
 def build_square_classifier():
     model = Sequential()
-    model.add(MaxPooling2D(pool_size=(4,4), input_shape=input_shape))
+    model.add(MaxPooling2D(pool_size=(2,2), input_shape=input_shape))
     model.add(Conv2D(30, (5, 5), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Conv2D(15, (3, 3), activation='relu'))
