@@ -92,6 +92,7 @@ if __name__ == "__main__":
                                 save_weights_only=True),
                 TensorBoard(log_dir='../logs/segmentation_logs/')]
 
+    start = time.time()
     model.fit_generator(generator=train_generator(ids_train_split),
                         steps_per_epoch=np.ceil(float(len(ids_train_split)) / float(batch_size)),
                         epochs=epochs,
@@ -99,3 +100,4 @@ if __name__ == "__main__":
                         callbacks=callbacks,
                         validation_data=valid_generator(ids_valid_split),
                         validation_steps=np.ceil(float(len(ids_valid_split)) / float(batch_size)))
+    print("Training the board extractor took {} seconds".format(time.time() - start))
