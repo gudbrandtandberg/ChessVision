@@ -12,6 +12,7 @@ weights/*
 .notes.txt
 data/raw/*
 data/.DS_Store
+data/squares/all/*
 data/squares/training/*
 data/squares/validation/*
 computeroot/user_uploads/*
