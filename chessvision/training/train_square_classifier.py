@@ -7,6 +7,7 @@ import cv_globals
 from util import listdir_nohidden
 import os
 import time
+from collections import Counter
 
 def get_train_generator(batch_size=32):
         
@@ -57,6 +58,13 @@ def count_examples(path):
                 sum += len(listdir_nohidden(os.path.join(path, d)))
         return sum
 
+def get_class_weights(generator):
+        counter = Counter(generator.classes)                          
+        max_val = float(max(counter.values()))       
+        class_weights = {class_id : max_val/num_images for class_id, num_images in counter.items()}        
+        return class_weights
+                
+
 # Build the model
 if __name__ == "__main__":
 
@@ -69,9 +77,10 @@ if __name__ == "__main__":
         num_classes = 13
         epochs = 100
 
-        # use class_weights!
-
         model = build_square_classifier()
+        train_generator = get_train_generator(batch_size=batch_size)
+        class_weights = get_class_weights(train_generator)
+
         print(model.summary())
 
         model.compile(loss=keras.losses.categorical_crossentropy,
@@ -94,8 +103,7 @@ if __name__ == "__main__":
                 TensorBoard(log_dir=cv_globals.CVROOT + '/logs/square_logs/')]
 
         start = time.time()
-        
-        model.fit_generator(generator=get_train_generator(batch_size=batch_size),
+        model.fit_generator(generator=train_generator,
                         steps_per_epoch=np.ceil(num_train/batch_size),
                         epochs=epochs,
                         verbose=1,
@@ -103,4 +111,5 @@ if __name__ == "__main__":
                         validation_data=get_validation_generator(batch_size=batch_size),
                         validation_steps=np.ceil(num_valid/batch_size))
 
-        print("Training the square classifier took {} seconds".format(time.time() - start))
+        duration = time.time() - start
+        print("Training the square classifier took {} minutes and {} seconds".format(duration / 60, duration % 60))
