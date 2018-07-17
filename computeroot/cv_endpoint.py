@@ -8,7 +8,7 @@ import json
 import platform
 import numpy as np
 import base64 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from chessvision import classify_raw
 import cv_globals

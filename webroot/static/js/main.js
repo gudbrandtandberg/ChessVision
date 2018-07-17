@@ -111,7 +111,8 @@ var extractBoard = function(event) {
         alert("Please upload a photo first!");
         return;
     }
-    dataURL = cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    dataURL = cropper.getCroppedCanvas({width: 512, height: 512}).toDataURL('image/jpeg', 0.9)
+    
     
     setSpinner()
 
@@ -134,7 +135,7 @@ var extractBoard = function(event) {
         cache: false,
         contentType: false,
         processData: false,
-        timeout: 3000,
+        timeout: 50000,
         success: uploadSuccess,
         error: function(xmlHttpRequest, textStatus, errorThrown) {
             unsetSpinner()
