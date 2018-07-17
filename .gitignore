@@ -11,6 +11,8 @@ weights/*
 
 .notes.txt
 data/raw/*
+data/squares/training/
+data/squares/validation/
 data/.DS_Store
 data/squares/all/*
 data/squares/training/*
