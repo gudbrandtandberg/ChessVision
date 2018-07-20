@@ -8,12 +8,14 @@ from sklearn.model_selection import train_test_split
 import data
 import numpy as np
 import cv2 
+import cv_globals
+from os.path import join
 
-image_dir = "../data/Segmentation/images/"
-labels_dir = "../data/Segmentation/labels/"
+image_dir = join(cv_globals.CVROOT, "data/Segmentation/images/")
+labels_dir = join(cv_globals.CVROOT, "data/Segmentation/labels/")
 
-input_size = 256
-SIZE = (256, 256)
+#input_size = 256
+#SIZE = (256, 256)
 batch_size = 16
 epochs = 100
 
@@ -45,7 +47,7 @@ def train_generator():
                                                hue_shift_limit=(-50, 50),
                                                sat_shift_limit=(-5, 5),
                                                val_shift_limit=(-15, 15))
-                img, label = randomShiftScaleRotateCorners(img, label,
+                img, label = randomShiftScaleRotate(img, label,
                                                    shift_limit=(-0.0625, 0.0625),
                                                    scale_limit=(-0.1, 0.1),
                                                    rotate_limit=(-5, 5))

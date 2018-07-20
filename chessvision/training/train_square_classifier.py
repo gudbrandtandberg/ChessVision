@@ -80,12 +80,12 @@ if __name__ == "__main__":
 		metrics=['accuracy'])
 
 	callbacks = [EarlyStopping(monitor='val_loss',
-				patience=8,
+				patience=20,
 				verbose=1,
 				min_delta=1e-4),
 		ReduceLROnPlateau(monitor='val_loss',
 				factor=0.1,
-				patience=4,
+				patience=6,
 				verbose=1,
 				epsilon=1e-4),
 		ModelCheckpoint(monitor='val_loss',

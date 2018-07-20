@@ -20,11 +20,33 @@ https://docs.python.org/2/library/subprocess.html
 
 ### Square classifier
 
-Epoch 18/100
-156/156 [==============================] - 9s 60ms/step - loss: 0.0489 - acc: 0.9862 - val_loss: 0.0362 - val_acc: 0.9846
-Epoch 00018: early stopping
+Train: 5644, valid: 1408
+Trainable params: 81,206
+
+Epoch 82/100 (more patience)
+177/177 [==============================] - 6s 36ms/step - loss: 0.0846 - acc: 0.9876 - val_loss: 0.0374 - val_acc: 0.9901
+Training the square classifier took 9 minutes and 1 seconds
+
+Epoch 50/100 (local) (less aug.)
+177/177 [==============================] - 6s 35ms/step - loss: 0.0829 - acc: 0.9885 - val_loss: 0.0471 - val_acc: 0.9873
+Epoch 00050: early stopping
+Training the square classifier took 5 minutes and 14 seconds
+
+Epoch 39/100 (local)
+177/177 [==============================] - 6s 35ms/step - loss: 0.1400 - acc: 0.9808 - val_loss: 0.0566 - val_acc: 0.9873
+Training the square classifier took 4 minutes and 23 seconds
+
+Epoch 29/100
+177/177 [==============================] - 5s 27ms/step - loss: 0.0980 - acc: 0.9883 - val_loss: 0.0623 - val_acc: 0.9872
+Training the square classifier took 2 minutes and 30 seconds
+
+Epoch 43/100
+177/177 [==============================] - 5s 26ms/step - loss: 0.0714 - acc: 0.9898 - val_loss: 0.0743 - val_acc: 0.9837
 
 ### Board Extractor
+
+Epoch 27/100
+14/14 [==============================] - 189s 13s/step - loss: 0.0677 - dice_coeff: 0.9733 - val_loss: 0.0784 - val_dice_coeff: 0.9711
 
 Epoch 20/100
 13/13 [==============================] - 175s 13s/step - loss: 0.0739 - dice_coeff: 0.9705 - val_loss: 0.0764 - val_dice_coeff: 0.9703
