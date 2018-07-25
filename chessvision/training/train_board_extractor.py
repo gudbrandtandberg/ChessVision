@@ -9,6 +9,7 @@ import cv2
 import cv_globals
 from util import listdir_nohidden
 from u_net import load_extractor
+import time
 
 batch_size = 16
 epochs = 100
@@ -100,4 +101,6 @@ if __name__ == "__main__":
                         callbacks=callbacks,
                         validation_data=valid_generator(ids_valid_split),
                         validation_steps=np.ceil(float(len(ids_valid_split)) / float(batch_size)))
-    print("Training the board extractor took {} seconds".format(time.time() - start))
+    
+    duration = time.time() - start
+    print("Training the board extractor took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))
