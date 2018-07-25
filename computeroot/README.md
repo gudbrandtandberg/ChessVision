@@ -23,6 +23,9 @@ https://docs.python.org/2/library/subprocess.html
 Train: 5644, valid: 1408
 Trainable params: 81,206
 
+Epoch 37/100 (no downsampling, more patience)
+177/177 [==============================] - 41s 231ms/step - loss: 0.0455 - acc: 0.9933 - val_loss: 0.0412 - val_acc: 0.9908
+
 Epoch 82/100 (more patience)
 177/177 [==============================] - 6s 36ms/step - loss: 0.0846 - acc: 0.9876 - val_loss: 0.0374 - val_acc: 0.9901
 Training the square classifier took 9 minutes and 1 seconds

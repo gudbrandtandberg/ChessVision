@@ -15,3 +15,6 @@ def resize_images(indir, outdir):
         dst = os.path.join(outdir, f)
         cv2.imwrite(dst, resized)
         print("resized image {}".format(src))
+
+if __name__ == "__main__":
+    resize_images(os.path.join(cv_globals.data_root, "new_raw/"), os.path.join(cv_globals.data_root, "new_raw_resized/"))

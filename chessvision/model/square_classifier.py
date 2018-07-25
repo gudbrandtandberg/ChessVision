@@ -29,7 +29,7 @@ def build_square_classifier():
 
 def build_square_classifier_old():
     model = Sequential()
-    
+    ´
     # Conv1
     #model.add(Conv2D(16, (3, 3), 
     #                activation="relu", 
