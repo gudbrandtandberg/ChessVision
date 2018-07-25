@@ -74,12 +74,10 @@ def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
         return update_wrapper(wrapped_function, f)
     return decorator
 
-
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(cv_globals.CVROOT, "computeroot/user_uploads/")
-app.config['TMP_FOLDER'] = os.path.join(cv_globals.CVROOT, "computeroot/tmp")
+app.config['TMP_FOLDER'] = os.path.join(cv_globals.CVROOT, "computeroot/tmp/")
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app.secret_key = 'super secret key'
 
@@ -152,7 +150,7 @@ def receive_feedback():
 
     squares, names = extract_squares(board, flip=flip)
 
-    # Save each square using the 'position' variable
+    # Save each square using the 'position' dictionary from chessboar.js
     for sq, name in zip(squares, names):
         
         if name not in position:
@@ -173,6 +171,7 @@ def receive_feedback():
 @app.route('/analyze/', methods=['POST'])
 @crossdomain(origin='*')
 def analyze():
+    print("Analyzing position using Stockfish")
     res = '{{ "success": "false" }}'
 
     if "FEN" not in request.form:
@@ -180,7 +179,7 @@ def analyze():
         return res
 
     fen = request.form["FEN"]
-    print(fen)
+    #print(fen)
     # check input is legal
 
     plat = platform.system()
@@ -195,14 +194,14 @@ def analyze():
     stockfish = Stockfish(sf_binary, depth=10)
     try: 
         stockfish.set_fen_position(fen)
-    except:
-        print("BOARD ILLEGAL!")
+    except Exception as e:
+        print("BOARD ILLEGAL!: {}".format(e))
         return res
     try:
         best_move = stockfish.get_best_move()
         print("Best move is: {}".format(best_move))
-    except:
-        print("STOCKFISH FAILED")
+    except Exception as e:
+        print("STOCKFISH FAILED: {}".format(e))
         return res
     
     return '{{ "success": "true", "bestMove": "{}" }}'.format(best_move)
@@ -216,20 +215,16 @@ def read_image_from_formdata():
         return None
 
     file = request.files['file']
-    
     data = file.read()
-    
     nparr = np.frombuffer(data, np.uint8)
-    
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    
     file.close()
     
     return img
 
 
 def load_models():
-    global sq_model, board_model
+    #global sq_model, board_model
 
     sq_model = load_classifier()
     board_model = load_extractor()
