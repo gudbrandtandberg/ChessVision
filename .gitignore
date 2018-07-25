@@ -10,10 +10,11 @@ env
 weights/*
 logs/*
 
+data/new_raw/
 .notes.txt
 data/raw/*
-data/squares/training/
-data/squares/validation/
+#data/squares/training/
+#data/squares/validation/
 data/.DS_Store
 data/squares/all/*
 data/squares/training/*
