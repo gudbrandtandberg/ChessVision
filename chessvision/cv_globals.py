@@ -3,6 +3,7 @@ import os
 CVROOT = os.getenv("CVROOT")
 
 compute_root = os.path.join(CVROOT, "computeroot/")
+data_root = os.path.join(CVROOT, "data/")
 
 squares_train_dir = os.path.join(CVROOT, "data/squares/training/")
 squares_validation_dir = os.path.join(CVROOT, "data/squares/validation/")

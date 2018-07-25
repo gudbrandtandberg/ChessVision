@@ -7,7 +7,7 @@ import os
 
 input_dir = "../data/Segmentation/images/"
 output_dir = "../data/Segmentation/labels/"
-json_file = "../data/Segmentation/ChessboardSegmentation.json"
+json_file = "../data/Segmentation/coordinates.json"
 
 with open(json_file, "r") as file:
     lines = file.readlines()
