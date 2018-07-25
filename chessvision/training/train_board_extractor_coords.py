@@ -47,7 +47,7 @@ def train_generator():
                                                hue_shift_limit=(-50, 50),
                                                sat_shift_limit=(-5, 5),
                                                val_shift_limit=(-15, 15))
-                img, label = randomShiftScaleRotate(img, label,
+                #img, label = randomShiftScaleRotate(img, label,
                                                    shift_limit=(-0.0625, 0.0625),
                                                    scale_limit=(-0.1, 0.1),
                                                    rotate_limit=(-5, 5))

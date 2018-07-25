@@ -81,7 +81,7 @@ var imageInputChanged = function() {
         reader.readAsDataURL(this.files[0]);
         $("#board-container").hide()
         $("#preview-container").show()
-        $("#board-state-pane").show()
+        $("#flip-pane").show()
     } else {
         alert("no file chosen")
     }
@@ -157,14 +157,17 @@ var uploadSuccess = function(data) {
     
     if (res.error == "false") {
         $("#board-container").show()
-        board.resize()
         $("#preview-container").hide()
         $("#edit-analyze-pane").show()
+        board.resize()
         setFEN(res.FEN)
         document.getElementById("raw-id-input").value = res.id
+        $("#to-move").show()
+        $("#flip-pane").hide()
         
     } else {
         console.log(res)
+        alert(res)
     }
 }
 

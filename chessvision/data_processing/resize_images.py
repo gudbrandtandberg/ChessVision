@@ -11,7 +11,7 @@ def resize_images(indir, outdir):
     for f in listdir_nohidden(indir):
         src = os.path.join(indir, f)
         image = cv2.imread(src)
-        resized = cv2.resize(image, cv_globals.INPUT_SIZE, interpolation= cv2.INTER_AREA)    
+        resized = cv2.resize(image, cv_globals.INPUT_SIZE, interpolation= cv2.INTER_AREA)  
         dst = os.path.join(outdir, f)
         cv2.imwrite(dst, resized)
         print("resized image {}".format(src))
