@@ -15,7 +15,7 @@ data/new_raw/
 data/raw/*
 data/.DS_Store
 data/squares/all/*
-#data/squares/training/*
-#data/squares/validation/*
+data/squares/training/*
+data/squares/validation/*
 computeroot/user_uploads/*
 data/user_uploads/*
