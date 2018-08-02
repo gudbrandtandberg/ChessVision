@@ -9,7 +9,7 @@ import cv2
 import cv_globals
 from util import listdir_nohidden
 from u_net import load_extractor
-import time
+import time 
 
 batch_size = 16
 epochs = 100
@@ -20,6 +20,7 @@ def load_image_and_mask_ids():
 
 ids_train = data.load_image_and_mask_ids()
 ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.1, random_state=42)
+
 def train_generator(ids_train_split, batch_size=16):
     while True:
         for start in range(0, len(ids_train_split), batch_size):
@@ -75,7 +76,7 @@ if __name__ == "__main__":
     print('Training on {} samples'.format(len(ids_train_split)))
     print('Validating on {} samples'.format(len(ids_valid_split)))
 
-    model = load_extractor()
+    model = load_extractor()  # or train from scratch? 
     print(model.summary())
 
     callbacks = [EarlyStopping(monitor='val_loss',
@@ -101,6 +102,6 @@ if __name__ == "__main__":
                         callbacks=callbacks,
                         validation_data=valid_generator(ids_valid_split),
                         validation_steps=np.ceil(float(len(ids_valid_split)) / float(batch_size)))
-    
+
     duration = time.time() - start
-    print("Training the board extractor took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))
+    print("Training the board_extractor took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))
