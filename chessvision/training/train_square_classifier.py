@@ -55,7 +55,7 @@ def get_data(node, N):
     return X, y
 
 
-def keras_generator(*, transform=False):
+def keras_generator(*, transform=False, sample=False):
     def _keras_generator(node, paths):
         datagen = None
         if transform:
@@ -65,18 +65,16 @@ def keras_generator(*, transform=False):
 
         X, y = get_data(node, len(paths))
 
-        # sample data!
-        print('Original dataset shape {}'.format(Counter(y)))
-        #nm = SMOTE(random_state=42)
-        nm = NearMiss(random_state=42)
-
-        X = X.reshape((X.shape[0], 64*64))
-
-        X_sampled, y_sampled = nm.fit_sample(X, y)
-
-        X_sampled = X_sampled.reshape((X_sampled.shape[0], 64, 64, 1))
-
-        print('Resampled dataset shape {}'.format(Counter(y_sampled)))
+        if sample:
+            print('Sampling data...\nOriginal dataset shape: {}'.format(Counter(y)))
+            sampler = SMOTE(random_state=42)
+            #sampler = NearMiss(random_state=42)
+            X = X.reshape((X.shape[0], 64*64))
+            X_sampled, y_sampled = sampler.fit_sample(X, y)
+            X_sampled = X_sampled.reshape((X_sampled.shape[0], 64, 64, 1))
+            print('Resampled dataset shape: {}'.format(Counter(y_sampled)))
+        else:
+            X_sampled, y_sampled = X, y
 
         datagen.fit(X_sampled)
         y_sampled = to_categorical(y_sampled)
@@ -84,14 +82,14 @@ def keras_generator(*, transform=False):
     return _keras_generator
 
 
-def get_validation_generator():
-    from quilt.data.gudbrandtandberg import chesspieces as pieces
-    return pieces["validation"](asa=keras_generator(transform=True))
-
-
 def get_training_generator():
     from quilt.data.gudbrandtandberg import chesspieces as pieces
-    return pieces["training"](asa=keras_generator(transform=False))
+    return pieces["training"](asa=keras_generator(transform=True, sample=False))
+
+
+def get_validation_generator():
+    from quilt.data.gudbrandtandberg import chesspieces as pieces
+    return pieces["validation"](asa=keras_generator(transform=False, sample=False))
 
 
 def get_class_weights(generator):
