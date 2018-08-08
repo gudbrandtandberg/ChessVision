@@ -7,8 +7,10 @@ var board, cropper, cropperOptions;
 var input, canvas, context, endpoint;
 
 var sizeCanvas = function() {
-    canvas = document.getElementById("image-preview");
-    canvas.height = canvas.width;
+    container = document.getElementById("preview-container");
+    container.style.height = container.offsetWidth
+    console.log(container.style.height)
+    console.log(container.style.width)
 }
 
 // initialize variables
@@ -23,6 +25,7 @@ var init = function() {
                         sparePieces: false,
                         showErrors: "console"
                         });
+
     $(window).resize(board.resize);
 
     // Initialize cropper (cropper.js)
