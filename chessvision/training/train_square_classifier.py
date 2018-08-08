@@ -1,6 +1,6 @@
 import keras
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from keras.utils import to_categorical
 import numpy as np
 import quilt
@@ -45,36 +45,40 @@ def get_data(node, N):
     for dir_name, dir_node in zip(dirs, node):
         label = labels[dir_name]
         for img in dir_node:
-            img = cv2.imread(img(), 0)
-            X[i, :, :, 0] = img
+            # load greyscale image
+            X[i, :, :, 0] = cv2.imread(img(), 0)
             y[i] = label
             i += 1
-
-    #y = to_categorical(y)
-
     return X, y
 
 
-def keras_generator(*, transform=False, sample=False):
+def sample_data(X, y, sample_type):
+    print('Sampling data...\nOriginal dataset shape: {}'.format(Counter(y)))
+
+    if sample == "over":
+        sampler = SMOTE(random_state=42)
+    elif sample == "under":
+        sampler = NearMiss(random_state=42)
+    else:
+        raise Exception("Sampler must be either 'under' under or 'over'")
+
+    X = X.reshape((X.shape[0], 64*64))
+    X_sampled, y_sampled = sampler.fit_sample(X, y)
+    X_sampled = X_sampled.reshape((X_sampled.shape[0], 64, 64, 1))
+
+    print('Resampled dataset shape: {}'.format(Counter(y_sampled)))
+    return X_sampled, y_sampled
+
+
+def keras_generator(*, transform=False, sample=None):
     def _keras_generator(node, paths):
-        datagen = None
-        if transform:
-            datagen = train_datagen
-        else:
-            datagen = valid_datagen
+
+        datagen = train_datagen if transform else valid_datagen
 
         X, y = get_data(node, len(paths))
 
-        if sample:
-            print('Sampling data...\nOriginal dataset shape: {}'.format(Counter(y)))
-            sampler = SMOTE(random_state=42)
-            #sampler = NearMiss(random_state=42)
-            X = X.reshape((X.shape[0], 64*64))
-            X_sampled, y_sampled = sampler.fit_sample(X, y)
-            X_sampled = X_sampled.reshape((X_sampled.shape[0], 64, 64, 1))
-            print('Resampled dataset shape: {}'.format(Counter(y_sampled)))
-        else:
-            X_sampled, y_sampled = X, y
+        if sample is not None:
+            X, y = sample_data(X, y, sample)
 
         datagen.fit(X_sampled)
         y_sampled = to_categorical(y_sampled)
@@ -82,14 +86,14 @@ def keras_generator(*, transform=False, sample=False):
     return _keras_generator
 
 
-def get_training_generator():
+def get_training_generator(sample=None):
     from quilt.data.gudbrandtandberg import chesspieces as pieces
-    return pieces["training"](asa=keras_generator(transform=True, sample=False))
+    return pieces["training"](asa=keras_generator(transform=True, sample=sample))
 
 
 def get_validation_generator():
     from quilt.data.gudbrandtandberg import chesspieces as pieces
-    return pieces["validation"](asa=keras_generator(transform=False, sample=False))
+    return pieces["validation"](asa=keras_generator(transform=False, sample=None))
 
 
 def get_class_weights(generator):
@@ -109,11 +113,13 @@ if __name__ == "__main__":
         description='Train the ChessVision square extractor')
     parser.add_argument('--epochs', type=int, default=100,
                         help='number of epochs to train for')
+    parser.add_argument('--sample', type=int, default=0,
+                        help='How to sample the training data, 0=none, 1=oversample, 2=undersample')
     opt = parser.parse_args()
 
     # install_data()
     model = build_square_classifier()
-    train_generator = get_training_generator()
+    train_generator = get_training_generator(opt.sample)
     valid_generator = get_validation_generator()
 
     print(model.summary())
@@ -123,12 +129,12 @@ if __name__ == "__main__":
                   metrics=['accuracy'])
 
     callbacks = [EarlyStopping(monitor='val_loss',
-                               patience=10,
+                               patience=8,
                                verbose=1,
                                min_delta=1e-4),
                  ReduceLROnPlateau(monitor='val_loss',
                                    factor=0.1,
-                                   patience=5,
+                                   patience=4,
                                    verbose=1,
                                    epsilon=1e-4),
                  ModelCheckpoint(monitor='val_loss',
