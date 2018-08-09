@@ -7,13 +7,13 @@ import uuid
 import json
 import platform
 import numpy as np
-import base64 
-#import matplotlib.pyplot as plt
+import base64
+
 
 from chessvision import classify_raw
 import cv_globals
 import cv2
-#from stockfish import Stockfish
+import chess
 from stockfishpy.stockfishpy import *
 from extract_squares import extract_squares
 from u_net import load_extractor
@@ -107,6 +107,8 @@ def predict_img():
         flip = False
         if "flip" in request.form:
             flip = request.form["flip"] == "true"
+        if "tomove" in request.form:
+            tomove = request.form["tomove"]
 
         try:
             board_img, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
@@ -119,11 +121,22 @@ def predict_img():
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             return e.json_string()
 
-        ret = '{{ "FEN": "{0}", "id": "{1}", "error": "false" }}'.format(FEN, raw_id)
+        FEN = expandFEN(FEN, tomove)
+
+        analysis = analyze(FEN, tomove)
+        if "error" in analysis:
+            score, mate = "None", "None"
+        else:
+            score, mate = analysis["score"], analysis["mate"]
+
+        ret = '{{ "FEN": "{}", "id": "{}", "error": "false", "score": "{}", "mate": "{}" }}'.format(FEN, raw_id, score, mate)
 
         return ret
     
-    return '{"error": "true", "errorMsg": "Fuck!"}'
+    return '{"error": "true", "errorMsg": "Oops!!"}'
+
+def expandFEN(FEN, tomove):
+    return "{} {} - - 0 1".format(FEN, tomove)
 
 piece2dir = {"wR": "R", "bR": "_r", "wK": "K", "bK": "_k", "wQ": "Q", "bQ": "_q",
  "wN": "N", "bN": "_n", "wP": "P", "bP": "_p", "wB": "B", "bB": "_b", "f": "f"}
@@ -169,21 +182,16 @@ def receive_feedback():
 
     return '{ "success": "true" }'
 
-@app.route('/analyze/', methods=['POST'])
-@crossdomain(origin='*')
-def analyze():
-    print("Analyzing position using Stockfish")
-    res = '{{ "success": "false" }}'
+def analyze(fen, move):
+    # check input is legal!!
+    res = {"error": True}
 
-    if "FEN" not in request.form:
-        print("No FEN in the form data...")
+    board = chess.Board(fen=fen)
+    if not board.is_valid():
         return res
-
-    fen = request.form["FEN"]
-    #print(fen)
-    move = fen.split()[1]
     
-    # check input is legal
+    if board.is_game_over():
+        return res
 
     plat = platform.system()
     if plat == "Linux":
@@ -213,13 +221,34 @@ def analyze():
             mate = ""
         elif "mate" in info:
             score = "None"
-            mate = abs(int(info[info.index("mate")+1]))
+            mate = int(info[info.index("mate")+1])
     
     except Exception as e:
         print("STOCKFISH FAILED: {}".format(e))
         return res
     
-    return '{{ "success": "true", "bestMove": "{}", "score": "{}", "mate": "{}" }}'.format(best_move["bestmove"], score, mate)
+    return {"best_move": best_move["bestmove"], "score": score, "mate": mate}
+
+@app.route('/analyze/', methods=['POST'])
+@crossdomain(origin='*')
+def engine_analyze():
+    print("Analyzing position using Stockfish")
+    res = '{{ "success": "false" }}'
+
+    if "FEN" not in request.form:
+        print("No FEN in the form data...")
+        return res
+
+    fen = request.form["FEN"]
+    move = fen.split()[1]
+    
+    analysis = analyze(fen, move)
+    if "error" in analysis: 
+        return res
+
+    best_move, score, mate = analysis["best_move"], analysis["score"], analysis["mate"]
+    
+    return '{{ "success": "true", "bestMove": "{}", "score": "{}", "mate": "{}" }}'.format(best_move, score, mate)
 
 
 def read_image_from_formdata():
