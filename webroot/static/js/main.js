@@ -9,8 +9,6 @@ var input, canvas, context, endpoint;
 var sizeCanvas = function() {
     container = document.getElementById("preview-container");
     container.style.height = container.offsetWidth
-    console.log(container.style.height)
-    console.log(container.style.width)
 }
 
 // initialize variables
@@ -267,14 +265,13 @@ $("#analyze-btn").on("click", function() {
             var fb = "Score is: "
             if (res.score != "None") {
                 score = parseFloat(res.score)
+                setScore(score)
                 fb += score
             } else {
                 mate = parseInt(res.mate)
+                setMate(mate)
                 fb += "mate in " + mate
             }
-            console.log(res)
-            
-            alert(fb)
             
             if (bestMove.length == 5) {
                 alert("strange move!")
@@ -318,5 +315,25 @@ var setFEN = function(fen) {
     
 }
 
+var setMate = function(mate) {
+    alert("not implemented")
+}
+
+var setScore = function(score) {
+    displayScore = score
+    if (score > 4.0) {
+        displayScore = 4.0
+    } else if (score < -4.0) {
+        displayScore = -4.0
+    }
+
+    displayScore += 4.0
+
+    width = (displayScore * 100 / 8.0).toString() + "%"
+
+    $("#needle-content").html(score.toString())
+    $("#needle-content").attr("aria-valuenow", displayScore)
+    $("#needle-content").css({width: width})
+}
 
 $(document).ready(init);
