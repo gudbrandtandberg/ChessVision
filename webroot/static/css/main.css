@@ -26,6 +26,7 @@ body {
     /*width: 400px;
     height: 400px;*/
     /*padding: 10px;*/
+    margin-bottom: 10px;
 }
 
 #image-preview {
@@ -41,5 +42,15 @@ body {
 }
 
 .row {
-    margin-bottom: 10px;
+    
+}
+
+.progress {
+    background-color: black;
+    border: solid 1px black;
+}
+
+  .progress-bar {
+    background-color: white;
+    color: lightcoral;
 }

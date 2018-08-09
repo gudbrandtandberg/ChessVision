@@ -23,6 +23,9 @@ https://docs.python.org/2/library/subprocess.html
 Train: 5644, valid: 1408
 Trainable params: 81,206
 
+Epoch 50/100 (class weights)
+213/213 [==============================] - 24s 112ms/step - loss: 0.0288 - acc: 0.9924 - val_loss: 0.0454 - val_acc: 0.9921
+
 Epoch 42/100 (no sampling)
 213/213 [==============================] - 7s 32ms/step - loss: 0.0397 - acc: 0.9893 - val_loss: 0.0471 - val_acc: 0.9902
 Epoch 00042: early stopping
