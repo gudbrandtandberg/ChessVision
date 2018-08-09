@@ -19,12 +19,18 @@
                 <div class="col-12" id="header-wrapper"> <h1>Chessvision <img id="logo" src="static/img/ChessVision.png"> </h1> </div>
             </div>
 
+            <div class="row">
+                <div id="needle-wrapper" class="progress">
+                    <div id="needle-content" class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="0.0" aria-valuemin="-4" aria-valuemax="4">0.0</div>
+                </div>
+            </div>
+
 
             <div id="preview-container" class="row">
                 <canvas id="image-preview" class="col-xs-12"></canvas>
             </div>
 
-            <div id="board-container" class="row" style="display: none">
+            <div id="board-container" class="" style="display: none">
                 <div id="board"></div>
             </div>
 
@@ -52,10 +58,10 @@
         
             <div id="edit-analyze-pane" class="row" style="display: none">
                 <div class="col-sm-6">
-                    <input id="edit-btn" type="button" class="btn btn-default btn-block" value="Edit">   
+                    <input id="analyze-btn" type="submit" class="btn btn-default btn-block" value="Best move">
                 </div>
                 <div class="col-sm-6">
-                    <input id="analyze-btn" type="submit" class="btn btn-default btn-block" value="Best move">
+                    <input id="edit-btn" type="button" class="btn btn-default btn-block" value="Edit">   
                 </div>
             </div>
 

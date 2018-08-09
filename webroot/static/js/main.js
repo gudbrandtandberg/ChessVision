@@ -9,8 +9,6 @@ var input, canvas, context, endpoint;
 var sizeCanvas = function() {
     container = document.getElementById("preview-container");
     container.style.height = container.offsetWidth
-    console.log(container.style.height)
-    console.log(container.style.width)
 }
 
 // initialize variables
@@ -85,6 +83,7 @@ var imageInputChanged = function() {
         $("#board-container").hide()
         $("#preview-container").show()
         $("#flip-pane").show()
+        $("#to-move").show()
     } else {
         alert("no file chosen")
     }
@@ -104,6 +103,7 @@ var unsetSpinner = function() {
 // Package image and metadata in a formdata object and send to server
 var extractBoard = function(event) {
     event.preventDefault()
+    setSpinner()
 
     endpoint = document.getElementById("endpoint").innerHTML
     
@@ -115,9 +115,6 @@ var extractBoard = function(event) {
         return;
     }
     dataURL = cropper.getCroppedCanvas({width: 512, height: 512}).toDataURL('image/jpeg', 0.9)
-    
-    
-    setSpinner()
 
     var blobBin = atob(dataURL.split(',')[1]);
     var array = [];
@@ -126,10 +123,11 @@ var extractBoard = function(event) {
     }
     var file = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
     flip = document.getElementById("reversed-input").checked ? "true" : "false"
-
+    var tomove = document.querySelector('input[name="move"]:checked').value;
     var formData = new FormData();
     formData.append("file", file);
     formData.append("flip", flip);
+    formData.append("tomove", tomove);
 
     $.ajax({
         url: cv_algo_url,
@@ -165,7 +163,13 @@ var uploadSuccess = function(data) {
         board.resize()
         setFEN(res.FEN)
         document.getElementById("raw-id-input").value = res.id
-        $("#to-move").show()
+        if (res.score != "None") {
+            setScore(res.score)
+        } else if (res.mate != "None") {
+            setMate(res.mate)
+        } else {
+            alert("Position is invalid, cannot analyze yet")
+        }
         $("#flip-pane").hide()
         
     } else {
@@ -246,7 +250,6 @@ $("#analyze-btn").on("click", function() {
     // get valid fen from board + input tags.
     var fen = board.fen()
     fen = expandFen(fen)
-
     formData.append("FEN", fen)
 
     $.ajax({
@@ -263,6 +266,21 @@ $("#analyze-btn").on("click", function() {
                 return
             }
             var bestMove = res.bestMove
+            var score, mate
+            
+            if (bestMove == "(none)") {
+                return
+            }
+
+            if (res.score != "None") {
+                score = parseFloat(res.score)
+                setScore(score)
+                
+            } else {
+                mate = parseInt(res.mate)
+                setMate(mate)
+            }
+            
             if (bestMove.length == 5) {
                 alert("strange move!")
             }
@@ -298,12 +316,39 @@ var expandFen = function(fen) {
 }
 
 var setFEN = function(fen) {
-    
     orientation = document.getElementById("reversed-input").checked ? "black" : "white"
     board.orientation(orientation)
     board.position(fen, true)
-    
 }
 
+var setMate = function(mate) {
+    var tomove = document.querySelector('input[name="move"]:checked').value;
+
+    if ((mate > 0 && tomove == "w") || (mate < 0 && tomove == "b")) {
+        $("#needle-content").css({width: "100%"})
+    } else {
+        $("#needle-content").css({width: "0%"})
+    }
+    $("#needle-content").attr("aria-valuenow", displayScore)
+    absMate = Math.abs(mate)
+    $("#needle-content").html("#" + absMate.toString())
+}
+
+var setScore = function(score) {
+    displayScore = score
+    if (score > 4.0) {
+        displayScore = 4.0
+    } else if (score < -4.0) {
+        displayScore = -4.0
+    }
+
+    displayScore += 4.0
+
+    width = (displayScore * 100 / 8.0).toString() + "%"
+
+    $("#needle-content").html(score.toString())
+    $("#needle-content").attr("aria-valuenow", displayScore)
+    $("#needle-content").css({width: width})
+}
 
 $(document).ready(init);

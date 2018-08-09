@@ -8,6 +8,7 @@ import cv2
 from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import SMOTE
 from imblearn.combine import SMOTEENN, SMOTETomek
+from sklearn.utils import class_weight
 
 from square_classifier import build_square_classifier
 import cv_globals
@@ -17,9 +18,11 @@ from collections import Counter
 
 import argparse
 
-labels = {"b": 0, "k": 1, "n": 2, "p": 3, "q": 4, "r": 5, "B": 6,
-          "f": 7, "K": 8, "N": 9, "P": 10, "Q": 11, "R": 12}
+#labels = {"b": 0, "k": 1, "n": 2, "p": 3, "q": 4, "r": 5, "B": 6,
+#          "f": 7, "K": 8, "N": 9, "P": 10, "Q": 11, "R": 12}
 
+labels = {"b": 6, "k": 7, "n": 8, "p": 9, "q": 10, "r": 11, "B": 0,
+          "f": 12, "K": 1, "N": 2, "P": 3, "Q": 4, "R": 5}
 train_datagen = ImageDataGenerator(
     rescale=1./255,
     rotation_range=5,
@@ -32,10 +35,8 @@ valid_datagen = ImageDataGenerator(
     rescale=1./255,
 )
 
-
 def install_data():
     quilt.install("gudbrandtandberg/chesspieces", force=True)
-
 
 def get_data(node, N):
     X = np.zeros((N, 64, 64, 1))
@@ -54,7 +55,6 @@ def get_data(node, N):
 
 def sample_data(X, y, sample):
     print('Sampling data...\nOriginal dataset shape: {}'.format(Counter(y)))
-
     if sample == "over":
         sampler = SMOTE(random_state=42)
     elif sample == "under":
@@ -65,7 +65,6 @@ def sample_data(X, y, sample):
     X = X.reshape((X.shape[0], 64*64))
     X_sampled, y_sampled = sampler.fit_sample(X, y)
     X_sampled = X_sampled.reshape((X_sampled.shape[0], 64, 64, 1))
-
     print('Resampled dataset shape: {}'.format(Counter(y_sampled)))
     return X_sampled, y_sampled
 
@@ -85,7 +84,6 @@ def keras_generator(*, transform=False, sample=None):
         return datagen.flow(X, y)
     return _keras_generator
 
-
 def get_training_generator(sample=None):
     from quilt.data.gudbrandtandberg import chesspieces as pieces
     return pieces["training"](asa=keras_generator(transform=True, sample=sample))
@@ -95,12 +93,16 @@ def get_validation_generator():
     from quilt.data.gudbrandtandberg import chesspieces as pieces
     return pieces["validation"](asa=keras_generator(transform=False, sample=None))
 
+def labels_only(node, paths):
+    _, y = get_data(node, len(paths))
+    return y
 
-def get_class_weights(generator):
-    counter = Counter(generator.classes)
-    max_val = float(max(counter.values()))
-    class_weights = {class_id: max_val /
-                     num_images for class_id, num_images in counter.items()}
+def get_class_weights():
+    from quilt.data.gudbrandtandberg import chesspieces as pieces
+    print("Getting class weights")
+    y = pieces["training"](asa=labels_only)
+    class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
+    #print(class_weights)
     return class_weights
 
 
@@ -115,10 +117,13 @@ if __name__ == "__main__":
                         help='number of epochs to train for')
     parser.add_argument('--sample', type=str, default=None,
                         help='how to sample the training data, over=oversample, under=undersample')
+    parser.add_argument('--class_weights', type=bool, default=False,
+                        help='whether to use the class_weights variable for training (no sampling!)')
     opt = parser.parse_args()
-
-    # install_data()
+    
     model = build_square_classifier()
+    install_data()
+    class_weights = get_class_weights() if opt.class_weights else None
     train_generator = get_training_generator(opt.sample)
     valid_generator = get_validation_generator()
 
@@ -146,6 +151,7 @@ if __name__ == "__main__":
     model.fit_generator(generator=train_generator,
                         steps_per_epoch=len(train_generator),
                         epochs=opt.epochs,
+                        class_weight=class_weights,
                         verbose=1,
                         callbacks=callbacks,
                         validation_data=valid_generator,
