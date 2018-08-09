@@ -13,7 +13,8 @@ import base64
 from chessvision import classify_raw
 import cv_globals
 import cv2
-from stockfish import Stockfish
+#from stockfish import Stockfish
+from stockfishpy.stockfishpy import *
 from extract_squares import extract_squares
 from u_net import load_extractor
 from square_classifier import load_classifier
@@ -180,6 +181,8 @@ def analyze():
 
     fen = request.form["FEN"]
     #print(fen)
+    move = fen.split()[1]
+    
     # check input is legal
 
     plat = platform.system()
@@ -191,20 +194,32 @@ def analyze():
         print("No support for windows..")
         return res
 
-    stockfish = Stockfish(sf_binary, depth=10)
+    stockfish = Engine(sf_binary, depth=10)
+
     try: 
-        stockfish.set_fen_position(fen)
+        stockfish.setposition(fen)
     except Exception as e:
         print("BOARD ILLEGAL!: {}".format(e))
         return res
     try:
-        best_move = stockfish.get_best_move()
-        print("Best move is: {}".format(best_move))
+        best_move = stockfish.bestmove()
+        print("Best move is: {}".format(best_move["bestmove"])) #is '(none)' if there is mate
+        info = best_move["info"].split()
+
+        if "cp" in info:
+            score = float(info[info.index("cp")+1]) / 100.
+            if move == "b": 
+                score *= -1
+            mate = ""
+        elif "mate" in info:
+            score = "None"
+            mate = abs(int(info[info.index("mate")+1]))
+    
     except Exception as e:
         print("STOCKFISH FAILED: {}".format(e))
         return res
     
-    return '{{ "success": "true", "bestMove": "{}" }}'.format(best_move)
+    return '{{ "success": "true", "bestMove": "{}", "score": "{}", "mate": "{}" }}'.format(best_move["bestmove"], score, mate)
 
 
 def read_image_from_formdata():

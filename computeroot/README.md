@@ -23,9 +23,26 @@ https://docs.python.org/2/library/subprocess.html
 Train: 5644, valid: 1408
 Trainable params: 81,206
 
+Epoch 42/100 (no sampling)
+213/213 [==============================] - 7s 32ms/step - loss: 0.0397 - acc: 0.9893 - val_loss: 0.0471 - val_acc: 0.9902
+Epoch 00042: early stopping
+Training the square classifier took 5 minutes and 1 seconds
 
-205/205 [==============================] - 7s 34ms/step - loss: 0.0032 - acc: 0.9994 - val_loss: 0.5123 - val_acc: 0.9104
-Training the square classifier took 2 minutes and 11 seconds
+Epoch 30/100 (undersampling)
+102/102 [==============================] - 3s 33ms/step - loss: 0.0728 - acc: 0.9795 - val_loss: 0.2319 - val_acc: 0.9585
+Training the square classifier took 1 minutes and 53 seconds
+
+Epoch 35/100 (oversampling)
+525/525 [==============================] - 17s 32ms/step - loss: 0.0242 - acc: 0.9948 - val_loss: 0.0528 - val_acc: 0.9915
+Training the square classifier took 9 minutes and 56 seconds
+
+Epoch 51/100 (quilt, no sampling, no weighting, local)
+205/205 [==============================] - 21s 104ms/step - loss: 0.0330 - acc: 0.9916 - val_loss: 0.0484 - val_acc: 0.9918
+Training the square classifier took 17 minutes and 51 seconds
+
+Epoch 34/100 (quilt + SMOTE on train, none on valid)
+525/525 [==============================] - 43s 82ms/step - loss: 0.0785 - acc: 0.9799 - val_loss: 0.0678 - val_acc: 0.9868
+Training the square classifier took 24 minutes and 28 seconds
 
 Epoch 65/100
 246/246 [==============================] - 9s 36ms/step - loss: 0.0474 - acc: 0.9952 - val_loss: 0.0112 - val_acc: 0.9981
@@ -37,7 +54,6 @@ Training the square classifier took 9 minutes and 1 seconds
 
 Epoch 50/100 (local) (less aug.)
 177/177 [==============================] - 6s 35ms/step - loss: 0.0829 - acc: 0.9885 - val_loss: 0.0471 - val_acc: 0.9873
-Epoch 00050: early stopping
 Training the square classifier took 5 minutes and 14 seconds
 
 Epoch 39/100 (local)
