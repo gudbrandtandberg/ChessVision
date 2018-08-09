@@ -175,8 +175,7 @@ var uploadSuccess = function(data) {
         $("#flip-pane").hide()
         
     } else {
-        console.log(res)
-        alert(res)
+        alert(res.errorMsg)
     }
 }
 

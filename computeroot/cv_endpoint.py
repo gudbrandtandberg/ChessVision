@@ -8,6 +8,7 @@ import json
 import platform
 import numpy as np
 import base64
+import argparse
 
 
 from chessvision import classify_raw
@@ -277,5 +278,10 @@ def load_models():
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--local", type=bool, default=True)
+    args = parser.parse_args()
+    
+    port = 7777 if args.local else 8080
     board_model, sq_model = load_models()
-    app.run(host='0.0.0.0', port=7777)
+    app.run(host='0.0.0.0', port=port)

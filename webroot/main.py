@@ -1,12 +1,16 @@
 from flask import Flask, render_template
+import argparse
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
   
-  local = False
-  
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--local", type=bool, default=True)
+  args = parser.parse_args()
+  local = args.local
+
   if local:
     endpoint = "http://localhost:7777/"
   else:

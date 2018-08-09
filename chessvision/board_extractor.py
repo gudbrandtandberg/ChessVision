@@ -79,12 +79,12 @@ def find_quadrangle(mask):
         cnt = contours[i]
         
         arclen = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.1*arclen, True)
+        candidate = cv2.approxPolyDP(cnt, 0.1*arclen, True)
         
-        if len(approx) != 4:
+        if len(candidate) != 4:
             continue
 
-        approx = rotate_quadrangle(approx)
+        approx = rotate_quadrangle(candidate)
         break
 
     return approx
@@ -106,7 +106,7 @@ def ignore_contours(img_shape,
                    contours,
                    min_ratio_bounding=0.6,
                    min_area_percentage=0.35,
-                   max_area_percentage=0.99):
+                   max_area_percentage=1.0):
 
     ret = []
     mask_area = float(img_shape[0]*img_shape[1])
