@@ -117,7 +117,7 @@ if __name__ == "__main__":
                         help='how to sample the training data, over=oversample, under=undersample')
     opt = parser.parse_args()
 
-    # install_data()
+    install_data()
     model = build_square_classifier()
     train_generator = get_training_generator(opt.sample)
     valid_generator = get_validation_generator()

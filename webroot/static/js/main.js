@@ -263,6 +263,19 @@ $("#analyze-btn").on("click", function() {
                 return
             }
             var bestMove = res.bestMove
+            var score, mate
+            var fb = "Score is: "
+            if (res.score != "None") {
+                score = parseFloat(res.score)
+                fb += score
+            } else {
+                mate = parseInt(res.mate)
+                fb += "mate in " + mate
+            }
+            console.log(res)
+            
+            alert(fb)
+            
             if (bestMove.length == 5) {
                 alert("strange move!")
             }
