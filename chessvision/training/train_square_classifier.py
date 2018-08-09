@@ -52,7 +52,7 @@ def get_data(node, N):
     return X, y
 
 
-def sample_data(X, y, sample_type):
+def sample_data(X, y, sample):
     print('Sampling data...\nOriginal dataset shape: {}'.format(Counter(y)))
 
     if sample == "over":
@@ -80,9 +80,9 @@ def keras_generator(*, transform=False, sample=None):
         if sample is not None:
             X, y = sample_data(X, y, sample)
 
-        datagen.fit(X_sampled)
-        y_sampled = to_categorical(y_sampled)
-        return datagen.flow(X_sampled, y_sampled)
+        datagen.fit(X)
+        y = to_categorical(y)
+        return datagen.flow(X, y)
     return _keras_generator
 
 
@@ -113,8 +113,8 @@ if __name__ == "__main__":
         description='Train the ChessVision square extractor')
     parser.add_argument('--epochs', type=int, default=100,
                         help='number of epochs to train for')
-    parser.add_argument('--sample', type=int, default=0,
-                        help='How to sample the training data, 0=none, 1=oversample, 2=undersample')
+    parser.add_argument('--sample', type=str, default=None,
+                        help='how to sample the training data, over=oversample, under=undersample')
     opt = parser.parse_args()
 
     # install_data()
