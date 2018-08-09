@@ -7,14 +7,10 @@ app = Flask(__name__)
 def home():
   
   parser = argparse.ArgumentParser()
-  parser.add_argument("--local", type=bool, default=True)
+  parser.add_argument("--local", type=bool, default=False)
   args = parser.parse_args()
-  local = args.local
 
-  if local:
-    endpoint = "http://localhost:7777/"
-  else:
-    endpoint = "http://23.97.186.93:8080/"
+  endpoint = "http://localhost:7777/" if args.local else "http://23.97.186.93:8080/"
 
   return render_template('index.html', endpoint=endpoint)
 
