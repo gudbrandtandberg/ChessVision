@@ -14,7 +14,6 @@ body {
 
 #board-container {
     width: 100%;
-    /*border: solid 2px black;*/
     margin-bottom: 15px;
 }
 
@@ -23,26 +22,19 @@ body {
 }
 
 #preview-container {
-    /*width: 400px;
-    height: 400px;*/
-    /*padding: 10px;*/
+    margin-bottom: 10px;
+}
+
+#upload-pane {
     margin-bottom: 10px;
 }
 
 #image-preview {
-    /*rotate: 90; 
-    overflow: hidden; */
     max-width: 100%;
-
-    /*image-orientation: from-image;*/
 }
 
 #logo {
     height: 64px;
-}
-
-.row {
-    
 }
 
 .progress {
@@ -50,7 +42,7 @@ body {
     border: solid 1px black;
 }
 
-  .progress-bar {
+.progress-bar {
     background-color: white;
     color: lightcoral;
 }
