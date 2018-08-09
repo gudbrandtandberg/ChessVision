@@ -15,7 +15,7 @@ var sizeCanvas = function() {
 var init = function() {
 
     sizeCanvas()
-
+    
     // Initialize chessboard (chessboard.js)
     board = ChessBoard( 'board', {position: "8/8/8/8/8/8/8/8 w KQkq -",
                         dropOffBoard: "trash",
@@ -84,6 +84,7 @@ var imageInputChanged = function() {
         $("#preview-container").show()
         $("#flip-pane").show()
         $("#to-move").show()
+        $("#needle-wrapper").hide()
     } else {
         alert("no file chosen")
     }
@@ -163,12 +164,13 @@ var uploadSuccess = function(data) {
         board.resize()
         setFEN(res.FEN)
         document.getElementById("raw-id-input").value = res.id
+        $("#needle-wrapper").show()
         if (res.score != "None") {
             setScore(res.score)
         } else if (res.mate != "None") {
             setMate(res.mate)
         } else {
-            alert("Position is invalid, cannot analyze yet")
+            alert("Position is invalid, cannot provide analysis")
         }
         $("#flip-pane").hide()
         
