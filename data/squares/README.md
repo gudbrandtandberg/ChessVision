@@ -1,9 +1,10 @@
 # Chess Pieces Dataset
 
-This dataset contains 64x64 JPG images of 2D chesspieces. 
+This dataset contains 64x64 greyscale JPG images of 2D chesspieces. 
 The images are (unevenly) distributed among the 13 categories:
 
-R, N, B, Q, K, P, _r, _n, _b, _q, _k, _p, f
+R, N, B, Q, K, P, r, n, b, q, k, p, f
 
-containing white and black rooks, nights, bishops, etc. (underscores in order to keep the filesystem happy)
+containing white and black rooks, nights, bishops, etc.
 
+See [ChessVision](https://github.com/gudbrandtandberg/ChessVision) for use.
