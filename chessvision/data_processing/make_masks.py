@@ -30,7 +30,7 @@ def make_masks(input_dir, output_dir, image_dir, json_file):
             print("Making mask for {}".format(filename))
             cv2.imwrite(join(output_dir, filename), mask)
             
-            #os.rename(join(input_dir, filename), join(image_dir, filename))
+            os.rename(join(input_dir, filename), join(image_dir, filename))
 
 if __name__ == "__main__":
 
@@ -39,6 +39,6 @@ if __name__ == "__main__":
     json_file = join(cv_globals.data_root, "board_extraction/coordinates.json")
     input_dir = join(cv_globals.data_root, "new_raw_resized/")
     output_dir = join(cv_globals.data_root, "board_extraction/masks/")
-    image_dir = join(cv_globals.data_root, "data/board_extraction/images/")
+    image_dir = join(cv_globals.data_root, "board_extraction/images/")
 
     make_masks(input_dir, output_dir, image_dir, json_file)
