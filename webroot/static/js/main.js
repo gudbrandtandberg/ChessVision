@@ -14,6 +14,11 @@ var sizeCanvas = function() {
 // initialize variables
 var init = function() {
 
+    $("#testButton").click(function() {
+        var value = parseFloat($("#testScore").val())
+        setMate(value)
+    })
+
     sizeCanvas()
     
     // Initialize chessboard (chessboard.js)
@@ -324,28 +329,28 @@ var setFEN = function(fen) {
 
 var setMate = function(mate) {
     var tomove = document.querySelector('input[name="move"]:checked').value;
-
+    
     if ((mate > 0 && tomove == "w") || (mate < 0 && tomove == "b")) {
         $("#needle-content").css({width: "100%"})
     } else {
         $("#needle-content").css({width: "0%"})
     }
-    $("#needle-content").attr("aria-valuenow", displayScore)
     absMate = Math.abs(mate)
-    $("#needle-content").html("#" + absMate.toString())
+    displayScore = "#" + absMate.toString()
+    $("#needle-content").attr("aria-valuenow", displayScore)
+    $("#needle-content").html(displayScore)
 }
 
 var setScore = function(score) {
-    displayScore = score
+
+    displayScore = parseFloat(score)
     if (score > 4.0) {
         displayScore = 4.0
     } else if (score < -4.0) {
         displayScore = -4.0
     }
-
     displayScore += 4.0
-
-    width = (displayScore * 100 / 8.0).toString() + "%"
+    width = (displayScore * 100.0 / 8.0).toString() + "%"
 
     $("#needle-content").html(score.toString())
     $("#needle-content").attr("aria-valuenow", displayScore)

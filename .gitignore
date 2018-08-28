@@ -17,4 +17,5 @@ data/.DS_Store
 data/squares/training/*
 data/squares/validation/*
 computeroot/user_uploads/*
+data/board_extraction/*
 data/user_uploads/*

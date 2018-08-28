@@ -4,7 +4,7 @@ from os.path import join
 from util import listdir_nohidden
 import random
 
-indir = join(cv_globals.data_root, "new_squares/")
+indir = join(cv_globals.CVROOT, "computeroot/user_uploads/squares/")
 outdir = join(cv_globals.data_root, "squares/")
 
 train_test_split = 0.2

@@ -279,9 +279,9 @@ def load_models():
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--local", type=bool, default=True)
+    parser.add_argument("--local", type=bool, default=False)
     args = parser.parse_args()
     
-    port = 7777 if args.local else 8080
+    port = 8080 if args.local else 7777
     board_model, sq_model = load_models()
     app.run(host='0.0.0.0', port=port)

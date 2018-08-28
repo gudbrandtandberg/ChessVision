@@ -29,7 +29,6 @@ def make_masks(input_dir, output_dir, image_dir, json_file):
             cv2.fillConvexPoly(mask, points, 255)
             print("Making mask for {}".format(filename))
             cv2.imwrite(join(output_dir, filename), mask)
-            
             os.rename(join(input_dir, filename), join(image_dir, filename))
 
 if __name__ == "__main__":

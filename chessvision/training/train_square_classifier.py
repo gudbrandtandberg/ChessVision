@@ -99,10 +99,9 @@ def labels_only(node, paths):
 
 def get_class_weights():
     from quilt.data.gudbrandtandberg import chesspieces as pieces
-    print("Getting class weights")
+    print("Computing class weights")
     y = pieces["training"](asa=labels_only)
     class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
-    #print(class_weights)
     return class_weights
 
 
