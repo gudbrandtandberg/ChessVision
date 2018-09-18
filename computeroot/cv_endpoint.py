@@ -123,13 +123,13 @@ def predict_img():
             return e.json_string()
 
         FEN = expandFEN(FEN, tomove)
-
+        
         analysis = analyze(FEN, tomove)
         if "error" in analysis:
             score, mate = "None", "None"
         else:
             score, mate = analysis["score"], analysis["mate"]
-
+        
         ret = '{{ "FEN": "{}", "id": "{}", "error": "false", "score": "{}", "mate": "{}" }}'.format(FEN, raw_id, score, mate)
 
         return ret

@@ -9,20 +9,16 @@ from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import SMOTE
 from imblearn.combine import SMOTEENN, SMOTETomek
 from sklearn.utils import class_weight
+import time
+from collections import Counter
+import argparse
 
 from square_classifier import build_square_classifier
 import cv_globals
 
-import time
-from collections import Counter
-
-import argparse
-
-#labels = {"b": 0, "k": 1, "n": 2, "p": 3, "q": 4, "r": 5, "B": 6,
-#          "f": 7, "K": 8, "N": 9, "P": 10, "Q": 11, "R": 12}
-
 labels = {"b": 6, "k": 7, "n": 8, "p": 9, "q": 10, "r": 11, "B": 0,
           "f": 12, "K": 1, "N": 2, "P": 3, "Q": 4, "R": 5}
+
 train_datagen = ImageDataGenerator(
     rescale=1./255,
     rotation_range=5,

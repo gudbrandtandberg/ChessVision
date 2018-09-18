@@ -5,6 +5,7 @@
 // global variablaes
 var board, cropper, cropperOptions;
 var input, canvas, context, endpoint;
+var endpoint, cv_algo_url, analyze_url;
 
 var sizeCanvas = function() {
     container = document.getElementById("preview-container");
@@ -14,15 +15,15 @@ var sizeCanvas = function() {
 // initialize variables
 var init = function() {
 
-    $("#testButton").click(function() {
-        var value = parseFloat($("#testScore").val())
-        setMate(value)
-    })
-
     sizeCanvas()
+    $("#analyze-btn").on("click", requestAnalysis)
+    
+    endpoint = document.getElementById("endpoint").innerHTML
+    cv_algo_url = endpoint + "cv_algo/"
+    analyze_url = endpoint + "analyze/"
     
     // Initialize chessboard (chessboard.js)
-    board = ChessBoard( 'board', {position: "8/8/8/8/8/8/8/8 w KQkq -",
+    board = ChessBoard("board", {position: "start",
                         dropOffBoard: "trash",
                         orientation: "white",
                         sparePieces: false,
@@ -111,10 +112,6 @@ var extractBoard = function(event) {
     event.preventDefault()
     setSpinner()
 
-    endpoint = document.getElementById("endpoint").innerHTML
-    
-    var cv_algo_url = endpoint + "cv_algo/"
-
     // option: minWidth
     if (cropper == undefined) {
         alert("Please upload a photo first!");
@@ -150,7 +147,7 @@ var extractBoard = function(event) {
                 alert("Connection to ChessVision server failed. It is probably sleeping..")
                 return
             } else {
-                alert(textStatus)
+                alert(textStatus)   
             }
         }
     })
@@ -248,32 +245,28 @@ var toggleTurn = function() {
     $('input[type="radio"]').not(':checked').prop("checked", true);
 };
 
-$("#analyze-btn").on("click", function() {
+var requestAnalysis = function() {
     
-    var analyze_url = endpoint + "analyze/"
-    var formData = new FormData(this);
-
+    //var formData = new FormData();
     // get valid fen from board + input tags.
     var fen = board.fen()
     fen = expandFen(fen)
-    formData.append("FEN", fen)
-
+    var formData = {"FEN": fen};
+    
     $.ajax({
         url: analyze_url,
         method: "POST",
-        data: formData, 
-        cache: false,
-        contentType: false,
-        processData: false,
+        data: formData,
         success: function(data) {
             res = JSON.parse(data)
             if (res.success == "false") {
                 alert("Analysis failed..")
                 return
             }
+    
             var bestMove = res.bestMove
             var score, mate
-            
+    
             if (bestMove == "(none)") {
                 return
             }
@@ -293,6 +286,7 @@ $("#analyze-btn").on("click", function() {
             src = bestMove.substr(0, 2)
             dst = bestMove.substr(2, 2)
             move = src.concat("-", dst)
+            console.log("Best move is: " + move)
             board.move(move)
             toggleTurn()
 
@@ -302,8 +296,8 @@ $("#analyze-btn").on("click", function() {
             console.log(data)
             }
         })
-})
-    
+}
+
 var expandFen = function(fen) {
     var move = document.querySelector('input[name="move"]:checked').value;
     var castle = "-"

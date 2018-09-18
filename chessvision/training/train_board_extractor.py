@@ -11,6 +11,7 @@ from util import listdir_nohidden
 from u_net import load_extractor
 import time
 import argparse
+import quilt
 
 def load_image_and_mask_ids():
     filenames = [f[:-4] for f in listdir_nohidden(cv_globals.image_dir)]
