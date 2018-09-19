@@ -1,7 +1,6 @@
-opencv=3.4.1
-theano=1.0.1
-keras=2.1.4
-flask=0.12.1
-quilt=2.9.9
-imblearn=0.3.3
-pip
+opencv==3.4.1
+theano==1.0.1
+keras==2.1.4
+flask==0.12.1
+quilt==2.9.9
+imblearn==0.3.3
