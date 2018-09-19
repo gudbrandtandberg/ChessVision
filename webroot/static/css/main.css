@@ -25,6 +25,10 @@ body {
     margin-bottom: 10px;
 }
 
+/* .cropper-container:hover {
+    cursor: pointer !important;
+} */
+
 #upload-pane {
     margin-bottom: 10px;
 }

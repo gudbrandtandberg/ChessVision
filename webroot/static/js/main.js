@@ -17,7 +17,8 @@ var init = function() {
 
     sizeCanvas()
     $("#analyze-btn").on("click", requestAnalysis)
-    
+    // $("#preview-anchor").on("click", alert("click"))
+
     endpoint = document.getElementById("endpoint").innerHTML
     cv_algo_url = endpoint + "cv_algo/"
     analyze_url = endpoint + "analyze/"

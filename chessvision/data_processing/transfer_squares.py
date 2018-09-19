@@ -15,4 +15,4 @@ for dirname in listdir_nohidden(indir):
         src = join(indir, dirname, filename)
         dst = join(outdir, split, dirname, filename)
         print("Moving {} to {}".format(src.split("/")[-3:], dst.split("/")[-4:]))
-        os.rename(src, dst)    
+        os.rename(src, dst)

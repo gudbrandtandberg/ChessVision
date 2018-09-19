@@ -14,8 +14,7 @@ data/new_raw/
 .notes.txt
 data/raw/*
 data/.DS_Store
-data/squares/training/*
-data/squares/validation/*
+#data/squares
 computeroot/user_uploads/*
-data/board_extraction/*
+#data/board_extraction
 data/user_uploads/*

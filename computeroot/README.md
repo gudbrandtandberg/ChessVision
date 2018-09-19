@@ -72,6 +72,9 @@ Epoch 43/100
 
 ### Board Extractor
 
+Epoch 41/100
+16/16 [==============================] - 215s 13s/step - loss: 0.0642 - dice_coeff: 0.9748 - val_loss: 0.0696 - val_dice_coeff: 0.9737
+
 Epoch 29/100
 15/15 [==============================] - 195s 13s/step - loss: 0.0658 - dice_coeff: 0.9736 - val_loss: 0.0655 - val_dice_coeff: 0.9749
 Training the board extractor took 97 minutes and 7 seconds
