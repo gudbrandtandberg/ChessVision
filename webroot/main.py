@@ -4,7 +4,7 @@ import argparse
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--local", type=bool, default=False)
+parser.add_argument("--local", action="store_true")
 args = parser.parse_args()
 
 @app.route('/')
@@ -16,5 +16,6 @@ def home():
 
 if __name__ == '__main__':  
 
-
+  print(args.local)
+  
   app.run(host='127.0.0.1', port=5000)

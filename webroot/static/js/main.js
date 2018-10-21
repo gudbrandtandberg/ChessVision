@@ -22,6 +22,7 @@ var init = function() {
     endpoint = document.getElementById("endpoint").innerHTML
     cv_algo_url = endpoint + "cv_algo/"
     analyze_url = endpoint + "analyze/"
+    ping_url = endpoint + "ping/"
     
     // Initialize chessboard (chessboard.js)
     board = ChessBoard("board", {position: "start",
@@ -56,10 +57,24 @@ var init = function() {
     $("#image-preview").cropper(cropperOptions);
 
     // Hook up event handlers
-    $("#upload-form").submit(extractBoard)      
-    document.getElementById("image-input").onchange = imageInputChanged
+    $("#upload-form").submit(extractBoard);
+    document.getElementById("image-input").onchange = imageInputChanged;
+
+    // Check server status
+    pingServer();
+    setInterval(pingServer, 3000);
 
 } // end init
+
+var pingServer = function() {
+    $.ajax({url: ping_url, 
+            success: function(data) {
+                $("#server-status").html("CV-server is live!");
+            }, 
+            error: function(data) {
+                $("#server-status").html("CV-server is DOWN..");
+            }});
+}
 
 // Fires every time a new file is selected (or file-choosing is cancelled)
 var imageInputChanged = function() {

@@ -25,6 +25,13 @@ body {
     margin-bottom: 10px;
 }
 
+#server-status {
+    position: absolute;
+    margin: 2px 2px;
+    top: 0;
+    right: 0;
+}
+
 /* .cropper-container:hover {
     cursor: pointer !important;
 } */
