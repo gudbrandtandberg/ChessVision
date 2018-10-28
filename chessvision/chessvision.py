@@ -25,11 +25,11 @@ def classify_raw(img, filename, board_model, sq_model, flip=False):
         raise e
     ###############################   STEP 2    #########################################
     
-    FEN, predictions, squares = board_classifier.classify_board(board_img, sq_model, flip=flip)
+    FEN, predictions, chessboard, squares = board_classifier.classify_board(board_img, sq_model, flip=flip)
     #del sq_model
     print("Processing image {}.. DONE".format(filename))
     
-    return board_img, predictions, FEN, squares
+    return board_img, predictions, chessboard, FEN, squares
 
 
 if __name__ == "__main__":

@@ -23,6 +23,10 @@ https://docs.python.org/2/library/subprocess.html
 Train: 5644, valid: 1408
 Trainable params: 81,206
 
+Epoch 37/100 (more data)
+255/255 [==============================] - 8s 32ms/step - loss: 0.0442 - acc: 0.9891 - val_loss: 0.0464 - val_acc: 0.9904
+Training the square classifier took 5 minutes and 49 seconds
+
 Epoch 50/100 (class weights)
 213/213 [==============================] - 24s 112ms/step - loss: 0.0288 - acc: 0.9924 - val_loss: 0.0454 - val_acc: 0.9921
 
@@ -71,6 +75,10 @@ Epoch 43/100
 177/177 [==============================] - 5s 26ms/step - loss: 0.0714 - acc: 0.9898 - val_loss: 0.0743 - val_acc: 0.9837
 
 ### Board Extractor
+
+Epoch 64/100 (more data)
+18/18 [==============================] - 242s 13s/step - loss: 0.0771 - dice_coeff: 0.9699 - val_loss: 0.0773 - val_dice_coeff: 0.9702
+Training the board_extractor took 260 minutes and 36 seconds
 
 Epoch 41/100
 16/16 [==============================] - 215s 13s/step - loss: 0.0642 - dice_coeff: 0.9748 - val_loss: 0.0696 - val_dice_coeff: 0.9737

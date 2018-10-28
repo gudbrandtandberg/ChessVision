@@ -117,7 +117,7 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     
     model = build_square_classifier()
-    install_data()
+    #install_data()
     class_weights = get_class_weights() if opt.class_weights else None
     train_generator = get_training_generator(opt.sample)
     valid_generator = get_validation_generator()
