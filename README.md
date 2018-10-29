@@ -2,7 +2,7 @@
 
 This repository contains code and resources for extracting chess positions from images using computer vision.
 
-9/8/2018: WORK IN PROGRESS!
+29/10/2018: ~~Work in progress..~~
 
 ## Try it!
 
