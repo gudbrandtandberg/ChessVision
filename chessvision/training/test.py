@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 import os
 from u_net import load_extractor
 from square_classifier import load_classifier
-import chessvision as cv
+import chessvision
 import ast
 import time
 
@@ -46,7 +46,7 @@ def compute_test_accuracy(data_generator, extractor, classifier):
         with open(truth_file) as truth:
             true_labels = ast.literal_eval(truth.read())
 
-        _, _, chessboard, _, _ = cv.classify_raw(img, filename, extractor, classifier)
+        _, _, chessboard, _, _ = chessvision.classify_raw(img, filename, extractor, classifier)
         res = vectorize_chessboard(chessboard)
         test_accuracy += sim(res, true_labels)
         N += 1
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     print("Computing test accuracy...")
 
     extractor = load_extractor()
-    classifier = load_classifier(model_file=cv_globals.CVROOT + "/weights/clf_train/square_0032-0.08.hdf5")
+    classifier = load_classifier()
     
     test_data_gen = get_test_generator()
 
