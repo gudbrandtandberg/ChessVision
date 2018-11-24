@@ -2,12 +2,12 @@
 
 This repository contains code and resources for extracting chess positions from images using computer vision.
 
-9/8/2018: WORK IN PROGRESS!
+29/10/2018: ~~Work in progress..~~
 
 ## Try it!
 
-The app is up and running from time to time, if you're lucky you might be able to try it out at
-[chessvision.azurewebsites.net](http://chessvision.azurewebsites.net).
+The app is sometimes up and running, if you're lucky you can try it out at
+[chessvision.net](http://chessvision.azurewebsites.net).
 
 ## Example
 
@@ -17,7 +17,7 @@ From *any* square input image (png, jpg, etc.), such as this one:
 
 the ChessVision algorithm recognizes, extracts, and classifies any chessboard contained in the image.
 
-Two generations of the ChessVision algorithm give the following two outputs to the example above
+Two iterations of the ChessVision algorithm give the following two outputs to the example above
 
 <p float="left">
     <img src="./img/example1.png" width="320"/>
