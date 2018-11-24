@@ -19,8 +19,6 @@ for base in bases:
                 uid = str(uuid.uuid1())
                 dst = os.path.join(base, dirname, uid + ".JPG")
                 #print("saving long file: {}".format(dst))
-                os.rename(src, dst)
-            
-
+                #os.rename(src, dst)
 print(tally)
 

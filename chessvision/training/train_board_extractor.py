@@ -13,8 +13,6 @@ import time
 import argparse
 import quilt
 import random
-import matplotlib.pyplot as plt
-
 from quilt.data.gudbrandtandberg import chessboard_segmentation as chessboards
 
 def install_data():
@@ -44,27 +42,6 @@ def get_data(node, split=None):
 
     return images, masks
 
-    def _keras_generator(node, paths):
-
-        #datagen = train_datagen if transform else valid_datagen
-
-        images, masks = get_data(node, split=split)
-
-        ## split images and masks based on split
-        img_split, mask_split = split_data(images, masks)
-    
-        img_datagen  = train_img_datagen if split == "train" else valid_img_datagen
-        mask_datagen = train_mask_datagen if split == "train" else valid_mask_datagen
-        
-        img_datagen.fit(img_split)
-        mask_datagen.fit(mask_split)
-
-        gen = zip(img_datagen.flow(img_split), mask_datagen.flow(mask_split))
-
-        return gen
-
-    return _keras_generator
-
 def matrix():
     def _matrix(node, paths):
         images, masks = get_data(node)
@@ -91,7 +68,6 @@ def get_training_generator(images, masks, batch_size=16):
                                                    scale_limit=(-0.2, 0.2),
                                                    rotate_limit=(-5, 5))
                 #img, mask = randomHorizontalFlip(img, mask)
-                #mask = mask.reshape((256, 256))
                 x_batch.append(img)
                 y_batch.append(mask)
             x_batch = np.array(x_batch, np.float32) / 255
@@ -109,13 +85,11 @@ def get_validation_generator(images, masks, batch_size=16):
             for id in ids_valid_batch:
                 img = images[id]
                 mask = masks[id]
-                #mask = np.expand_dims(mask, axis=2)
                 x_batch.append(img)
                 y_batch.append(mask)
             x_batch = np.array(x_batch, np.float32) / 255
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
-
 
 if __name__ == "__main__":
 
@@ -144,20 +118,15 @@ if __name__ == "__main__":
     training_generator    = get_training_generator(img_train, mask_train, batch_size=args.batch_size)
     validation_generator  = get_validation_generator(img_valid, mask_valid, batch_size=args.batch_size)
 
-    # plt.figure()
-    # for img, mask in validation_generator:
-    #     plt.subplot(1, 2, 1)
-    #     plt.imshow(img[0,:,:,:])
-    #     plt.subplot(1, 2, 2)
-    #     mask = mask[0,:,:,:].reshape((256, 256))
-    #     plt.imshow(mask, cmap="gray")
-    #     plt.show()
-    #     plt.clf()
-
     print('Training on {} samples'.format(N_train))
     print('Validating on {} samples'.format(N_valid))
 
     model = load_extractor()  # or train from scratch?!
+
+    date = datetime.datetime.now().strftime("%m-%d-%Y-%H:%M")
+    os.mkdir(os.path.join(cv_globals.extractor_weights_dir, date), 0o644)
+    weight_filename = cv_globals.board_weights_train.format(date)
+
     print(model.summary())
 
     callbacks = [EarlyStopping(monitor='val_loss',
@@ -170,7 +139,7 @@ if __name__ == "__main__":
                                 verbose=1,
                                 epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
-                                filepath=cv_globals.board_weights_train,
+                                filepath=weight_filename,
                                 save_best_only=True,
                                 save_weights_only=True)]
 

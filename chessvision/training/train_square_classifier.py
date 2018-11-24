@@ -13,9 +13,10 @@ import time
 from collections import Counter
 import argparse
 import sys, os
-
+from quilt.data.gudbrandtandberg import chesspieces as pieces
 from square_classifier import build_square_classifier
 import cv_globals
+import datetime
 
 labels = {"b": 6, "k": 7, "n": 8, "p": 9, "q": 10, "r": 11, "B": 0,
           "f": 12, "K": 1, "N": 2, "P": 3, "Q": 4, "R": 5}
@@ -82,12 +83,9 @@ def keras_generator(*, transform=False, sample=None, batch_size=32):
     return _keras_generator
 
 def get_training_generator(sample=None, batch_size=32):
-    from quilt.data.gudbrandtandberg import chesspieces as pieces
     return pieces["training"](asa=keras_generator(transform=True, sample=sample, batch_size=batch_size))
 
-
 def get_validation_generator():
-    from quilt.data.gudbrandtandberg import chesspieces as pieces
     return pieces["validation"](asa=keras_generator(transform=False, sample=None))
 
 def labels_only(node, paths):
@@ -95,7 +93,6 @@ def labels_only(node, paths):
     return y
 
 def get_class_weights():
-    from quilt.data.gudbrandtandberg import chesspieces as pieces
     print("Computing class weights")
     y = pieces["training"](asa=labels_only)
     class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
@@ -119,6 +116,10 @@ if __name__ == "__main__":
                         help='whether to install the dataset using quilt')
     args = parser.parse_args()
     
+    date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
+    os.mkdir(os.path.join(cv_globals.classifier_weights_dir, date), 0o777)
+    weight_filename = cv_globals.square_weights_train.format(date)
+
     model = build_square_classifier()
 
     if args.install:
@@ -128,10 +129,9 @@ if __name__ == "__main__":
 
     train_generator = get_training_generator(args.sample)
     valid_generator = get_validation_generator()
-    
 
     print(model.summary())
-
+    print(weight_filename)
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
@@ -146,7 +146,7 @@ if __name__ == "__main__":
                                    verbose=1,
                                    epsilon=1e-4),
                  ModelCheckpoint(monitor='val_loss',
-                                 filepath=cv_globals.square_weights_train,
+                                 filepath=weight_filename,
                                  save_best_only=True,
                                  save_weights_only=True)]
 
@@ -159,10 +159,5 @@ if __name__ == "__main__":
                         callbacks=callbacks,
                         validation_data=valid_generator,
                         validation_steps=len(valid_generator))
-
     duration = time.time() - start
-    print("Training the square classifier took {} minutes and {} seconds".format(
-        int(np.floor(duration / 60)), int(np.round(duration % 60))))
-
-# move best model to weights/acc....
-# delete all other model files
+    print("Training the square classifier took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))

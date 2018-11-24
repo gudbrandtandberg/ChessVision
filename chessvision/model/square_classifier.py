@@ -16,7 +16,7 @@ def load_classifier(model_file=None):
     print("\rLoading square model.. DONE")
     return model
 
-def build_square_classifier():
+def build_square_classifier2():
     model = Sequential()
     model.add(Conv2D(16, (3, 3), input_shape=input_shape, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -33,7 +33,7 @@ def build_square_classifier():
     model.add(Dense(num_classes, activation='softmax'))
     return model
 
-def build_square_classifier2():
+def build_square_classifier():
     model = Sequential()
     model.add(Conv2D(30, (5, 5), input_shape=input_shape, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))

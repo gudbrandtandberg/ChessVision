@@ -276,7 +276,7 @@ def read_image_from_formdata():
 def load_models():
     #global sq_model, board_model
 
-    sq_model = load_classifier(model_file=cv_globals.CVROOT + "/weights/clf_train/square_0032-0.08.hdf5")
+    sq_model = load_classifier(model_file=cv_globals.square_weights)
     board_model = load_extractor()
 
     return board_model, sq_model
