@@ -12,51 +12,104 @@ from u_net import load_extractor
 import time
 import argparse
 import quilt
+import random
+import matplotlib.pyplot as plt
 
-def load_image_and_mask_ids():
-    filenames = [f[:-4] for f in listdir_nohidden(cv_globals.image_dir)]
-    return filenames
+from quilt.data.gudbrandtandberg import chessboard_segmentation as chessboards
 
-ids_train = data.load_image_and_mask_ids()
-ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.1, random_state=42)
+def install_data():
+    quilt.install("gudbrandtandberg/chessboard_segmentation")
 
-def train_generator(ids_train_split, batch_size=16):
+def get_data(node, split=None):
+    
+    images = []
+    masks  = []
+    
+    img_nodes   = node["images"]
+    mask_nodes  = node["masks"]
+
+    i = 0
+    for img, mask in zip(img_nodes, mask_nodes):
+       
+        _img  = cv2.imread(img())
+        _mask = cv2.imread(mask(), cv2.IMREAD_GRAYSCALE)
+
+        images.append(_img)
+        masks.append(_mask)
+
+        i += 1
+
+    images = np.array(images)
+    masks  = np.expand_dims(np.array(masks), 3)
+
+    return images, masks
+
+    def _keras_generator(node, paths):
+
+        #datagen = train_datagen if transform else valid_datagen
+
+        images, masks = get_data(node, split=split)
+
+        ## split images and masks based on split
+        img_split, mask_split = split_data(images, masks)
+    
+        img_datagen  = train_img_datagen if split == "train" else valid_img_datagen
+        mask_datagen = train_mask_datagen if split == "train" else valid_mask_datagen
+        
+        img_datagen.fit(img_split)
+        mask_datagen.fit(mask_split)
+
+        gen = zip(img_datagen.flow(img_split), mask_datagen.flow(mask_split))
+
+        return gen
+
+    return _keras_generator
+
+def matrix():
+    def _matrix(node, paths):
+        images, masks = get_data(node)
+        return images, masks
+    return _matrix
+
+def get_training_generator(images, masks, batch_size=16):
+    N = len(images)
     while True:
-        for start in range(0, len(ids_train_split), batch_size):
+        for start in range(0, N, batch_size):
             x_batch = []
             y_batch = []
-            end = min(start + batch_size, len(ids_train_split))
-            ids_train_batch = ids_train_split[start:end]
+            end = min(start + batch_size, N)
+            ids_train_batch = list(range(start,end))
             for id in ids_train_batch:
-                img = cv2.imread('{}{}.JPG'.format(cv_globals.image_dir, id))
-                mask = cv2.imread('{}{}.JPG'.format(cv_globals.mask_dir, id), cv2.IMREAD_GRAYSCALE)
+                img = images[id]
+                mask = masks[id]
                 img = randomHueSaturationValue(img,
                                                hue_shift_limit=(-50, 50),
-                                               sat_shift_limit=(-5, 5),
-                                               val_shift_limit=(-15, 15))
+                                               sat_shift_limit=(-50, 50),
+                                               val_shift_limit=(-50, 50))
                 img, mask = randomShiftScaleRotate(img, mask,
-                                                   shift_limit=(-0.0625, 0.0625),
-                                                   scale_limit=(-0.1, 0.1),
-                                                   rotate_limit=(-5, 50))
+                                                   shift_limit=(-0.1, 0.1),
+                                                   scale_limit=(-0.2, 0.2),
+                                                   rotate_limit=(-5, 5))
                 #img, mask = randomHorizontalFlip(img, mask)
-                mask = np.expand_dims(mask, axis=2)
+                #mask = mask.reshape((256, 256))
                 x_batch.append(img)
                 y_batch.append(mask)
             x_batch = np.array(x_batch, np.float32) / 255
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
 
-def valid_generator(ids_valid_split, batch_size=16):
+def get_validation_generator(images, masks, batch_size=16):
+    N = len(images)
     while True:
-        for start in range(0, len(ids_valid_split), batch_size):
+        for start in range(0, N, batch_size):
             x_batch = []
             y_batch = []
-            end = min(start + batch_size, len(ids_valid_split))
-            ids_valid_batch = ids_valid_split[start:end]
+            end = min(start + batch_size, N)
+            ids_valid_batch = list(range(start, end))
             for id in ids_valid_batch:
-                img = cv2.imread('{}{}.JPG'.format(cv_globals.image_dir, id))
-                mask = cv2.imread('{}{}.JPG'.format(cv_globals.mask_dir, id), cv2.IMREAD_GRAYSCALE)
-                mask = np.expand_dims(mask, axis=2)
+                img = images[id]
+                mask = masks[id]
+                #mask = np.expand_dims(mask, axis=2)
                 x_batch.append(img)
                 y_batch.append(mask)
             x_batch = np.array(x_batch, np.float32) / 255
@@ -75,13 +128,34 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=16,
                         help='Batch size')
 
-    opt = parser.parse_args()
+    parser.add_argument('--install', type=bool, default=False,
+                        help='whether to install the dataset using quilt')
+    args = parser.parse_args()
 
-    ids_train = data.load_image_and_mask_ids()
-    ids_train_split, ids_valid_split = train_test_split(ids_train, test_size=0.2, random_state=42)
+    if args.install:
+        install_data()
 
-    print('Training on {} samples'.format(len(ids_train_split)))
-    print('Validating on {} samples'.format(len(ids_valid_split)))
+    images, masks = chessboards(asa=matrix())
+    img_train, img_valid, mask_train, mask_valid = train_test_split(images, masks)
+
+    N_train = len(img_train)
+    N_valid = len(img_valid)
+
+    training_generator    = get_training_generator(img_train, mask_train, batch_size=args.batch_size)
+    validation_generator  = get_validation_generator(img_valid, mask_valid, batch_size=args.batch_size)
+
+    # plt.figure()
+    # for img, mask in validation_generator:
+    #     plt.subplot(1, 2, 1)
+    #     plt.imshow(img[0,:,:,:])
+    #     plt.subplot(1, 2, 2)
+    #     mask = mask[0,:,:,:].reshape((256, 256))
+    #     plt.imshow(mask, cmap="gray")
+    #     plt.show()
+    #     plt.clf()
+
+    print('Training on {} samples'.format(N_train))
+    print('Validating on {} samples'.format(N_valid))
 
     model = load_extractor()  # or train from scratch?!
     print(model.summary())
@@ -101,13 +175,13 @@ if __name__ == "__main__":
                                 save_weights_only=True)]
 
     start = time.time()
-    model.fit_generator(generator=train_generator(ids_train_split),
-                        steps_per_epoch=np.ceil(float(len(ids_train_split)) / float(opt.batch_size)),
-                        epochs=opt.epochs,
+    model.fit_generator(generator=training_generator,
+                        steps_per_epoch=np.ceil(float(N_train / float(args.batch_size))),
+                        epochs=args.epochs,
                         verbose=1,
                         callbacks=callbacks,
-                        validation_data=valid_generator(ids_valid_split),
-                        validation_steps=np.ceil(float(len(ids_valid_split)) / float(opt.batch_size)))
+                        validation_data=validation_generator,
+                        validation_steps=np.ceil(float(N_valid) / float(args.batch_size)))
 
     duration = time.time() - start
     print("Training the board_extractor took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))

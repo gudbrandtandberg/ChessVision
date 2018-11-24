@@ -56,6 +56,7 @@ def randomShiftScaleRotate(image, mask,
                                    borderValue=(
                                        0, 0,
                                        0,))
+        mask = mask.reshape((256, 256, 1))
 
     return image, mask
 

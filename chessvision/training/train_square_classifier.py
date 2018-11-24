@@ -12,6 +12,7 @@ from sklearn.utils import class_weight
 import time
 from collections import Counter
 import argparse
+import sys, os
 
 from square_classifier import build_square_classifier
 import cv_globals
@@ -65,7 +66,7 @@ def sample_data(X, y, sample):
     return X_sampled, y_sampled
 
 
-def keras_generator(*, transform=False, sample=None):
+def keras_generator(*, transform=False, sample=None, batch_size=32):
     def _keras_generator(node, paths):
 
         datagen = train_datagen if transform else valid_datagen
@@ -77,12 +78,12 @@ def keras_generator(*, transform=False, sample=None):
 
         datagen.fit(X)
         y = to_categorical(y)
-        return datagen.flow(X, y)
+        return datagen.flow(X, y, batch_size=batch_size)
     return _keras_generator
 
-def get_training_generator(sample=None):
+def get_training_generator(sample=None, batch_size=32):
     from quilt.data.gudbrandtandberg import chesspieces as pieces
-    return pieces["training"](asa=keras_generator(transform=True, sample=sample))
+    return pieces["training"](asa=keras_generator(transform=True, sample=sample, batch_size=batch_size))
 
 
 def get_validation_generator():
@@ -114,13 +115,20 @@ if __name__ == "__main__":
                         help='how to sample the training data, over=oversample, under=undersample')
     parser.add_argument('--class_weights', type=bool, default=False,
                         help='whether to use the class_weights variable for training (no sampling!)')
-    opt = parser.parse_args()
+    parser.add_argument('--install', type=bool, default=False,
+                        help='whether to install the dataset using quilt')
+    args = parser.parse_args()
     
     model = build_square_classifier()
-    #install_data()
-    class_weights = get_class_weights() if opt.class_weights else None
-    train_generator = get_training_generator(opt.sample)
+
+    if args.install:
+        install_data()
+    
+    class_weights = get_class_weights() if args.class_weights else None
+
+    train_generator = get_training_generator(args.sample)
     valid_generator = get_validation_generator()
+    
 
     print(model.summary())
 
@@ -145,7 +153,7 @@ if __name__ == "__main__":
     start = time.time()
     model.fit_generator(generator=train_generator,
                         steps_per_epoch=len(train_generator),
-                        epochs=opt.epochs,
+                        epochs=args.epochs,
                         class_weight=class_weights,
                         verbose=1,
                         callbacks=callbacks,
@@ -155,3 +163,6 @@ if __name__ == "__main__":
     duration = time.time() - start
     print("Training the square classifier took {} minutes and {} seconds".format(
         int(np.floor(duration / 60)), int(np.round(duration % 60))))
+
+# move best model to weights/acc....
+# delete all other model files
