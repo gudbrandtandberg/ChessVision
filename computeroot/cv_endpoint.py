@@ -112,7 +112,7 @@ def predict_img():
             tomove = request.form["tomove"]
 
         try:
-            board_img, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
+            board_img, _, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
@@ -165,7 +165,7 @@ def receive_feedback():
 
     squares, names = extract_squares(board, flip=flip)
 
-    # Save each square using the 'position' dictionary from chessboar.js
+    # Save each square using the 'position' dictionary from chessboard.js
     for sq, name in zip(squares, names):
         
         if name not in position:

@@ -8,7 +8,7 @@ from util import listdir_nohidden, parse_arguments, BoardExtractionError
 import cv_globals
 
 def classify_board(board_img, model, flip=False):
-    print("Classifying board..")
+    #print("Classifying board..")
     
     squares, names = extract_squares(board_img, flip=flip)
     
@@ -17,7 +17,7 @@ def classify_board(board_img, model, flip=False):
     chessboard = classification_logic(predictions, names)
         
     FEN = chessboard.board_fen(promoted=False)
-    print("\rClassifying board.. DONE")
+    #print("\rClassifying board.. DONE")
     
     return FEN, predictions, chessboard, squares
 

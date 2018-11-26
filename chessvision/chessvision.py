@@ -7,7 +7,7 @@ from util import BoardExtractionError
 import board_extractor
 import board_classifier
 
-def classify_raw(img, filename, board_model, sq_model, flip=False):
+def classify_raw(img, filename, board_model, sq_model, flip=False, threshold=80):
 
     #filename = path.split("/")[-1]
     print("Processing image {}".format(filename))
@@ -20,16 +20,16 @@ def classify_raw(img, filename, board_model, sq_model, flip=False):
     
     ## Extract board using CNN model and contour approximation
     try: 
-        board_img = board_extractor.extract_board(comp_image, img, board_model)
+        board_img, mask = board_extractor.extract_board(comp_image, img, board_model, threshold=threshold)
     except BoardExtractionError as e:
         raise e
     ###############################   STEP 2    #########################################
     
     FEN, predictions, chessboard, squares = board_classifier.classify_board(board_img, sq_model, flip=flip)
     #del sq_model
-    print("Processing image {}.. DONE".format(filename))
+    #print("Processing image {}.. DONE".format(filename))
     
-    return board_img, predictions, chessboard, FEN, squares
+    return board_img, mask, predictions, chessboard, FEN, squares
 
 
 if __name__ == "__main__":

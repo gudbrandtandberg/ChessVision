@@ -3,6 +3,10 @@ import numpy as np
 import random
 import os
 import argparse
+import logging
+
+logger = logging.getLogger("chessvision.log")
+
 
 class BoardExtractionError(Exception):
     def json_string(self):

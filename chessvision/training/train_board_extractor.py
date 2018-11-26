@@ -13,6 +13,9 @@ import time
 import argparse
 import quilt
 import random
+import datetime
+import os
+
 from quilt.data.gudbrandtandberg import chessboard_segmentation as chessboards
 
 def install_data():
@@ -123,8 +126,8 @@ if __name__ == "__main__":
 
     model = load_extractor()  # or train from scratch?!
 
-    date = datetime.datetime.now().strftime("%m-%d-%Y-%H:%M")
-    os.mkdir(os.path.join(cv_globals.extractor_weights_dir, date), 0o644)
+    date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
+    os.mkdir(os.path.join(cv_globals.extractor_weights_dir, date), 0o777)
     weight_filename = cv_globals.board_weights_train.format(date)
 
     print(model.summary())

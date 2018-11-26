@@ -7,12 +7,12 @@ import cv_globals
 input_shape = (64, 64, 1)
 num_classes = 13
 
-def load_classifier(model_file=None):
+def load_classifier(weights=None):
     print("Loading square model..")
     model = build_square_classifier()
-    if not model_file:
-        model_file = cv_globals.square_weights
-    model.load_weights(model_file)
+    if not weights:
+        weights = cv_globals.square_weights
+    model.load_weights(weights)
     print("\rLoading square model.. DONE")
     return model
 

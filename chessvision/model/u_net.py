@@ -6,10 +6,12 @@ from losses import bce_dice_loss, dice_loss, weighted_bce_dice_loss, weighted_di
 
 import cv_globals
 
-def load_extractor():
+def load_extractor(weights=None):
     print("Loading board extraction model..")
     model = get_unet_256()
-    model.load_weights(cv_globals.board_weights)
+    if not weights:
+        weights = cv_globals.board_weights
+    model.load_weights(weights)
     print("\rLoading board extraction model.. DONE")
     return model
 

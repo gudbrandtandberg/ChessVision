@@ -14,14 +14,13 @@ import cv2
 import cv_globals
 
 
-def extract_board(image, orig, model):
-    
+def extract_board(image, orig, model, threshold=80):
     #predict chessboard-mask:
-    print("Extracting board..")
+    #print("Extracting board..")
     image_batch = np.array([image], np.float32) / 255
     predicted_mask_batch = model.predict(image_batch)
     predicted_mask = predicted_mask_batch[0].reshape(cv_globals.INPUT_SIZE)
-    mask = fix_mask(predicted_mask)
+    mask = fix_mask(predicted_mask, threshold=threshold)
 
     #approximate chessboard-mask with a quadrangle
     approx = find_quadrangle(mask)
@@ -37,8 +36,8 @@ def extract_board(image, orig, model):
 
     board = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
     board = cv2.flip(board, 1) # TODO: permute approximation instead..
-    print("\rExtracting board.. DONE")
-    return board
+    #print("\rExtracting board.. DONE")
+    return board, predicted_mask
 
 def fix_mask(mask, threshold=80):
     mask *= 255
@@ -64,9 +63,9 @@ def find_quadrangle(mask):
     _, contours, _ = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
     
     if len(contours) > 1:
-        print("Found {} contour(s)".format(len(contours)))
+        #print("Found {} contour(s)".format(len(contours)))
         contours = ignore_contours(mask.shape, contours)
-        print("Filtered to {} contour(s)".format(len(contours)))
+        #print("Filtered to {} contour(s)".format(len(contours)))
 
     if len(contours) == 0:
         return None
