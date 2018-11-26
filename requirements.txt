@@ -4,3 +4,4 @@ keras==2.1.4
 flask==0.12.1
 quilt==2.9.9
 imblearn==0.3.3
+papermill==0.16.1
