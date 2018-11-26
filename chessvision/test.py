@@ -14,6 +14,15 @@ import time
 
 test_data_dir = cv_globals.data_root + "test/"
 
+def entropy(dist):
+    return sum([-p * np.log(p) for p in dist if p != 0])
+
+def avg_entropy(predictions):
+    predictions = np.array(predictions)
+    pred_shape = predictions.shape
+    if len(pred_shape) == 3: #(N, 64, 13)
+        predictions = np.reshape(predictions, (pred_shape[0]*pred_shape[1], pred_shape[2]))
+    return sum([entropy(p) for p in predictions]) / len(predictions)
 
 def sim(a, b):
     return sum([aa == bb for aa, bb in zip(a, b)]) / len(a)
@@ -41,7 +50,7 @@ def get_test_generator():
         yield img_filenames[i], test_imgs[i]
 
 
-def run_tests(data_generator, extractor, classifier, threshold):
+def run_tests(data_generator, extractor, classifier, threshold=80):
     N = 0
     test_accuracy = 0
     times = []
@@ -49,7 +58,9 @@ def run_tests(data_generator, extractor, classifier, threshold):
                "board_imgs": [],
                "predictions": [],
                "chessboards": [],
-               "squares": []
+               "squares": [],
+               "filenames": [],
+               "masks": []
                }
 
     for filename, img in data_generator:
@@ -58,12 +69,14 @@ def run_tests(data_generator, extractor, classifier, threshold):
         with open(truth_file) as truth:
             true_labels = ast.literal_eval(truth.read())
     
-        board_img, _,predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+        board_img, mask, predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
         results["board_imgs"].append(board_img)
         results["raw_imgs"].append(img)
         results["predictions"].append(predictions)
         results["chessboards"].append(chessboard)
         results["squares"].append(squares)
+        results["filenames"].append(filename)
+        results["masks"].append(mask)
 
         res = vectorize_chessboard(chessboard)
         test_accuracy += sim(res, true_labels)
@@ -72,11 +85,11 @@ def run_tests(data_generator, extractor, classifier, threshold):
         times.append(stop-start)
 
     test_accuracy /= N
-
-    print("Classified {} raw images".format(N))
+    
+    results["avg_entropy"] = avg_entropy(results["predictions"])
     results["avg_time"] = sum(times[:-1]) / (N-1)
     results["acc"] = test_accuracy
-    #print("Average time per raw classification: {:.2f}s".format(avg_time))
+    print("Classified {} raw images".format(N))
 
     return results
 
@@ -88,6 +101,6 @@ if __name__ == "__main__":
     classifier = load_classifier()
 
     test_data_gen = get_test_generator()
-    acc = compute_test_accuracy(test_data_gen, extractor, classifier)
+    results = run_tests(test_data_gen, extractor, classifier)
 
-    print("Test accuracy: {}".format(acc))
+    print("Test accuracy: {}".format(results["acc"]))
