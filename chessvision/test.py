@@ -30,7 +30,7 @@ def sim(a, b):
     return sum([aa == bb for aa, bb in zip(a, b)]) / len(a)
 
 def confusion_matrix(predicted, truth, N=13):
-    
+
     if type(predicted[0]) == str:
         for i in range(len(predicted)):
             predicted[i] = labels.index(predicted[i])
@@ -82,11 +82,18 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 
     for filename, img in data_generator:
         start = time.time()
+        board_img, mask, predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+        stop = time.time()
+
         truth_file = test_data_dir + "ground_truth/" + filename[:-4] + ".txt"
         with open(truth_file) as truth:
             true_labels = ast.literal_eval(truth.read())
-    
-        board_img, mask, predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+
+        times.append(stop-start)
+        res = vectorize_chessboard(chessboard)
+        test_accuracy += sim(res, true_labels)
+        confusion_mtx += confusion_matrix(res, true_labels)
+
         results["board_imgs"].append(board_img)
         results["raw_imgs"].append(img)
         results["predictions"].append(predictions)
@@ -94,13 +101,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
         results["squares"].append(squares)
         results["filenames"].append(filename)
         results["masks"].append(mask)
-
         N += 1
-        stop = time.time()
-        times.append(stop-start)
-        res = vectorize_chessboard(chessboard)
-        test_accuracy += sim(res, true_labels)
-        confusion_mtx += confusion_matrix(res, true_labels)
 
     test_accuracy /= N
     
@@ -116,18 +117,6 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 if __name__ == "__main__":
     print("Computing test accuracy...")
 
-    # predicted = [0, 1, 2, 3, 0, 1]
-    # truth     = [0, 1, 2, 2, 0, 0]
-
-    # mtx = confusion_matrix(predicted, truth, N=4)
-
-    # predicted = ["r", "p", "q", "n", "n", "f"]
-    # truth     = ["R", "p", "q", "N", "N", "p"]
-
-    # mtx = confusion_matrix(predicted, truth)
-
-    # print(mtx)
-
     extractor = load_extractor()
     classifier = load_classifier()
 
@@ -135,5 +124,3 @@ if __name__ == "__main__":
     results = run_tests(test_data_gen, extractor, classifier)
 
     print("Test accuracy: {}".format(results["acc"]))
-    print("Confusion matrix:")
-    print(results["confusion_matrix"])
