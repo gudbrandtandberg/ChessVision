@@ -7,7 +7,6 @@ import os
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Output a html report of chessvision performance')
-
     parser.add_argument("--extractor_weights", type=str, default=cv_globals.board_weights)
     parser.add_argument("--classifier_weights", type=str, default=cv_globals.square_weights)
     parser.add_argument("--threshold", type=int, default=80)
@@ -16,7 +15,7 @@ if __name__ == "__main__":
 
     infile  = cv_globals.CVROOT + "/chessvision/notebooks/Performance Report.ipynb"
     outfile = cv_globals.CVROOT + "/chessvision/notebooks/{}.ipynb".format(args.report_name)
-
+    
     pm.execute_notebook(
         infile,
         outfile,
@@ -25,5 +24,5 @@ if __name__ == "__main__":
                         threshold=args.threshold)
     )
 
-    subprocess.call(["jupyter-nbconvert", "{}".format(outfile)])
+    subprocess.call(["jupyter-nbconvert", outfile])
     os.remove(outfile)
