@@ -112,7 +112,7 @@ def predict_img():
             tomove = request.form["tomove"]
 
         try:
-            board_img, _, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
+            board_img, _, _, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
@@ -254,7 +254,7 @@ def engine_analyze():
 @app.route('/ping/', methods=['GET'])
 @crossdomain(origin='*')
 def ping():
-    return '\{{ "success": "true"}}'
+    return '{{ "success": "true"}}'
 
 
 def read_image_from_formdata():
@@ -276,7 +276,7 @@ def read_image_from_formdata():
 def load_models():
     #global sq_model, board_model
 
-    sq_model = load_classifier(model_file=cv_globals.square_weights)
+    sq_model = load_classifier(weights=cv_globals.square_weights)
     board_model = load_extractor()
 
     return board_model, sq_model
