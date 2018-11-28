@@ -93,10 +93,16 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
                }
 
     confusion_mtx = np.zeros((13, 13), dtype=int)
+    errors = 0
 
     for filename, img in data_generator:
         start = time.time()
-        board_img, mask, predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+        try: 
+            board_img, mask, predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+        except:
+            errors += 1
+            continue
+
         stop = time.time()
 
         truth_file = test_data_dir + "ground_truth/" + filename[:-4] + ".txt"
@@ -123,6 +129,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
     results["avg_entropy"] = avg_entropy(results["predictions"])
     results["avg_time"] = sum(times[:-1]) / (N-1)
     results["acc"] = test_accuracy
+    results["errors"] = errors
     print("Classified {} raw images".format(N))
 
     return results
