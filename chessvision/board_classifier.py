@@ -39,10 +39,10 @@ def classification_logic(probs, names):
 
 def check_multiple_kings(pred_labels, probs):
     if pred_labels.count("k") > 1:
-        print("Predicted more than two black kings!")
+        #print("Predicted more than two black kings!")
         # all but the most likely black king gets switched to the second most likely piece
     if pred_labels.count("K") > 1:
-        print("Predicted more than two white kings!")
+        #print("Predicted more than two white kings!")
         # all but the most likely white king gets switched to the second most likely piece
     return pred_labels
 
@@ -58,10 +58,10 @@ def check_pawns_not_on_first_rank(pred_labels, probs, names):
     for label, name in zip(pred_labels, names):
         if label == "P":
             if name in first_rank:
-                print("White pawn on 1st rank!")
+                #print("White pawn on 1st rank!")
         if label == "p":
             if name in last_rank:
-                print("Black pawn on 8th rank!")
+                #print("Black pawn on 8th rank!")
 
     return pred_labels
 
