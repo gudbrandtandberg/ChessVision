@@ -1,20 +1,35 @@
-import chessvision as cv
+import chessvision
 import cv_globals
-from util import listdir_nohidden
-import cv2
-from util import listdir_nohidden
-import numpy as np
-from keras.preprocessing.image import ImageDataGenerator
-import os
 from u_net import load_extractor
 from square_classifier import load_classifier
-import chessvision
+from util import listdir_nohidden
+import cv2
+import numpy as np
+import os
 import ast
 import time
-
-labels = ["R", "N", "B", "K", "Q", "P", "r", "n", "b", "p", "k", "q", "f"]
+import itertools
+import matplotlib.pyplot as plt 
 
 test_data_dir = cv_globals.data_root + "test/"
+labels = ["f", "P", "p", "R", "r", "N", "n", "B", "b", "Q", "q", "K", "k"]
+
+def plot_confusion_mtx(mtx, labels):
+    plt.imshow(mtx, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title("Confusion Matrix")
+    tick_marks = np.arange(len(labels))
+    plt.xticks(tick_marks, labels)
+    plt.yticks(tick_marks, labels)
+
+    thresh = mtx.max() / 2.
+    for i, j in itertools.product(range(mtx.shape[0]), range(mtx.shape[1])):
+        plt.text(j, i, format(mtx[i, j], "d"),
+                 horizontalalignment="center",
+                 color="white" if mtx[i, j] > thresh else "black")
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
 
 def entropy(dist):
     return sum([-p * np.log(p) for p in dist if p != 0])
@@ -30,7 +45,6 @@ def sim(a, b):
     return sum([aa == bb for aa, bb in zip(a, b)]) / len(a)
 
 def confusion_matrix(predicted, truth, N=13):
-
     if type(predicted[0]) == str:
         for i in range(len(predicted)):
             predicted[i] = labels.index(predicted[i])
@@ -39,7 +53,7 @@ def confusion_matrix(predicted, truth, N=13):
     mtx = np.zeros((N, N), dtype=int)
 
     for p, t in zip(predicted, truth):
-        mtx[p, t] += 1
+        mtx[t, p] += 1
 
     return mtx
 
