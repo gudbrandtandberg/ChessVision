@@ -9,6 +9,7 @@ env
 
 weights/*
 logs/*
+*.log
 
 data/new_raw/
 .notes.txt
