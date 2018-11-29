@@ -40,7 +40,7 @@ The goal of ChessVision is to be able to correctly classify as many as possible 
 
 We impose as few constraints on the inputs as possible, in principle any photograph of a 2D representation of a chess board should be identifyable by the algorithm. In particular, different formats such as books, screenshots, photos of screens, etc. should be allowable, under any lighting and small scale and rotational deviations. However, the input image must be square, at least 512 pixels wide, and contain exactly one chessboard filling at least 35% of the image area.
 
-The current performance of the best models can be evaluated in this [notebook](./chessvision/notebooks/report.html).
+The current performance of the best models can be evaluated in this [notebook](./chessvision/notebooks/report.ipynb).
 
 ## Algorithm details
 
