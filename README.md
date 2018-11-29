@@ -12,7 +12,7 @@ The app is sometimes up and running, if you're lucky you can try it out at
 From *any* square input image (png, jpg, etc.), the ChessVision algorithm extracts and classifies any chessboard contained in the image.
 
 <p float="left">
-    <img src="./img/example_raw.png" width="320"/>
+    <img src="./img/example_raw.JPG" width="320"/>
     <img src="./img/example2.png" width="320"/>
 </p>
 
@@ -40,7 +40,7 @@ The goal of ChessVision is to be able to correctly classify as many as possible 
 
 We impose as few constraints on the inputs as possible, in principle any photograph of a 2D representation of a chess board should be identifyable by the algorithm. In particular, different formats such as books, screenshots, photos of screens, etc. should be allowable, under any lighting and small scale and rotational deviations. However, the input image must be square, at least 512 pixels wide, and contain exactly one chessboard filling at least 35% of the image area.
 
-The current performance of the best models can be evaluated in this [notebook](./chessvision/notebooks/report.ipynb).
+The current performance of the best models can be evaluated in this [notebook](./chessvision/notebooks/Performance&#32;Report.ipynb).
 
 ## Algorithm details
 
