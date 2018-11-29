@@ -10,7 +10,6 @@ import numpy as np
 import base64
 import argparse
 
-
 from chessvision import classify_raw
 import cv_globals
 import cv2
@@ -19,10 +18,16 @@ from stockfishpy.stockfishpy import *
 from extract_squares import extract_squares
 from u_net import load_extractor
 from square_classifier import load_classifier
-
 from util import BoardExtractionError
+from flask.logging import default_handler
 
 app = Flask(__name__)
+#app.logger.removeHandler(default_handler)
+#from logging.config import dictConfig
+#import logging
+#import logging.config
+
+#logging.config.fileConfig("cv.log")
 
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
@@ -90,7 +95,7 @@ def allowed_file(filename):
 @app.route('/cv_algo/', methods=['POST'])
 @crossdomain(origin='*')
 def predict_img():
-    print("CV-Algo invoked")
+    app.logger.info("CV-Algo invoked")
     
     #Host, User-Agent, Content-Length, Origin
     image = read_image_from_formdata()
@@ -112,7 +117,7 @@ def predict_img():
             tomove = request.form["tomove"]
 
         try:
-            board_img, _, _, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
+            board_img, _, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
