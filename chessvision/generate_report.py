@@ -5,6 +5,9 @@ import subprocess
 import os
 
 if __name__ == "__main__":
+    # Example usage:
+    # python generate_report.py --extractor_weights=/Users/gudbrand/Programming/Chess/ChessVision/weights/new_extractor.hdf5 --report_name=new_report
+
     parser = argparse.ArgumentParser(
         description='Output a html report of chessvision performance')
     parser.add_argument("--extractor_weights", type=str, default=cv_globals.board_weights)
