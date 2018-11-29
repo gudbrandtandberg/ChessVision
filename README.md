@@ -5,14 +5,14 @@ This repository contains code and resources for extracting chess positions from 
 ## Try it
 
 The app is sometimes up and running, if you're lucky you can try it out at
-[chessvision.net](http://chessvision.azurewebsites.net).
+[chessvision.net](http://chessvision.net).
 
 ## Example
 
 From *any* square input image (png, jpg, etc.), the ChessVision algorithm extracts and classifies any chessboard contained in the image.
 
 <p float="left">
-    <img src="./img/example_raw_.png" width="320"/>
+    <img src="./img/example_raw.png" width="320"/>
     <img src="./img/example2.png" width="320"/>
 </p>
 
@@ -56,7 +56,7 @@ Board extraction is done in two steps, first the image is resized to 256x256 and
 
 #### Training
 
-The `u_net` model is quite large (approx 35M parameters) and takes quite a while to train (approx 6 hours from scratch on a high performance GPU). In order to train this network from a relatively small training set, image augmentation is used. This [notebook](./chessvision/notebooks/View Board Extraction Training Data.ipynb) shows what a batch of training data looks like and is useful for evaluating the current augmentation scheme.  
+The `u_net` model is quite large (approx 35M parameters) and takes quite a while to train (approx 6 hours from scratch on a high performance GPU). In order to train this network from a relatively small training set, image augmentation is used. This [notebook](./chessvision/notebooks/View&#32;Board&#32;Extraction&#32;Training&#32;Data.ipynb) shows what a batch of training data looks like and is useful for evaluating the current augmentation scheme.  
 
 ### Board classification
 
