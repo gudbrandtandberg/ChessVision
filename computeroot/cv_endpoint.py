@@ -19,7 +19,6 @@ from extract_squares import extract_squares
 from u_net import load_extractor
 from square_classifier import load_classifier
 from util import BoardExtractionError
-from flask.logging import default_handler
 import logging 
 
 app = Flask(__name__)
