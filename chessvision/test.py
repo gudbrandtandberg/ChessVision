@@ -44,6 +44,42 @@ def avg_entropy(predictions):
 def sim(a, b):
     return sum([aa == bb for aa, bb in zip(a, b)]) / len(a)
 
+label_names  = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']
+
+def top_k_sim(predictions, truth, k, names):
+    """
+    predictions: (64, 13) probability distributions
+    truth      : (64, 1)  true labels
+    k          : is true label in top k predictions
+
+    returns    : fraction of the 64 squares are k-correctly classified
+    """
+    
+    label_names  = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']
+    sorted_predictions = np.argsort(predictions, axis=1)
+    
+    top_k = sorted_predictions[:, -k:]
+    
+    top_k_predictions = np.array([["" for _ in range(k)] for _ in range(64)])
+    
+    hits = 0
+
+    for i in range(64):        
+        for j in range(k):
+            top_k_predictions[i, j] = label_names[top_k[i, j]]
+
+    i = 0
+    
+    for rank in range(1, 9):
+        for file in ["a", "b", "c", "d", "e", "f", "g", "h"]:
+            square = file + str(rank)
+            square_ind = names.index(square)  
+            if truth[i] in top_k_predictions[square_ind]:
+                hits += 1
+            i += 1
+
+    return hits / 64
+
 def confusion_matrix(predicted, truth, N=13):
     if type(predicted[0]) == str:
         for i in range(len(predicted)):
@@ -70,7 +106,6 @@ def vectorize_chessboard(board):
 
 
 def get_test_generator():
-
     img_filenames = listdir_nohidden(test_data_dir + "raw/")
     test_imgs = np.array(
         list(map(lambda x: cv2.imread(test_data_dir + "raw/" + x), img_filenames)))
@@ -81,7 +116,10 @@ def get_test_generator():
 
 def run_tests(data_generator, extractor, classifier, threshold=80):
     N = 0
-    test_accuracy = 0
+    test_accuracy  = 0
+    top_2_accuracy = 0
+    top_3_accuracy = 0
+
     times = []
     results = {"raw_imgs": [],
                "board_imgs": [],
@@ -98,7 +136,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
     for filename, img in data_generator:
         start = time.time()
         try: 
-            board_img, mask, predictions, chessboard, _, squares = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+            board_img, mask, predictions, chessboard, _, squares, names = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
         except:
             errors += 1
             continue
@@ -109,9 +147,14 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
         with open(truth_file) as truth:
             true_labels = ast.literal_eval(truth.read())
 
+        top_2_accuracy += top_k_sim(predictions, true_labels, 2, names)
+        top_3_accuracy += top_k_sim(predictions, true_labels, 3, names)
+
         times.append(stop-start)
         res = vectorize_chessboard(chessboard)
+        
         test_accuracy += sim(res, true_labels)
+
         confusion_mtx += confusion_matrix(res, true_labels)
 
         results["board_imgs"].append(board_img)
@@ -123,8 +166,12 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
         results["masks"].append(mask)
         N += 1
 
-    test_accuracy /= N
-    
+    test_accuracy  /= N
+    top_2_accuracy /= N
+    top_3_accuracy /= N
+
+    results["top_2_accuracy"] = top_2_accuracy
+    results["top_3_accuracy"] = top_3_accuracy
     results["confusion_matrix"] = confusion_mtx
     results["avg_entropy"] = avg_entropy(results["predictions"])
     results["avg_time"] = sum(times[:-1]) / (N-1)
@@ -138,10 +185,13 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 if __name__ == "__main__":
     print("Computing test accuracy...")
 
-    extractor = load_extractor()
-    classifier = load_classifier()
+    extractor = load_extractor(weights=cv_globals.board_weights)
+    classifier = load_classifier(weights=cv_globals.square_weights)
 
     test_data_gen = get_test_generator()
     results = run_tests(test_data_gen, extractor, classifier)
 
     print("Test accuracy: {}".format(results["acc"]))
+    print("Top-1 accuracy: {}".format(results["top_1_accuracy"]))
+    print("Top-2 accuracy: {}".format(results["top_2_accuracy"]))
+    print("Top-3 accuracy: {}".format(results["top_3_accuracy"]))
