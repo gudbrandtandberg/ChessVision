@@ -112,7 +112,7 @@ if __name__ == "__main__":
                         help='how to sample the training data, over=oversample, under=undersample')
     parser.add_argument('--class_weights', type=bool, default=False,
                         help='whether to use the class_weights variable for training (no sampling!)')
-    parser.add_argument('--install', type=bool, default=False,
+    parser.add_argument('--install', action="store_true",
                         help='whether to install the dataset using quilt')
     args = parser.parse_args()
     
