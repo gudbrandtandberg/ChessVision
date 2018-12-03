@@ -9,9 +9,8 @@ import cv_globals
 def load_extractor(weights=None):
     print("Loading board extraction model..")
     model = get_unet_256()
-    if not weights:
-        weights = cv_globals.board_weights
-    model.load_weights(weights)
+    if weights:
+        model.load_weights(weights)
     print("\rLoading board extraction model.. DONE")
     return model
 
