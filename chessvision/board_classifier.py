@@ -19,7 +19,7 @@ def classify_board(board_img, model, flip=False):
     FEN = chessboard.board_fen(promoted=False)
     #print("\rClassifying board.. DONE")
     
-    return FEN, predictions, chessboard, squares
+    return FEN, predictions, chessboard, squares, names
 
 def classification_logic(probs, names):
     

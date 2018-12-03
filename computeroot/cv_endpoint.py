@@ -132,7 +132,7 @@ def predict_img():
 
         try:
             logger.info("Processing image {}".format(filename))
-            board_img, _, _, _, FEN, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
+            board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
