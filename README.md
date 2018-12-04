@@ -107,14 +107,14 @@ After running
 
 ``` 
 cd computeroot
-python cv_endpoint.py
+python cv_endpoint.py --local
 ````
 
 and 
 
 ```
 cd webroot
-python main.py
+python main.py --local
 ```
 
 the ChessVision web server will be listening on `localhost:5000/`. Enjoy!
