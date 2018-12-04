@@ -159,8 +159,25 @@ def predict_img():
 def expandFEN(FEN, tomove):
     return "{} {} - - 0 1".format(FEN, tomove)
 
-piece2dir = {"wR": "R", "bR": "_r", "wK": "K", "bK": "_k", "wQ": "Q", "bQ": "_q",
- "wN": "N", "bN": "_n", "wP": "P", "bP": "_p", "wB": "B", "bB": "_b", "f": "f"}
+piece2dir = {"R": "R", "r": "_r", "K": "K", "k": "_k", "Q": "Q", "q": "_q",
+ "N": "N", "n": "_n", "P": "P", "p": "_p", "B": "B", "b": "_b", "f": "f"}
+
+dict = {"wR": "R", "bR": "r", "wK": "K", "bK": "k", "wQ": "Q", "bQ": "q",
+ "wN": "N", "bN": "n", "wP": "P", "bP": "p", "wB": "B", "bB": "b", "f": "f"}
+
+def convertPosition(position):
+    new = {}
+    for key in position:
+        new[key] = dict[position[key]]
+    return new
+    
+def FEN2JSON(fen):
+    piecemap = chess.Board(fen=fen).piece_map()
+    predictedPos = {}
+    for square_index in piecemap:
+        square = chess.SQUARE_NAMES[square_index]
+        predictedPos[square] = str(piecemap[square_index].symbol())
+    return predictedPos
 
 @app.route('/feedback/', methods=['POST'])
 @crossdomain(origin='*')
@@ -174,32 +191,41 @@ def receive_feedback():
     raw_id = request.form['id']
     position = json.loads(request.form["position"])
     flip = request.form["flip"] == "true"
-
+    predictedFEN = request.form["predictedFEN"]
+    predictedPos = FEN2JSON(predictedFEN)
+    position = convertPosition(position)
     board_filename = "x_" + raw_id + ".JPG"
-    board_src = os.path.join(app.config["UPLOAD_FOLDER"], "boards/", board_filename)
+    board_filename = os.path.join(app.config["UPLOAD_FOLDER"], "boards/", board_filename)
 
-    if not os.path.isfile(board_src):
+    if not os.path.isfile(board_filename):
         return res
 
-    board = cv2.imread(board_src, 0)
-
+    board = cv2.imread(board_filename, 0)
     squares, names = extract_squares(board, flip=flip)
 
     # Save each square using the 'position' dictionary from chessboard.js
     for sq, name in zip(squares, names):
-        
         if name not in position:
             label = "f"
         else:
             label = position[name]
+
+        if name not in predictedPos:
+            predictedLabel = "f"
+        else:
+            predictedLabel = predictedPos[name]
         
-        fname = name + "_" + raw_id + ".JPG"
+        if predictedLabel == label:
+            continue
+        
+        # Else, the prediction was incorrect, save it to learn from it later
+        fname = str(uuid.uuid4()) + ".JPG"
         out_dir = os.path.join(app.config["UPLOAD_FOLDER"], "squares/", piece2dir[label])
         outfile = os.path.join(out_dir, fname)
         cv2.imwrite(outfile, sq)
         
     # remove the board file
-    os.remove(board_src)
+    os.remove(board_filename)
 
     return '{ "success": "true" }'
 
@@ -216,9 +242,9 @@ def analyze(fen, move):
 
     plat = platform.system()
     if plat == "Linux":
-        sf_binary = "./stockfish-9-64-linux"
+        sf_binary = os.path.join(cv_globals.compute_root, "stockfish-9-64-linux")
     elif plat == "Darwin":
-        sf_binary = "./stockfish-9-64-mac"
+        sf_binary = os.path.join(cv_globals.compute_root, "stockfish-9-64-mac")
     else:
         logger.error("No support for windows..")
         return res

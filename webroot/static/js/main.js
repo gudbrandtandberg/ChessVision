@@ -6,6 +6,7 @@
 var board, cropper, cropperOptions;
 var input, canvas, context, endpoint;
 var endpoint, cv_algo_url, analyze_url;
+var effectivePredictedFEN
 
 var sizeCanvas = function() {
     container = document.getElementById("preview-container");
@@ -181,6 +182,7 @@ var uploadSuccess = function(data) {
         $("#edit-analyze-pane").show()
         board.resize()
         setFEN(res.FEN)
+        effectivePredictedFEN = res.FEN
         document.getElementById("raw-id-input").value = res.id
         $("#needle-wrapper").show()
         if (res.score != "None") {
@@ -223,6 +225,7 @@ $("#feedback-form").submit(function(event) {
     var formData = new FormData(this);
     formData.append("position", JSON.stringify(position))
     formData.append("flip", flip)
+    formData.append("predictedFEN", effectivePredictedFEN)
 
     $.ajax({
         url: feedback_url,
