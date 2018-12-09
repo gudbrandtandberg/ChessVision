@@ -85,8 +85,8 @@ def keras_generator(*, transform=False, sample=None, batch_size=32):
 def get_training_generator(sample=None, batch_size=32):
     return pieces["training"](asa=keras_generator(transform=True, sample=sample, batch_size=batch_size))
 
-def get_validation_generator():
-    return pieces["validation"](asa=keras_generator(transform=False, sample=None))
+def get_validation_generator(batch_size=32):
+    return pieces["validation"](asa=keras_generator(transform=False, sample=None, batch_size=batch_size))
 
 def labels_only(node, paths):
     _, y = get_data(node, len(paths))
@@ -98,11 +98,10 @@ def get_class_weights():
     class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
     return class_weights
 
-
 # Build the model
 if __name__ == "__main__":
 
-    print("Running training job for square classifier...")
+    print("Running training job for the square classifier...")
 
     parser = argparse.ArgumentParser(
         description='Train the ChessVision square extractor')
@@ -111,9 +110,11 @@ if __name__ == "__main__":
     parser.add_argument('--sample', type=str, default=None,
                         help='how to sample the training data, over=oversample, under=undersample')
     parser.add_argument('--class_weights', action="store_true",
-                        help='whether to use the class_weights variable for training (no sampling!)')
+                        help='whether to use class weights during training (no sampling!)')
     parser.add_argument('--install', action="store_true",
                         help='whether to install the dataset using quilt')
+    parser.add_argument('--batch_size', type=int, default=32,
+                        help='batch size to use for training')
     args = parser.parse_args()
     
     date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
@@ -127,37 +128,43 @@ if __name__ == "__main__":
     
     class_weights = get_class_weights() if args.class_weights else None
 
-    train_generator = get_training_generator(args.sample)
-    valid_generator = get_validation_generator()
+    train_generator = get_training_generator(args.sample, batch_size=args.batch_size)
+    valid_generator = get_validation_generator(batch_size=args.batch_size)
 
     print(model.summary())
-    
+
+    N_train = len(train_generator)
+    N_valid = len(valid_generator)
+
+    print("Training on {} samples".format(N_train*args.batch_size))
+    print("Validating on {} samples".format(N_valid*args_batch_size))
+
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
 
     callbacks = [EarlyStopping(monitor='val_loss',
-                               patience=8,
+                               patience=10,
                                verbose=1,
                                min_delta=1e-4),
                  ReduceLROnPlateau(monitor='val_loss',
                                    factor=0.1,
-                                   patience=4,
+                                   patience=5,
                                    verbose=1,
                                    epsilon=1e-4),
                  ModelCheckpoint(monitor='val_loss',
                                  filepath=weight_filename,
                                  save_best_only=True,
-                                 save_weights_only=True)]
+                                 save_weights_only=False)]
 
     start = time.time()
     model.fit_generator(generator=train_generator,
-                        steps_per_epoch=len(train_generator),
+                        steps_per_epoch=N_train,
                         epochs=args.epochs,
                         class_weight=class_weights,
                         verbose=1,
                         callbacks=callbacks,
                         validation_data=valid_generator,
-                        validation_steps=len(valid_generator))
+                        validation_steps=N_valid)
     duration = time.time() - start
     print("Training the square classifier took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))
