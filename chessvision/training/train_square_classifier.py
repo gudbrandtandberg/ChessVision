@@ -137,7 +137,7 @@ if __name__ == "__main__":
     N_valid = len(valid_generator)
 
     print("Training on {} samples".format(N_train*args.batch_size))
-    print("Validating on {} samples".format(N_valid*args_batch_size))
+    print("Validating on {} samples".format(N_valid*args.batch_size))
 
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
