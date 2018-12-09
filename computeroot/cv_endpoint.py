@@ -223,7 +223,7 @@ def receive_feedback():
         out_dir = os.path.join(app.config["UPLOAD_FOLDER"], "squares/", piece2dir[label])
         outfile = os.path.join(out_dir, fname)
         cv2.imwrite(outfile, sq)
-        
+
     # remove the board file
     os.remove(board_filename)
 
@@ -310,12 +310,15 @@ def read_image_from_formdata():
         logger.error("No file")
         return None
 
-    file = request.files['file']
-    data = file.read()
-    nparr = np.frombuffer(data, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    file.close()
-    
+    try: 
+        file = request.files['file']
+        data = file.read()
+        nparr = np.frombuffer(data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        file.close()
+    except: 
+        img = None
+
     return img
 
 
