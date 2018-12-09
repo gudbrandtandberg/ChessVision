@@ -110,7 +110,7 @@ if __name__ == "__main__":
                         help='number of epochs to train for')
     parser.add_argument('--sample', type=str, default=None,
                         help='how to sample the training data, over=oversample, under=undersample')
-    parser.add_argument('--class_weights', type=bool, default=False,
+    parser.add_argument('--class_weights', action="store_true",
                         help='whether to use the class_weights variable for training (no sampling!)')
     parser.add_argument('--install', action="store_true",
                         help='whether to install the dataset using quilt')
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     valid_generator = get_validation_generator()
 
     print(model.summary())
-    print(weight_filename)
+    
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])

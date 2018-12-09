@@ -14,7 +14,7 @@ if __name__ == "__main__":
     parser.add_argument("--extractor_weights", type=str, default=cv_globals.board_weights)
     parser.add_argument("--classifier_weights", type=str, default=cv_globals.square_weights)
     parser.add_argument("--threshold", type=int, default=80)
-    parser.add_argument("--report_name", type=str, default="report")
+    parser.add_argument("--report_name", type=str, default="new_report")
     args = parser.parse_args()
 
     infile  = cv_globals.CVROOT + "/chessvision/notebooks/Performance Report.ipynb"
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         infile,
         outfile,
         parameters=dict(extractor_weights=args.extractor_weights,
-                        classifier_weights=args.classifier_weights, 
+                        classifier_weights=cv_globals.weights_dir + "new_classifier.hdf5", 
                         threshold=args.threshold)
     )
 
