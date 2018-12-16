@@ -9,7 +9,7 @@ The app is sometimes up and running, if you're lucky you can try it out at
 
 ## Example
 
-From *any* square input image (png, jpg, etc.), the ChessVision algorithm extracts and classifies any chessboard contained in the image.
+From *any* square input image, the ChessVision algorithm extracts and classifies any chessboard contained in the image.
 
 <p float="left">
     <img src="./img/example_raw.JPG" width="320"/>
@@ -50,7 +50,7 @@ The first step is to extact square chessboards from raw photographs, the followi
 
 <img src="./img/test_extraction.png" />
 
-Board extraction is done in two steps, first the image is resized to 256x256 and fed into a deep convolutional neural network (the [unet](https://github.com/zhixuhao/unet) architecture) after which a heatmap is produced, estimating the probability that each pixel is part of a chessboard. The heatmap is then converted to a binary mask using a simple thresholding operator. Next, a contour approximation algorithm approximates the mask using four points. The board is extracted from the raw image using these four points, appropriately scaled. The next image illustrates the trained models performance on a batch of training data. 
+Board extraction is done in two steps, first the image is resized to 256x256 and fed into a deep convolutional neural network (the [unet](https://github.com/zhixuhao/unet) architecture) after which a heatmap is produced, estimating the probability that each pixel is part of a chessboard. The heatmap is then converted to a binary mask using a simple thresholding operator. Next, a contour approximation algorithm approximates the mask using four points. The board is extracted from the raw image using these four points. The next image illustrates the trained model's performance on a batch of training data. 
 
 <img src="./img/training_extraction.png" />
 
@@ -60,15 +60,11 @@ The `u_net` model is quite large (approx 35M parameters) and takes quite a while
 
 ### Board classification
 
-The next step is to cut the board image into 64 little 64x64-pixel squares, with accompanying square-names (in order account for board orientation). We classify squares using a small convolutional network.
+The next step is to cut the board image into 64 little 64x64-pixel squares, with accompanying square-names (in order to account for board orientation). We classify squares using a small convolutional network.
 
 The performance of the current generation of square classifiers is promising; the next image shows the results on a batch of training data (99.6% accuracy)
 
 <img src="./img/training_classification1.png" />
-
-However, on unseen test data the algorithm fares worse, as the following figure shows
-
-<img src="./img/test_classification.png" />
 
 ## Install
 
@@ -132,6 +128,4 @@ the ChessVision web server will be listening on `localhost:5000/`. Enjoy!
 + https://ieeexplore.ieee.org/document/5967178/
 + https://web.stanford.edu/class/ee368/Project_Spring_1415/Reports/Danner_Kafafy.pdf
 + http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#4d4e495354
-+ https://yashk2810.github.io/Applying-Convolutional-Neural-Network-on-the-MNIST-dataset/
 + http://sci2s.ugr.es/keel/pdf/algorithm/articulo/knnAdaptive.pdf
-+ https://stackoverflow.com/questions/19126994/what-is-the-cleanest-way-to-get-the-progress-of-jquery-ajax-request
