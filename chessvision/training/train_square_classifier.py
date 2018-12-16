@@ -23,11 +23,11 @@ labels = {"b": 6, "k": 7, "n": 8, "p": 9, "q": 10, "r": 11, "B": 0,
 
 train_datagen = ImageDataGenerator(
     rescale=1./255,
-    rotation_range=5,
+    rotation_range=0,
     zoom_range=0.05,
     width_shift_range=0.1,
     height_shift_range=0.1,
-    shear_range=5
+    shear_range=0
 )
 valid_datagen = ImageDataGenerator(
     rescale=1./255,
