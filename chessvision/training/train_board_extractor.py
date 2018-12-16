@@ -11,7 +11,6 @@ from u_net import load_extractor
 import time
 import argparse
 import quilt
-import random
 import datetime
 import os
 
