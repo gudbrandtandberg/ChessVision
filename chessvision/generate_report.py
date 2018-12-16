@@ -18,7 +18,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     infile  = cv_globals.CVROOT + "/chessvision/notebooks/Performance Report.ipynb"
-    outfile = cv_globals.CVROOT + "/chessvision/notebooks/{}.ipynb".format(args.report_name)
+    outfile = cv_globals.CVROOT + "/chessvision/notebooks/reports/{}.ipynb".format(args.report_name)
     
     pm.execute_notebook(
         infile,
