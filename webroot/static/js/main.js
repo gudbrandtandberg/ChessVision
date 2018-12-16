@@ -63,12 +63,13 @@ var init = function() {
 
     // Check server status
     pingServer();
-    setInterval(pingServer, 3000);
+    setInterval(pingServer, 6000);
 
 } // end init
 
 var pingServer = function() {
-    $.ajax({url: ping_url, 
+    $.ajax({url: ping_url,
+            timeout: 5000,
             success: function(data) {
                 $("#server-status").html("CV-server is live!");
             }, 
@@ -156,7 +157,7 @@ var extractBoard = function(event) {
         cache: false,
         contentType: false,
         processData: false,
-        timeout: 50000,
+        timeout: 10000,
         success: uploadSuccess,
         error: function(xmlHttpRequest, textStatus, errorThrown) {
             unsetSpinner()
@@ -164,7 +165,7 @@ var extractBoard = function(event) {
                 alert("Connection to ChessVision server failed. It is probably sleeping..")
                 return
             } else {
-                alert(textStatus)   
+                alert(textStatus)
             }
         }
     })
