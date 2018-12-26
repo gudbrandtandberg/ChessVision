@@ -163,6 +163,7 @@ var extractBoard = function(event) {
             unsetSpinner()
             if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
                 alert("Connection to ChessVision server failed. It is probably sleeping..")
+                console.log(textStatus)
                 return
             } else {
                 alert(textStatus)
