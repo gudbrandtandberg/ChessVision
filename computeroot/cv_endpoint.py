@@ -41,7 +41,7 @@ logger = logging.getLogger("chessvision")
 file_handler = logging.FileHandler('cv_endpoint.log', 'w')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
@@ -141,6 +141,10 @@ def predict_img():
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             return e.json_string()
+        
+        except FileNotFoundError as e:
+            logger.debug("Unexpected error: {}".format(e))
+            return '{{"error": "true"}}'
 
         FEN = expandFEN(FEN, tomove)
         
