@@ -1,0 +1,5 @@
+# Local testing data
+data/
+
+# iPython Notebook Checkpoints
+.ipynb_checkpoints/
