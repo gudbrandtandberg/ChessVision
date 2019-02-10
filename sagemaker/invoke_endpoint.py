@@ -4,14 +4,15 @@ import requests
 
 local = True
 
-if local:
-    with open("sagemaker/container/local_test/test_img.txt", "r") as f:
-        image = f.read()
+with open("sagemaker/container/local_test/test_img.txt", "r") as f:
+    image = f.read()
 
-    payload = json.dumps({
-        "image": image,
-        "flip": "false"
-    })
+payload = json.dumps({
+    "image": image,
+    "flip": "false"
+})
+
+if local:
 
     r1 = requests.get("http://127.0.0.1:8080/ping", data="")
     r2 = requests.post("http://127.0.0.1:8080/invocations", data=payload, headers={"Content-Type": "application/json"})
