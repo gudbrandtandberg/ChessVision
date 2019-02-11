@@ -1,4 +1,4 @@
-# Build an image that can do training and inference in SageMaker
+# Build an image that can do inference in SageMaker
 # This is a Python 2 image that uses the nginx, gunicorn, flask stack
 # for serving inferences in a stable way.
 
@@ -16,7 +16,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 # Install all of the packages
 RUN pip3 install numpy
 RUN pip3 install opencv-python
-# opencv-python should be 3.4.1
 RUN pip3 install gevent
 RUN pip3 install gunicorn
 RUN pip3 install keras

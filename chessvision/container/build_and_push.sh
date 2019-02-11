@@ -5,7 +5,7 @@
 
 # The argument to this script is the image name. This will be used as the image on the local
 # machine and combined with the account and region to form the repository name for ECR.
-image=$1
+image="chessvision-algo"
 
 if [ "$image" == "" ]
 then
@@ -13,7 +13,6 @@ then
     exit 1
 fi
 
-#chmod +x /train
 chmod +x src/serve
 
 # Get the account number associated with the current IAM credentials
