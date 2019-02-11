@@ -10,56 +10,24 @@ from u_net import get_unet_256
 from square_classifier import build_square_classifier
 import chessvision
 import tensorflow as tf
+from tensorflow import Graph
 import chess
+import cv2
 from keras.models import load_model
 
-#prefix = 'weights/'  # <-- for local
-prefix = ""           # <-- for docker
-model_path = os.path.join(prefix, 'model')
+prefix = 'weights/'
+prefix = 'model/'
+model_path = prefix
+#model_path = os.path.join(prefix, 'model')
+
+print("Loading models...")
+board_extractor = get_unet_256()
+board_extractor.load_weights(os.path.join(model_path, 'best_extractor.hdf5'))
+
+square_classifier = load_model(os.path.join(model_path, 'best_classifier.hdf5'))
+print("Loading models... DONE!")
 
 graph = tf.get_default_graph()
-
-# A singleton for holding the model. This simply loads the model and holds it.
-# It has a predict function that does a prediction based on the model and the
-# input data.
-class ModelManager(object):
-    board_extractor = None                # Where we keep the model when it's loaded
-    square_classifier = None
-    
-    @classmethod
-    def get_models(cls):
-        """
-        """
-
-        if cls.board_extractor is None or cls.square_classifier is None:
-            print("Reloading models")
-
-            board_extractor = get_unet_256()
-            board_extractor.load_weights(os.path.join(model_path, 'best_extractor.hdf5'))
-            cls.board_extractor = board_extractor
-
-            square_classifier = load_model(os.path.join(model_path, 'best_classifier.hdf5'))
-            cls.square_classifier = square_classifier
-            
-            return True
-        
-        return True
-
-    @classmethod
-    def call_board_extractor(cls, input):
-        """
-        """
-        if cls.board_extractor is None:
-            cls.get_models()
-        return cls.board_extractor.predict(input)
-    
-    @classmethod
-    def call_square_classifier(cls, input):
-        """
-        """
-        if cls.square_classifier is None:
-            cls.get_models()
-        return cls.square_classifier.predict(input)
 
 # The flask app for serving predictions
 app = flask.Flask(__name__)
@@ -96,6 +64,8 @@ def read_image_from_b64(b64string):
     return img
 
 def fix_mask(mask, threshold=80):
+    # max_val = np.max(np.max(mask))
+    # mask /= max_val
     mask *= 255
     mask = mask.astype(np.uint8)
     mask[mask > threshold] = 255
@@ -106,6 +76,7 @@ def scale_approx(approx, orig_size):
     sf = orig_size[0]/256.0
     scaled = np.array(approx * sf, dtype=np.uint32)
     return scaled
+
 
 def rotate_quadrangle(approx):
     if approx[0,0,0] < approx[2,0,0]:
@@ -216,14 +187,12 @@ def ping():
     successfully.
     """
     print("Pinged")
-    # Health check -- You can insert a health check here
-    health = ModelManager.get_models() is not None
+    health = True
     status = 200 if health else 404
     return flask.Response(
-        response="Yeah, bro\n",
+        response="Yeah, bro!",
         status=status,
         mimetype='application/json')
-
 
 @app.route('/invocations', methods=['POST', "GET"])
 def chessvision_algo():
@@ -242,32 +211,47 @@ def chessvision_algo():
     else:
         print("Did not got data")
         return flask.Response(
-            response='Nope, dude\n',
+            response="Could not parse input!",
             status=415,
-            mimetype='text/plain')
+            mimetype="application/json")
 
+    # Predict
+    
     comp_img = resize(img, (256, 256))
+   
+    global graph
+    mask = None
     img_batch = np.array([comp_img], np.float32) / 255
-    mask = ModelManager.call_board_extractor(img_batch)    
+    
+    with graph.as_default():
+        mask = board_extractor.predict(img_batch)
+    
     mask = mask[0].reshape((256, 256))
     mask = fix_mask(mask)
     
     approx = find_quadrangle(mask)
-    
+
     if approx is None:
         print("Contour approximation failed!")
-    
+        return flask.Response(
+            response="ChessVision algorithm failed!",
+            status=500,
+            mimetype="application/json")
+
     approx = scale_approx(approx, (img.shape[0], img.shape[1])) 
     board = extract_perspective(img, approx, (512, 512))
     board = cvtColor(board, COLOR_BGR2GRAY)
     board = flip(board, 1) # TODO: permute approximation instead..
     squares, names = extract_squares(board, flip=flipped)
     
-    predictions = ModelManager.call_square_classifier(squares)
+    with graph.as_default():
+        predictions = square_classifier.predict(squares)
+
     chessboard = classification_logic(predictions, names)
     FEN = chessboard.board_fen(promoted=False)
+    result = {"FEN": FEN}
 
-    return flask.Response(response="FEN: {}\n".format(FEN), status=200, mimetype='text/plain')
+    return flask.Response(response=json.dumps(result), status=200, mimetype="application/json")
 
 if __name__ == "__main__":
     print("Running server")

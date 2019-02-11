@@ -2,7 +2,7 @@ import boto3
 import json
 import requests
 
-local = True
+local = False
 
 with open("sagemaker/container/local_test/test_img.txt", "r") as f:
     image = f.read()
@@ -35,4 +35,4 @@ else:
         Body=payload
         )
 
-    print(response)
+    print(response["Body"].read())
