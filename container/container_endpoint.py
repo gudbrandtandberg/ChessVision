@@ -67,14 +67,12 @@ def chessvision_algo():
         flipped = data["flip"] == "true"
         img = read_image_from_b64(data["image"])
 
-    else:
+    if not img or not flipped:
         print("Did not got data")
         return flask.Response(
             response="Could not parse input!",
             status=415,
             mimetype="application/json")
-
-    # Predict
 
     try:
         global graph
