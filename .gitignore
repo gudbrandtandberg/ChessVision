@@ -12,6 +12,7 @@ logs/*
 *.log
 
 data/new_raw/
+data/new_raw_resized/
 .notes.txt
 data/raw/*
 data/.DS_Store

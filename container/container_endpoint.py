@@ -130,6 +130,8 @@ def chessvision_algo():
             status=415,
             mimetype="application/json")
 
+    # Upload image to S3
+
     try:
         global graph
         with graph.as_default():

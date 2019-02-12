@@ -135,47 +135,35 @@ def predict_img():
             response="Could not parse input!",
             status=415,
             mimetype="application/json")
-
-    if image is not None:
         
-        raw_id = str(uuid.uuid4())
-        filename = secure_filename(raw_id) + ".JPG"
-        tmp_loc = os.path.join(app.config['TMP_FOLDER'], filename)
-        
-        tmp_path = os.path.abspath(tmp_loc)
-        cv2.imwrite(tmp_path, image)
-
-        try:
-            logger.info("Processing image {}".format(filename))
-            global graph
-            with graph.as_default():
-                board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flipped)
-            #move file to success raw folder
-            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
-            cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], "boards/x_" + filename), board_img)
+    raw_id = str(uuid.uuid4())
+    filename = secure_filename(raw_id) + ".JPG"
+    tmp_loc = os.path.join(app.config['TMP_FOLDER'], filename)
     
-        except BoardExtractionError as e:
-            #move file to success raw folder
-            os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
-            return e.json_string()
-        
-        except FileNotFoundError as e:
-            logger.debug("Unexpected error: {}".format(e))
-            return '{{"error": "true"}}'
+    tmp_path = os.path.abspath(tmp_loc)
+    cv2.imwrite(tmp_path, image)
 
-        #FEN = expandFEN(FEN, tomove)
+    try:
+        logger.info("Processing image {}".format(filename))
+        global graph
+        with graph.as_default():
+            board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flipped)
         
-        #analysis = analyze(FEN, tomove)
-        # if "error" in analysis:
-        #     score, mate = "None", "None"
-        # else:
-        #     score, mate = analysis["score"], analysis["mate"]
-        
-        ret = '{{ "FEN": "{}", "id": "{}", "error": "false"}}'.format(FEN, raw_id)
+        #move file to success raw folder
+        os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
+        cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], "boards/x_" + filename), board_img)
 
-        return ret
+    except BoardExtractionError as e:
+        #move file to success raw folder
+        os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
+        return e.json_string()
     
-    return '{"error": "true", "errorMsg": "Oops!!"}'
+    except FileNotFoundError as e:
+        logger.debug("Unexpected error: {}".format(e))
+        return '{{"error": "true"}}'
+    
+    ret = '{{ "FEN": "{}", "id": "{}", "error": "false"}}'.format(FEN, raw_id)
+    return ret
 
 def expandFEN(FEN, tomove):
     return "{} {} - - 0 1".format(FEN, tomove)
