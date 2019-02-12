@@ -121,7 +121,7 @@ def read_image_from_b64(b64string):
 @crossdomain(origin='*')
 def predict_img():
     logger.info("CV-Algo invoked")
-    print("Invoked")
+    
     #Host, User-Agent, Content-Length, Origin
     if flask.request.content_type == 'application/json':
         print("Got data")
@@ -144,22 +144,15 @@ def predict_img():
         
         tmp_path = os.path.abspath(tmp_loc)
         cv2.imwrite(tmp_path, image)
-        
-        # check if input image is flipped (from black's perspective)
-        flip = False
-        if "flip" in request.form:
-            flip = request.form["flip"] == "true"
-        if "tomove" in request.form:
-            tomove = request.form["tomove"]
 
         try:
             logger.info("Processing image {}".format(filename))
             global graph
             with graph.as_default():
-                board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
+                board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flipped)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
-            cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
+            cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], "boards/x_" + filename), board_img)
     
         except BoardExtractionError as e:
             #move file to success raw folder
@@ -212,14 +205,16 @@ def FEN2JSON(fen):
 def receive_feedback():
     res = '{"success": "false"}'
 
-    if "id" not in request.form or "position" not in request.form or "flip" not in request.form:
+    data = json.loads(flask.request.data.decode('utf-8'))
+
+    if "id" not in data or "position" not in data or "flip" not in data:
         logger.error("Missing form data, abort!")
         return res
 
-    raw_id = request.form['id']
-    position = json.loads(request.form["position"])
-    flip = request.form["flip"] == "true"
-    predictedFEN = request.form["predictedFEN"]
+    raw_id = data["id"]
+    position = json.loads(data["position"])
+    flip = data["flip"] == "true"
+    predictedFEN = data["predictedFEN"]
     predictedPos = FEN2JSON(predictedFEN)
     position = convertPosition(position)
     board_filename = "x_" + raw_id + ".JPG"

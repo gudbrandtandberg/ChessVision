@@ -7,6 +7,7 @@ var board, cropper, cropperOptions;
 var input, canvas, context, endpoint;
 var endpoint, cv_algo_url, analyze_url;
 var effectivePredictedFEN;
+var effectiveRawId;
 var lambda; 
 
 var sizeCanvas = function() {
@@ -254,7 +255,12 @@ var uploadSuccess = function(data) {
     board.resize()
     setFEN(data.FEN)
     effectivePredictedFEN = data.FEN
-    //document.getElementById("raw-id-input").value = res.id
+
+    if (data.id) {
+        $("#raw-id-input").val(data.id);
+        effectiveRawId = data.id;
+    }
+
     //$("#needle-wrapper").show()
     // if (res.score != "None") {
     //     setScore(res.score)
@@ -285,19 +291,22 @@ $("#edit-btn").on("click", function(e) {
 
 $("#feedback-form").submit(function(event) {
     event.preventDefault()
-    var feedback_url = endpoint + "feedback/"
+    
+    var feedback_url = "http://localhost:7777/feedback/";
     var position = board.position()
     var flip = document.getElementById("reversed-input").checked ? "true" : "false"
 
-    var formData = new FormData(this);
-    formData.append("position", JSON.stringify(position))
-    formData.append("flip", flip)
-    formData.append("predictedFEN", effectivePredictedFEN)
+    formData = {
+        position: JSON.stringify(position),
+        flip: flip,
+        predictedFEN: expandFen(effectivePredictedFEN), 
+        id: effectiveRawId 
+    };
 
     $.ajax({
         url: feedback_url,
         method: "POST",
-        data: formData, 
+        data: JSON.stringify(formData), 
         cache: false,
         contentType: false,
         processData: false,
@@ -336,7 +345,7 @@ var requestAnalysis = function() {
     //var formData = new FormData();
     // get valid fen from board + input tags.
     var fen = board.fen()
-    fen = expandFen(fen)
+    fen = expandFen(fen);
     var formData = {"FEN": fen};
     
     $.ajax({
