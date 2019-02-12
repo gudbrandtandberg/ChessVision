@@ -1,5 +1,6 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, make_response, current_app
+import flask
 from werkzeug.utils import secure_filename
 from datetime import timedelta
 from functools import update_wrapper
@@ -20,11 +21,13 @@ from u_net import load_extractor
 from square_classifier import load_classifier
 from util import BoardExtractionError
 import logging 
+import tensorflow as tf
 
 app = Flask(__name__)
+graph = tf.get_default_graph()
 
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+#log = logging.getLogger('werkzeug')
+#log.setLevel(logging.ERROR)
 
 class RequestFormatter(logging.Formatter):
     def format(self, record):
@@ -40,12 +43,10 @@ formatter = RequestFormatter(
 logger = logging.getLogger("chessvision")
 file_handler = logging.FileHandler('cv_endpoint.log', 'w')
 file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+logger.addHandler(stream_handler)
 logger.addHandler(file_handler)
-<<<<<<< HEAD
 logger.setLevel(logging.DEBUG)
-=======
-logger.setLevel(logging.INFO)
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
 
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
@@ -110,13 +111,30 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/cv_algo/', methods=['POST'])
+def read_image_from_b64(b64string):
+    buffer = base64.b64decode(b64string)
+    nparr = np.frombuffer(buffer, dtype=np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    return img
+
+@app.route('/cv_algo/', methods=["POST", "OPTIONS"])
 @crossdomain(origin='*')
 def predict_img():
     logger.info("CV-Algo invoked")
-    
+    print("Invoked")
     #Host, User-Agent, Content-Length, Origin
-    image = read_image_from_formdata()
+    if flask.request.content_type == 'application/json':
+        print("Got data")
+        data = json.loads(flask.request.data.decode('utf-8'))
+        flipped = data["flip"] == "true"
+        image = read_image_from_b64(data["image"])
+
+    if image is None or flipped is None:
+        print("Did not got data")
+        return flask.Response(
+            response="Could not parse input!",
+            status=415,
+            mimetype="application/json")
 
     if image is not None:
         
@@ -136,7 +154,9 @@ def predict_img():
 
         try:
             logger.info("Processing image {}".format(filename))
-            board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
+            global graph
+            with graph.as_default():
+                board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flip)
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             cv2.imwrite("./user_uploads/boards/x_" + filename, board_img)
@@ -145,23 +165,20 @@ def predict_img():
             #move file to success raw folder
             os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
             return e.json_string()
-<<<<<<< HEAD
         
         except FileNotFoundError as e:
             logger.debug("Unexpected error: {}".format(e))
             return '{{"error": "true"}}'
-=======
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
 
-        FEN = expandFEN(FEN, tomove)
+        #FEN = expandFEN(FEN, tomove)
         
-        analysis = analyze(FEN, tomove)
-        if "error" in analysis:
-            score, mate = "None", "None"
-        else:
-            score, mate = analysis["score"], analysis["mate"]
+        #analysis = analyze(FEN, tomove)
+        # if "error" in analysis:
+        #     score, mate = "None", "None"
+        # else:
+        #     score, mate = analysis["score"], analysis["mate"]
         
-        ret = '{{ "FEN": "{}", "id": "{}", "error": "false", "score": "{}", "mate": "{}" }}'.format(FEN, raw_id, score, mate)
+        ret = '{{ "FEN": "{}", "id": "{}", "error": "false"}}'.format(FEN, raw_id)
 
         return ret
     

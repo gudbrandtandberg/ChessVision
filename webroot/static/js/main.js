@@ -6,12 +6,8 @@
 var board, cropper, cropperOptions;
 var input, canvas, context, endpoint;
 var endpoint, cv_algo_url, analyze_url;
-<<<<<<< HEAD
 var effectivePredictedFEN;
 var lambda; 
-=======
-var effectivePredictedFEN
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
 
 var sizeCanvas = function() {
     container = document.getElementById("preview-container");
@@ -21,7 +17,6 @@ var sizeCanvas = function() {
 // initialize variables
 var init = function() {
 
-<<<<<<< HEAD
     // Initialize the Amazon Cognito credentials provider
     AWS.config.region = 'eu-central-1'; // Region
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -38,13 +33,12 @@ var init = function() {
         var sessionToken = AWS.config.credentials.sessionToken;
     });
 
-=======
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
     sizeCanvas()
     $("#analyze-btn").on("click", requestAnalysis)
     // $("#preview-anchor").on("click", alert("click"))
 
     endpoint = document.getElementById("endpoint").innerHTML
+    
     cv_algo_url = endpoint + "cv_algo/"
     analyze_url = endpoint + "analyze/"
     ping_url = endpoint + "ping/"
@@ -86,7 +80,6 @@ var init = function() {
     document.getElementById("image-input").onchange = imageInputChanged;
 
     // Check server status
-<<<<<<< HEAD
     //pingServer();
     //setInterval(pingServer, 6000);
 
@@ -102,23 +95,6 @@ var init = function() {
 //                 $("#server-status").html("CV-server is DOWN..");
 //             }});
 // }
-=======
-    pingServer();
-    setInterval(pingServer, 6000);
-
-} // end init
-
-var pingServer = function() {
-    $.ajax({url: ping_url,
-            timeout: 5000,
-            success: function(data) {
-                $("#server-status").html("CV-server is live!");
-            }, 
-            error: function(data) {
-                $("#server-status").html("CV-server is DOWN..");
-            }});
-}
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
 
 // Fires every time a new file is selected (or file-choosing is cancelled)
 var imageInputChanged = function() {
@@ -177,11 +153,70 @@ var extractBoard = function(event) {
         alert("Please upload a photo first!");
         return;
     }
-<<<<<<< HEAD
     
     b64image = cropper.getCroppedCanvas({width: 512, height: 512}).toDataURL('image/jpeg', 0.9).split(",")[1];
     payload = JSON.stringify({image: b64image, flip: "false"});
 
+    if (endpoint == "lambda") {
+        invokeLambda(payload);
+    } else if (endpoint == "container") {
+        invokeLocalContainer(payload);
+    } else if (endpoint == "server") {
+        invokeLocalServer(payload);
+    }
+};
+
+var invokeLocalContainer = function(payload) {
+    $.ajax({
+        url: "http://localhost:8080/invocations",
+        method: "POST", 
+        data: payload,
+        contentType: "application/json",
+        // crossDomain: true,
+        dataType: 'json',
+        timeout: 10000,
+        success: function(data) {
+            uploadSuccess(data);
+        },
+        error: function(xmlHttpRequest, textStatus, errorThrown) {
+            unsetSpinner()
+            if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
+                alert("Connection to ChessVision server failed.")
+                console.log(textStatus);
+                return
+            } else {
+                alert(textStatus)
+            }
+        }
+    })
+};
+
+var invokeLocalServer = function(payload) {
+    $.ajax({
+        url: "http://localhost:7777/cv_algo/",
+        method: "POST", 
+        data: payload,
+        contentType: "application/json",
+        // crossDomain: true,
+        dataType: 'json',
+        timeout: 10000,
+        success: function(data) {
+            uploadSuccess(data);
+        },
+        error: function(xmlHttpRequest, textStatus, errorThrown) {
+            unsetSpinner()
+            if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
+                alert("Connection to ChessVision server failed.")
+                console.log(textStatus);
+                return
+            } else {
+                alert(textStatus)
+            }
+        }
+    })
+};
+
+var invokeLambda = function(payload) {
     var params = {
         Payload: payload,
         FunctionName : "arn:aws:lambda:eu-central-1:580857158266:function:chessvisionClient",
@@ -206,83 +241,12 @@ var extractBoard = function(event) {
             
         }
     });
-    
-    // var blobBin = atob(dataURL.split(',')[1]);
-    // var array = [];
-    // for (var i = 0; i < blobBin.length; i++) {
-    //     array.push(blobBin.charCodeAt(i));
-    // }
-    // var file = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-    // flip = document.getElementById("reversed-input").checked ? "true" : "false"
-    // var tomove = document.querySelector('input[name="move"]:checked').value;
-    // var formData = new FormData();
-    // formData.append("file", file);
-    // formData.append("flip", "true");
-    //formData.append("tomove", tomove);
-
-    // $.ajax({
-    //     url: cv_algo_url,
-    //     method: "POST", 
-    //     data: formData,
-    //     cache: false,
-    //     contentType: false,
-    //     processData: false,
-    //     timeout: 10000,
-    //     success: uploadSuccess,
-    //     error: function(xmlHttpRequest, textStatus, errorThrown) {
-    //         unsetSpinner()
-    //         if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
-    //             alert("Connection to ChessVision server failed. It is probably sleeping..")
-    //             console.log(textStatus)
-    //             return
-    //         } else {
-    //             alert(textStatus)
-    //         }
-    //     }
-    // })
-=======
-    dataURL = cropper.getCroppedCanvas({width: 512, height: 512}).toDataURL('image/jpeg', 0.9)
-
-    var blobBin = atob(dataURL.split(',')[1]);
-    var array = [];
-    for (var i = 0; i < blobBin.length; i++) {
-        array.push(blobBin.charCodeAt(i));
-    }
-    var file = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-    flip = document.getElementById("reversed-input").checked ? "true" : "false"
-    var tomove = document.querySelector('input[name="move"]:checked').value;
-    var formData = new FormData();
-    formData.append("file", file);
-    formData.append("flip", flip);
-    formData.append("tomove", tomove);
-
-    $.ajax({
-        url: cv_algo_url,
-        method: "POST", 
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        timeout: 10000,
-        success: uploadSuccess,
-        error: function(xmlHttpRequest, textStatus, errorThrown) {
-            unsetSpinner()
-            if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
-                alert("Connection to ChessVision server failed. It is probably sleeping..")
-                return
-            } else {
-                alert(textStatus)
-            }
-        }
-    })
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
-}
+};
 
 var uploadSuccess = function(data) {
     //parse data = {FEN: "...", id: "..."}
     
     unsetSpinner()
-<<<<<<< HEAD
     
     $("#board-container").show()
     $("#preview-container").hide()
@@ -301,32 +265,6 @@ var uploadSuccess = function(data) {
     // }
     $("#flip-pane").hide()
 };
-=======
-    res = JSON.parse(data)
-    
-    if (res.error == "false") {
-        $("#board-container").show()
-        $("#preview-container").hide()
-        $("#edit-analyze-pane").show()
-        board.resize()
-        setFEN(res.FEN)
-        effectivePredictedFEN = res.FEN
-        document.getElementById("raw-id-input").value = res.id
-        $("#needle-wrapper").show()
-        if (res.score != "None") {
-            setScore(res.score)
-        } else if (res.mate != "None") {
-            setMate(res.mate)
-        } else {
-            alert("Position is invalid, cannot provide analysis")
-        }
-        $("#flip-pane").hide()
-        
-    } else {
-        alert(res.errorMsg)
-    }
-}
->>>>>>> 2388d53994ce1daaa0fc00abd947c5859faaa050
 
 $("#edit-btn").on("click", function(e) {
     
