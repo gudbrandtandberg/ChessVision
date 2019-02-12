@@ -4,7 +4,9 @@ import os
 import flask
 import json
 import base64
-# import numpy as np
+import numpy as np
+from util import BoardExtractionError
+from cv2 import imdecode, IMREAD_COLOR
 from model.u_net import get_unet_256
 from model.square_classifier import build_square_classifier
 from chessvision import classify_raw
@@ -13,9 +15,10 @@ import chess
 import cv2
 from keras.models import load_model
 
-prefix = ""
+#prefix = "../" # local
+prefix = ""     # container
 model_path = 'weights/'
-#model_path = os.path.join(prefix, 'model')
+model_path = os.path.join(prefix, model_path)
 
 print("Loading models...")
 board_extractor = get_unet_256()
@@ -25,6 +28,12 @@ square_classifier = load_model(os.path.join(model_path, 'best_classifier.hdf5'))
 print("Loading models... DONE!")
 
 graph = tf.get_default_graph()
+
+def read_image_from_b64(b64string):
+    buffer = base64.b64decode(b64string)
+    nparr = np.frombuffer(buffer, dtype=np.uint8)
+    img = imdecode(nparr, IMREAD_COLOR)
+    return img
 
 # The flask app for serving predictions
 app = flask.Flask(__name__)
@@ -67,10 +76,12 @@ def chessvision_algo():
 
     # Predict
 
-    try: 
-        board_img, _, _, _, FEN, _, _ = classify_raw(img, "filename", board_extractor, square_classifier, flip=flipped)
+    try:
+        global graph
+        with graph.as_default():
+            _, _, _, _, FEN, _, _ = classify_raw(img, "filename", board_extractor, square_classifier, flip=flipped)
     
-    except BoardExtractionError as e:
+    except BoardExtractionError:
         return flask.Response(
             response="ChessVision algorithm failed",
             status=500,

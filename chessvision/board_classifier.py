@@ -4,7 +4,6 @@ Classify a 512x512 image of a chessboard.
 import numpy as np
 import chess
 from extract_squares import extract_squares
-from util import listdir_nohidden, parse_arguments, BoardExtractionError
 import cv_globals
 
 def classify_board(board_img, model, flip=False):

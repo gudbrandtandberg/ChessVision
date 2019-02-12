@@ -3,7 +3,6 @@ from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Activation, U
 from keras.optimizers import RMSprop, Adam
 
 from losses import bce_dice_loss, dice_loss, weighted_bce_dice_loss, weighted_dice_loss, dice_coeff
-
 import cv_globals
 
 def load_extractor(weights=None):
