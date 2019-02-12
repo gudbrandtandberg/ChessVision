@@ -1,0 +1,9 @@
+data/
+weights/extractor/
+weights/classifier/
+img/
+computeroot/
+webroot/
+local_test/
+./*.sh
+chessvision/notebooks/
