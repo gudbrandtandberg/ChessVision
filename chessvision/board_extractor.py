@@ -8,7 +8,7 @@ Usage:
 python board_extractor.py -d ../data/images/ -o ./data/boards/
 """
 
-from util import listdir_nohidden, ratio, parse_arguments, BoardExtractionError
+from util import ratio, BoardExtractionError
 import numpy as np
 import cv2
 import cv_globals
