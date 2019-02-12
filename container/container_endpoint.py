@@ -16,12 +16,16 @@ from chessvision import classify_raw
 import tensorflow as tf
 import chess
 import cv2
+import boto3
 from keras.models import load_model
+import uuid
 
 #prefix = "../" # local
 prefix = ""     # container
 model_path = 'weights/'
 model_path = os.path.join(prefix, model_path)
+
+client = boto3.client('s3')
 
 print("Loading models...")
 board_extractor = get_unet_256()
@@ -131,6 +135,11 @@ def chessvision_algo():
             mimetype="application/json")
 
     # Upload image to S3
+    filename = str(uuid.uuid4()) + ".JPG"
+    cv2.imwrite(filename, img)
+    with open(filename, "rb") as data:
+        client.upload_fileobj(data, "chessvision-bucket", "raw-uploads/" + filename)
+    os.remove(filename)
 
     try:
         global graph
