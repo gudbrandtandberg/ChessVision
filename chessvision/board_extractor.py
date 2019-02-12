@@ -59,9 +59,11 @@ def rotate_quadrangle(approx):
     return approx
 
 def find_quadrangle(mask):
-
-    contours, _ = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
-    
+    try: 
+        contours, _ = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+    except: 
+        _, contours, _ = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+        
     if len(contours) > 1:
         #print("Found {} contour(s)".format(len(contours)))
         contours = ignore_contours(mask.shape, contours)
