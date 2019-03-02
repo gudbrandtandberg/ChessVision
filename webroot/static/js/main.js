@@ -228,10 +228,9 @@ var invokeLambda = function(payload) {
         if (error) {
             prompt(error);
         } else {
-            
             var payload = JSON.parse(data.Payload);
             var body = JSON.parse(payload.body);
-            var statusCode = JSON.parse(payload.statusCode)
+            var statusCode = JSON.parse(payload.statusCode);
             
             if (statusCode == 200) {
                 uploadSuccess(body);
@@ -239,7 +238,6 @@ var invokeLambda = function(payload) {
                 console.log("ChessVision failed");
                 console.log(body);
             }
-            
         }
     });
 };
