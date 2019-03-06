@@ -20,3 +20,4 @@ data/.DS_Store
 computeroot/user_uploads/*
 #data/board_extraction
 data/user_uploads/*
+models.tar.gz

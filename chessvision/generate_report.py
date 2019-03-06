@@ -24,7 +24,7 @@ if __name__ == "__main__":
         infile,
         outfile,
         parameters=dict(extractor_weights=args.extractor_weights,
-                        classifier_weights=args.classifier_weights, 
+                        classifier_weights=args.classifier_weights,
                         threshold=args.threshold)
     )
 

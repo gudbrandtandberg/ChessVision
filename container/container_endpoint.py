@@ -22,7 +22,8 @@ import uuid
 
 #prefix = "../" # local
 prefix = ""     # container
-model_path = 'weights/'
+prefix="/opt/ml"
+model_path = 'model/models'
 model_path = os.path.join(prefix, model_path)
 
 client = boto3.client('s3')
