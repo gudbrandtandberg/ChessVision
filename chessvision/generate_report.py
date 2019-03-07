@@ -17,12 +17,13 @@ if __name__ == "__main__":
     parser.add_argument("--report_name", type=str, default="new_report")
     args = parser.parse_args()
 
-    infile  = cv_globals.CVROOT + "/chessvision/notebooks/Performance Report.ipynb"
-    outfile = cv_globals.CVROOT + "/chessvision/notebooks/reports/{}.ipynb".format(args.report_name)
+    infile  = os.path.join(cv_globals.CVROOT, "chessvision", "notebooks", "Performance Report.ipynb")
+    outfile = os.path.join(cv_globals.CVROOT, "chessvision", "notebooks", "reports", "{}.ipynb".format(args.report_name))
     
     pm.execute_notebook(
         infile,
         outfile,
+        kernel_name="python",
         parameters=dict(extractor_weights=args.extractor_weights,
                         classifier_weights=args.classifier_weights, 
                         threshold=args.threshold)
