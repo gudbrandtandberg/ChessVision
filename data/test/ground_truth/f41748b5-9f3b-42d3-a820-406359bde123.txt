@@ -1,1 +1,1 @@
-['f', 'f', 'f', 'R', 'R', 'f', 'K', 'f', 'P', 'f', 'f', 'f', 'f', 'P', 'B', 'f', 'q', 'f', 'P', 'f', 'B', 'f', 'P', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'Q', 'f', 'p', 'f', 'f', 'f', 'b', 'p', 'f', 'f', 'f', 'p', 'f', 'f', 'f', 'k', 'f', 'p', 'f', 'f', 'f', 'b', 'f', 'f', 'p', 'r', 'n', 'f', 'f', 'f', 'r', 'f', 'f']
+fffRRfKfPffffPBfqfPfBfPffffffffQfpfffbpfffpfffkfpfffbffprnfffrff
