@@ -81,6 +81,8 @@ def top_k_sim(predictions, truth, k, names):
     return hits / 64
 
 def confusion_matrix(predicted, truth, N=13):
+    predicted = list(predicted)
+    truth = list(truth)
     if type(predicted[0]) == str:
         for i in range(len(predicted)):
             predicted[i] = labels.index(predicted[i])
@@ -93,7 +95,7 @@ def confusion_matrix(predicted, truth, N=13):
 
     return mtx
 
-def vectorize_chessboard(board):
+def vectorize_chessboard1(board):
     """vectorizes a python-chess board from a1 to h8 along ranks (row-major)"""
     res = ["f"] * 64
 
@@ -104,6 +106,19 @@ def vectorize_chessboard(board):
 
     return res
 
+def vectorize_chessboard(board):
+    
+    res = list("f" * 64)
+    
+    piecemap = board.piece_map()
+    
+    for i in range(64):
+        
+        piece = piecemap.get(i)
+        if piece:
+            res[i] = piece.symbol()
+
+    return "".join(res)
 
 def get_test_generator():
     img_filenames = listdir_nohidden(test_data_dir + "raw/")
@@ -127,7 +142,8 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
                "chessboards": [],
                "squares": [],
                "filenames": [],
-               "masks": []
+               "masks": [],
+               "board_accs": []
                }
 
     confusion_mtx = np.zeros((13, 13), dtype=int)
@@ -145,7 +161,8 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 
         truth_file = test_data_dir + "ground_truth/" + filename[:-4] + ".txt"
         with open(truth_file) as truth:
-            true_labels = ast.literal_eval(truth.read())
+            #true_labels = ast.literal_eval(truth.read())
+            true_labels = truth.read()
 
         top_2_accuracy += top_k_sim(predictions, true_labels, 2, names)
         top_3_accuracy += top_k_sim(predictions, true_labels, 3, names)
@@ -153,10 +170,12 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
         times.append(stop-start)
         res = vectorize_chessboard(chessboard)
         
-        test_accuracy += sim(res, true_labels)
+        this_board_acc = sim(res, true_labels)
+        test_accuracy += this_board_acc
 
         confusion_mtx += confusion_matrix(res, true_labels)
 
+        results["board_accs"].append(this_board_acc)
         results["board_imgs"].append(board_img)
         results["raw_imgs"].append(img)
         results["predictions"].append(predictions)
@@ -192,6 +211,6 @@ if __name__ == "__main__":
     results = run_tests(test_data_gen, extractor, classifier)
 
     print("Test accuracy: {}".format(results["acc"]))
-    print("Top-1 accuracy: {}".format(results["top_1_accuracy"]))
+    # print("Top-1 accuracy: {}".format(results["top_1_accuracy"]))
     print("Top-2 accuracy: {}".format(results["top_2_accuracy"]))
     print("Top-3 accuracy: {}".format(results["top_3_accuracy"]))
