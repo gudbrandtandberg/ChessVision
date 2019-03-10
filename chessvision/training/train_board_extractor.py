@@ -103,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=16,
                         help='Batch size')
 
-    parser.add_argument('--install', type=bool, default=False,
+    parser.add_argument('--install', actin="store_true",
                         help='whether to install the dataset using quilt')
     args = parser.parse_args()
 
@@ -131,12 +131,12 @@ if __name__ == "__main__":
     print(model.summary())
 
     callbacks = [EarlyStopping(monitor='val_loss',
-                            patience=8,
+                            patience=10,
                             verbose=1,
                             min_delta=1e-4),
                 ReduceLROnPlateau(monitor='val_loss',
                                 factor=0.1,
-                                patience=4,
+                                patience=5,
                                 verbose=1,
                                 epsilon=1e-4),
                 ModelCheckpoint(monitor='val_loss',
