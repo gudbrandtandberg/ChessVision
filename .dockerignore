@@ -1,6 +1,7 @@
 data/
 weights/extractor/
 weights/classifier/
+weights/models/
 img/
 computeroot/
 webroot/
