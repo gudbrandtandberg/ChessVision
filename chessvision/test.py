@@ -92,8 +92,21 @@ def confusion_matrix(predicted, truth, N=13):
 
     for p, t in zip(predicted, truth):
         mtx[t, p] += 1
+        if p == 
 
     return mtx
+
+def get_hits(mtx):
+    N = mtx.shape[0]
+    ondiag = 0
+    offdiag = 0
+    for i in len(N):
+        for j in len(N):
+            if i == j:
+                ondiag += mtx[i,j]
+            else:
+                offdiag += mtx[i,j]
+    return ondiag, offdiag
 
 def vectorize_chessboard1(board):
     """vectorizes a python-chess board from a1 to h8 along ranks (row-major)"""
@@ -196,6 +209,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
     results["avg_time"] = sum(times[:-1]) / (N-1)
     results["acc"] = test_accuracy
     results["errors"] = errors
+    results["hits"] = get_hits(confusion_matrix)
     print("Classified {} raw images".format(N))
 
     return results
