@@ -20,7 +20,7 @@ def install_data():
     quilt.install("gudbrandtandberg/chessboard_segmentation")
 
 def get_data(node, split=None):
-    
+
     images = []
     masks  = []
     
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=16,
                         help='Batch size')
 
-    parser.add_argument('--install', actin="store_true",
+    parser.add_argument('--install', action="store_true",
                         help='whether to install the dataset using quilt')
     args = parser.parse_args()
 
