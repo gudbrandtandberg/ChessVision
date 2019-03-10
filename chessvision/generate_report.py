@@ -23,7 +23,7 @@ if __name__ == "__main__":
     pm.execute_notebook(
         infile,
         outfile,
-        kernel_name="python",
+        # kernel_name="python",
         parameters=dict(extractor_weights=args.extractor_weights,
                         classifier_weights=args.classifier_weights,
                         threshold=args.threshold)

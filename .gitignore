@@ -21,3 +21,8 @@ computeroot/user_uploads/*
 #data/board_extraction
 data/user_uploads/*
 models.tar.gz
+
+chessvision/notebooks/reports/*
+!chessvision/notebooks/reports/new_report.html
+!chessvision/notebooks/reports/best_report.html
+
