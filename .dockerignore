@@ -1,7 +1,9 @@
 data/
-weights/extractor/
-weights/classifier/
-weights/models/
+weights/
+.git
+#weights/extractor/
+#weights/classifier/
+#weights/models/
 img/
 computeroot/
 webroot/
