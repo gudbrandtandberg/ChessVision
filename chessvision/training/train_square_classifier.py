@@ -74,7 +74,7 @@ def keras_generator(*, transform=False, sample=None, batch_size=32):
 
         X, y = get_data(node, len(paths))
 
-        if sample is not None:
+        if sample:
             X, y = sample_data(X, y, sample)
 
         datagen.fit(X)
