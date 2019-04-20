@@ -17,6 +17,7 @@ from quilt.data.gudbrandtandberg import chesspieces as pieces
 from square_classifier import build_square_classifier
 import cv_globals
 import datetime
+from sklearn.utils import shuffle
 
 labels = {"b": 6, "k": 7, "n": 8, "p": 9, "q": 10, "r": 11, "B": 0,
           "f": 12, "K": 1, "N": 2, "P": 3, "Q": 4, "R": 5}
@@ -75,7 +76,16 @@ def keras_generator(*, transform=False, sample=None, batch_size=32):
         X, y = get_data(node, len(paths))
 
         if sample:
-            X, y = sample_data(X, y, sample)
+            try:
+                X, y = shuffle(X, y)
+                frac = int(sample)
+                N = X.shape[0]
+                n = round(N * frac / 100.)
+                X = X[:n]
+                y = y[:n]
+                print("Only using first {} of {} training examples".format(n, N))
+            except ValueError:
+                X, y = sample_data(X, y, sample)
 
         datagen.fit(X)
         y = to_categorical(y)
@@ -102,7 +112,7 @@ def get_class_weights():
 if __name__ == "__main__":
 
     print("Running training job for the square classifier...")
-
+    
     parser = argparse.ArgumentParser(
         description='Train the ChessVision square extractor')
     parser.add_argument('--epochs', type=int, default=100,

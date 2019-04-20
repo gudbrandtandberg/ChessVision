@@ -52,36 +52,65 @@ def check_bishops(pred_labels, probs, names):
     # check if more than two dark/light bishops
     # check if dark bishop on light square and vice versa
 
-    #sorted_probs = np.argsort(probs)
+    sorted_probs    = np.sort(probs)
+    argsorted_probs = np.argsort(probs)
 
     dark_squares  = ["a1", "c1", "e1", "g1", "b2", "d2", "f2", "h2", "a3", "c3", "e3", "g3", "b4", "d4", "f4", "h4", "a5", "c5", "e5", "g5", "b6", "d6", "f6", "h6", "a7", "c7", "e7", "g7", "b8", "d8", "f8", "h8"]
     #light_squares = ["b1", "d1", "f1", "h1", "a2", "c2", "e2", "g2", "b3", "d3", "f3", "h3", "a4", "c4", "e4", "g4", "b5", "d5", "f5", "h5", "a6", "c6", "e6", "g6", "b7", "d7", "f7", "h7", "a8", "c8", "e8", "g8"]
 
-    num_white_bishops_dark_squares = 0
+    num_white_bishops_dark_squares  = 0
     num_white_bishops_light_squares = 0
-    num_black_bishops_dark_squares = 0
+    num_black_bishops_dark_squares  = 0
     num_black_bishops_light_squares = 0
+
+    white_bishops_dark_squares  = []
+    white_bishops_light_squares = []
+    black_bishops_dark_squares  = []
+    black_bishops_light_squares = []
 
     for label, name in zip(pred_labels, names):
         if label == "B":
             if name in dark_squares:
                 num_white_bishops_dark_squares += 1
+                white_bishops_dark_squares.append(name)
             else:
                 num_white_bishops_light_squares += 1
+                white_bishops_light_squares.append(name)
         elif label == "b":
             if name in dark_squares:
                 num_black_bishops_dark_squares += 1
+                black_bishops_dark_squares.append(name)
             else:
                 num_black_bishops_light_squares += 1
+                black_bishops_light_squares.append(name)
 
     if num_black_bishops_dark_squares > 1:
         print("More than one black dark-squared bishop")
+        for name in black_bishops_dark_squares:
+            ind = names.index(name)
+            prob = sorted_probs[ind][-1]
+            print("At {} with prob {:.10f}".format(name, prob))
+
     if num_black_bishops_light_squares > 1:
         print("More than one black light-squared bishop")
+        for name in black_bishops_light_squares:
+            ind = names.index(name)
+            prob = sorted_probs[ind][-1]
+            print("At {} with prob {:.10f}".format(name, prob))
+
     if num_white_bishops_dark_squares > 1:
         print("More than one white dark-squared bishop")
+        for name in white_bishops_dark_squares:
+            ind = names.index(name)
+            prob = sorted_probs[ind][-1]
+            print("At {} with prob {:.10f}".format(name, prob))
+            
     if num_white_bishops_light_squares > 1:
         print("More than one white light-squared bishop")
+        for name in white_bishops_light_squares:
+            ind = names.index(name)
+            prob = sorted_probs[ind][-1]
+            print("At {} with prob {:.10f}".format(name, prob))
 
     return pred_labels
 
