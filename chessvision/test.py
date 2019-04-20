@@ -173,7 +173,6 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 
         truth_file = test_data_dir + "ground_truth/" + filename[:-4] + ".txt"
         with open(truth_file) as truth:
-            #true_labels = ast.literal_eval(truth.read())
             true_labels = truth.read()
 
         top_2_accuracy += top_k_sim(predictions, true_labels, 2, names)
