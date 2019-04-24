@@ -14,6 +14,7 @@ import quilt
 import datetime
 import os
 from sklearn.utils import shuffle
+import math
 
 from quilt.data.gudbrandtandberg import chessboard_segmentation as chessboards
 
@@ -55,10 +56,11 @@ def get_training_generator(images, masks, batch_size=16, sample=None):
     if sample:
         images, masks = shuffle(images, masks)
         frac = int(sample)
-        n = round(N * frac / 100.)
+        n = math.floor(N * frac / 100.)
         images = images[:n]
         masks = masks[:n]
         print("Only using first {} of {} training examples".format(n, N))
+        N = n
 
     while True:
         for start in range(0, N, batch_size):
