@@ -1,5 +1,6 @@
 data/
 weights/
+!weights/models/*
 .git
 #weights/extractor/
 #weights/classifier/

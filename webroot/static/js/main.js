@@ -1,14 +1,15 @@
-// 
+//
 // main.js -- all the chessvision website stuff
 //
 
 // global variablaes
-var board, cropper, cropperOptions;
+var board, game, cropper, cropperOptions;
 var input, canvas, context, endpoint;
 var endpoint, cv_algo_url, analyze_url;
 var effectivePredictedFEN;
+var effectiveCorrectedFEN;
 var effectiveRawId;
-var lambda; 
+var lambda;
 
 var sizeCanvas = function() {
     container = document.getElementById("preview-container");
@@ -23,7 +24,7 @@ var init = function() {
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
         IdentityPoolId: 'eu-central-1:d06d1df9-443e-49e3-84e8-d90aacb9b333',
     });
-    
+
     lambda = new AWS.Lambda({region: "eu-central-1"});
     lambda.config.credentials = AWS.config.credentials;
     lambda.config.region = AWS.config.region;
@@ -39,18 +40,23 @@ var init = function() {
     // $("#preview-anchor").on("click", alert("click"))
 
     endpoint = document.getElementById("endpoint").innerHTML
-    
+
     cv_algo_url = endpoint + "cv_algo/"
     analyze_url = endpoint + "analyze/"
     ping_url = endpoint + "ping/"
-    
+
     // Initialize chessboard (chessboard.js)
-    board = ChessBoard("board", {position: "start",
-                        dropOffBoard: "trash",
-                        orientation: "white",
-                        sparePieces: false,
-                        showErrors: "console"
-                        });
+    var config = {
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd,
+        showErrors: "console"
+      }
+    board = ChessBoard("board", config);
+
+    game = new Chess();
 
     $(window).resize(board.resize);
 
@@ -68,10 +74,10 @@ var init = function() {
                 modal: true,
                 toggleDragModeOnDblclick: false,
                 ready: function(event) {
-                    
+
                 },
                 crop: function(event) {
-                    
+
                   }
                 }
     $("#image-preview").cropper(cropperOptions);
@@ -91,7 +97,7 @@ var init = function() {
 //             timeout: 5000,
 //             success: function(data) {
 //                 $("#server-status").html("CV-server is live!");
-//             }, 
+//             },
 //             error: function(data) {
 //                 $("#server-status").html("CV-server is DOWN..");
 //             }});
@@ -103,23 +109,23 @@ var imageInputChanged = function() {
     canvas = document.getElementById("image-preview");
     context = canvas.getContext('2d');
     var reader = new FileReader();
-    
+
     reader.addEventListener("loadend", function(arg) {
 
       var src_image = new Image();
-      
+
       src_image.onload = function() {
-        
+
         canvas.height = src_image.height;
         canvas.width = src_image.width;
         context.drawImage(src_image, 0, 0);
-        
+
         cropper = $("#image-preview").data("cropper");
         cropper.replace(this.src)
       }
 
       src_image.src = this.result;
-      
+
     });
     if (this.files) {
         reader.readAsDataURL(this.files[0]);
@@ -154,7 +160,7 @@ var extractBoard = function(event) {
         alert("Please upload a photo first!");
         return;
     }
-    
+
     b64image = cropper.getCroppedCanvas({width: 512, height: 512}).toDataURL('image/jpeg', 0.9).split(",")[1];
     payload = JSON.stringify({image: b64image, flip: "false"});
 
@@ -170,7 +176,7 @@ var extractBoard = function(event) {
 var invokeLocalContainer = function(payload) {
     $.ajax({
         url: "http://localhost:8080/invocations",
-        method: "POST", 
+        method: "POST",
         data: payload,
         contentType: "application/json",
         // crossDomain: true,
@@ -195,7 +201,7 @@ var invokeLocalContainer = function(payload) {
 var invokeLocalServer = function(payload) {
     $.ajax({
         url: "http://localhost:7777/cv_algo/",
-        method: "POST", 
+        method: "POST",
         data: payload,
         contentType: "application/json",
         // crossDomain: true,
@@ -223,7 +229,7 @@ var invokeLambda = function(payload) {
         FunctionName : "arn:aws:lambda:eu-central-1:580857158266:function:chessvisionClient",
         InvocationType : "RequestResponse"
         };
-    
+
     lambda.invoke(params, function(error, data) {
         if (error) {
             prompt(error);
@@ -231,7 +237,7 @@ var invokeLambda = function(payload) {
             var payload = JSON.parse(data.Payload);
             var body = JSON.parse(payload.body);
             var statusCode = JSON.parse(payload.statusCode);
-            
+
             if (statusCode == 200) {
                 uploadSuccess(body);
             } else {
@@ -244,15 +250,16 @@ var invokeLambda = function(payload) {
 
 var uploadSuccess = function(data) {
     //parse data = {FEN: "...", id: "..."}
-    
+
     unsetSpinner()
-    
+
     $("#board-container").show()
     $("#preview-container").hide()
     $("#edit-analyze-pane").show()
     board.resize()
     setFEN(data.FEN)
     effectivePredictedFEN = data.FEN
+    effectiveCorrectedFEN = effectivePredictedFEN;
 
     if (data.id) {
         $("#raw-id-input").val(data.id);
@@ -270,10 +277,45 @@ var uploadSuccess = function(data) {
     $("#flip-pane").hide()
 };
 
+function onDragStart (source, piece, position, orientation) {
+    // do not pick up pieces if the game is over
+    if (game.game_over()) return false
+
+    // only pick up pieces for the side to move
+    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+      return false
+    }
+  }
+
+function onDrop (source, target) {
+    // see if the move is legal
+    var move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    })
+
+    // illegal move
+    if (move === null) return 'snapback'
+}
+
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+function onSnapEnd () {
+    board.position(game.fen())
+}
+
+$("#logo").on("click", function(e) {
+    board.position(effectiveCorrectedFEN);
+    game.load(expandFen(effectiveCorrectedFEN));
+});
+
 $("#edit-btn").on("click", function(e) {
-    
+
     var orientation = document.getElementById("reversed-input").checked ? "black" : "white"
     var pos = board.position("fen")
+    board.destroy();
     board = ChessBoard( 'board', {
     position: pos,
     orientation: orientation,
@@ -289,7 +331,7 @@ $("#edit-btn").on("click", function(e) {
 
 $("#feedback-form").submit(function(event) {
     event.preventDefault()
-    
+
     var feedback_url = "http://localhost:7777/feedback/";
     var position = board.position()
     var flip = document.getElementById("reversed-input").checked ? "true" : "false"
@@ -297,27 +339,35 @@ $("#feedback-form").submit(function(event) {
     formData = {
         position: JSON.stringify(position),
         flip: flip,
-        predictedFEN: expandFen(effectivePredictedFEN), 
-        id: effectiveRawId 
+        predictedFEN: expandFen(effectivePredictedFEN),
+        id: effectiveRawId
     };
 
     $.ajax({
         url: feedback_url,
         method: "POST",
-        data: JSON.stringify(formData), 
+        data: JSON.stringify(formData),
         cache: false,
         contentType: false,
         processData: false,
         success: function(data) {
             res = JSON.parse(data)
-            $("#feedback-pane").hide()
+            $("#feedback-pane").hide();
             var pos = board.position("fen")
+            effectiveCorrectedFEN = pos;
             var orientation = document.getElementById("reversed-input").checked ? "black" : "white"
+            board.destroy();
             board = ChessBoard( 'board', {
                 position: pos,
                 orientation: orientation,
                 sparePieces: false,
+                draggable: true,
+                onDragStart: onDragStart,
+                onDrop: onDrop,
+                onSnapEnd: onSnapEnd,
+                showErrors: "console"
                 });
+            game.load(expandFen(board.position("fen")))
             $("#submit-pane").show()
             $("#edit-analyze-pane").show()
 
@@ -325,7 +375,7 @@ $("#feedback-form").submit(function(event) {
                 alert("Thanks for your feedback!")
             } else {
                 alert("Something went wrong, your feedback was not taken into consideration")
-                }           
+                }
             },
         error: function(data) {
             alert("Feedback-ajax failed..")
@@ -339,13 +389,13 @@ var toggleTurn = function() {
 };
 
 var requestAnalysis = function() {
-    
+
     //var formData = new FormData();
     // get valid fen from board + input tags.
     var fen = board.fen()
     fen = expandFen(fen);
     var formData = {"FEN": fen};
-    
+
     $.ajax({
         url: analyze_url,
         method: "POST",
@@ -356,10 +406,10 @@ var requestAnalysis = function() {
                 alert("Analysis failed..")
                 return
             }
-    
+
             var bestMove = res.bestMove
             var score, mate
-    
+
             if (bestMove == "(none)") {
                 return
             }
@@ -367,12 +417,12 @@ var requestAnalysis = function() {
             if (res.score != "None") {
                 score = parseFloat(res.score)
                 setScore(score)
-                
+
             } else {
                 mate = parseInt(res.mate)
                 setMate(mate)
             }
-            
+
             if (bestMove.length == 5) {
                 alert("strange move!")
             }
@@ -409,6 +459,7 @@ var expandFen = function(fen) {
 }
 
 var setFEN = function(fen) {
+    game.load(expandFen(fen))
     orientation = document.getElementById("reversed-input").checked ? "black" : "white"
     board.orientation(orientation)
     board.position(fen, true)
@@ -416,7 +467,7 @@ var setFEN = function(fen) {
 
 var setMate = function(mate) {
     var tomove = document.querySelector('input[name="move"]:checked').value;
-    
+
     if ((mate > 0 && tomove == "w") || (mate < 0 && tomove == "b")) {
         $("#needle-content").css({width: "100%"})
     } else {

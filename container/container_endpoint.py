@@ -20,8 +20,8 @@ import boto3
 from keras.models import load_model
 import uuid
 
-#prefix = "../" # local
-prefix = ""     # container
+prefix = "../" # local
+# prefix = ""     # container
 prefix="/opt/ml"
 model_path = 'model/models'
 model_path = os.path.join(prefix, model_path)
