@@ -325,7 +325,7 @@ $("#edit-btn").on("click", function(e) {
     //$(window).resize(board.resize);
 
     $("#feedback-pane").show()
-    $("#submit-pane").hide()
+    $("#upload-pane").hide()
     $("#edit-analyze-pane").hide()
 })
 
@@ -352,37 +352,43 @@ $("#feedback-form").submit(function(event) {
         processData: false,
         success: function(data) {
             res = JSON.parse(data)
-            $("#feedback-pane").hide();
-            var pos = board.position("fen")
-            effectiveCorrectedFEN = pos;
-            var orientation = document.getElementById("reversed-input").checked ? "black" : "white"
-            board.destroy();
-            board = ChessBoard( 'board', {
-                position: pos,
-                orientation: orientation,
-                sparePieces: false,
-                draggable: true,
-                onDragStart: onDragStart,
-                onDrop: onDrop,
-                onSnapEnd: onSnapEnd,
-                showErrors: "console"
-                });
-            game.load(expandFen(board.position("fen")))
-            $("#submit-pane").show()
-            $("#edit-analyze-pane").show()
-
+            setCorrectedPosition();
             if (res.success == "true") {
                 alert("Thanks for your feedback!")
             } else {
-                alert("Something went wrong, your feedback was not taken into consideration")
+                console.log("Something went wrong, your feedback was not taken into consideration")
                 }
             },
         error: function(data) {
-            alert("Feedback-ajax failed..")
+            setCorrectedPosition();
+            console.log("Feedback endpoint ajax failed..")
             console.log(data)
             }
         })
     })
+
+var setCorrectedPosition = function() {
+    $("#feedback-pane").hide();
+    
+    var pos = board.position("fen")
+    effectiveCorrectedFEN = pos;
+    var orientation = document.getElementById("reversed-input").checked ? "black" : "white"
+    board.destroy();
+    board = ChessBoard( 'board', {
+        position: pos,
+        orientation: orientation,
+        sparePieces: false,
+        draggable: true,
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd,
+        showErrors: "console"
+        });
+    game.load(expandFen(board.position("fen")))
+    
+    $("#upload-pane").show();
+    $("#edit-analyze-pane").show();
+}
 
 var toggleTurn = function() {
     $('input[type="radio"]').not(':checked').prop("checked", true);
@@ -443,7 +449,7 @@ var requestAnalysis = function() {
 
 var expandFen = function(fen) {
     var move = document.querySelector('input[name="move"]:checked').value;
-    var castle = "-"
+    var castle = "KQkq"
     var ep = "-"
     var halfmove = "0"
     var fullmove = "1"
