@@ -4,10 +4,6 @@ import boto3
 client = boto3.client("s3")
 
 avoid = [
-    "requirements.txt",
-    "web.2.7.config",
-    "ptvs_virtualenv_proxy.py",
-    "runtime.txt",
     "README.md",
     "copy_bucket.py",
     "main.py"
@@ -20,6 +16,8 @@ for dirName, subdirList, fileList in os.walk(rootDir):
     for fname in fileList:
         contentType = "text/plain"
         if fname[0] == "." or fname in avoid:
+            continue
+        if fname == "index.html" and dirName == "webroot/templates":
             continue
         if fname.endswith(".html"):
             contentType = "text/html"
