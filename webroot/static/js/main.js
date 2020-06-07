@@ -396,58 +396,33 @@ var toggleTurn = function() {
 
 var requestAnalysis = function() {
 
-    //var formData = new FormData();
-    // get valid fen from board + input tags.
+    var chessdotcomEndpoint = "https://www.chess.com/analysis"
+    
     var fen = board.fen()
-    fen = expandFen(fen);
-    var formData = {"FEN": fen};
+    fen = encodeURIComponent(fen)
 
-    $.ajax({
-        url: analyze_url,
-        method: "POST",
-        data: formData,
-        success: function(data) {
-            res = JSON.parse(data)
-            if (res.success == "false") {
-                alert("Analysis failed..")
-                return
-            }
+    var move = document.querySelector('input[name="move"]:checked').value;
+    var canCastle = "KQkq";
+    var ep = "-";
 
-            var bestMove = res.bestMove
-            var score, mate
+    fen = fen.concat("+", move, "+", canCastle, "+", ep);
 
-            if (bestMove == "(none)") {
-                return
-            }
+    var query = "/?fen="
+    var queryString = query.concat(fen);
 
-            if (res.score != "None") {
-                score = parseFloat(res.score)
-                setScore(score)
-
-            } else {
-                mate = parseInt(res.mate)
-                setMate(mate)
-            }
-
-            if (bestMove.length == 5) {
-                alert("strange move!")
-            }
-            src = bestMove.substr(0, 2)
-            dst = bestMove.substr(2, 2)
-            move = src.concat("-", dst)
-            console.log("Best move is: " + move)
-            board.move(move)
-            toggleTurn()
-
-            },
-        error: function(data) {
-            alert("error")
-            console.log(data)
-            }
-        })
+    var URL = chessdotcomEndpoint.concat(queryString)
+    
+    //console.log(fen);
+    //console.log(URL);
+    window.open(URL, '_blank');
+    
 }
 
+//https://www.chess.com/analysis?fen=rnbqkbnr%2Fpppppppp%2F8%2F8%2F4P3%2F8%2FPPPP1PPP%2FRNBQKBNR+b+KQkq+-
+//https://www.chess.com/analysis%2F%3Ffen%3Drnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR+b+KQkq+-
+
 var expandFen = function(fen) {
+    //rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR+b+KQkq+-
     var move = document.querySelector('input[name="move"]:checked').value;
     var castle = "KQkq"
     var ep = "-"
