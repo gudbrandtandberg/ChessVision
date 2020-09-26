@@ -1,5 +1,5 @@
 opencv==3.4.1
-tensorflow==1.12.0
+tensorflow==1.15.4
 keras==2.2.4
 flask==0.12.1
 quilt==2.9.9
