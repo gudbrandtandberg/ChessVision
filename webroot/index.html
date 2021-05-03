@@ -8,7 +8,6 @@
         <link rel="shortcut icon" href="static/img/favicon.ico">
         
         <!--           CSS             -->
-        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
         <link rel="stylesheet" href="static/css/bootstrap.min.css">        
         <link rel="stylesheet" href="static/css/chessboard-0.3.0.css" />
         <link rel="stylesheet" href="static/css/cropper.css">
@@ -37,9 +36,10 @@
                 </div>
             </div>
 
-        
-            <div id="preview-container" class="row">
-                <canvas id="image-preview" class="col-xs-12"></canvas>
+            <div id="crop-area" class="row">
+                <div id="preview-container">
+                    <canvas id="image-preview"></canvas>
+                </div>
             </div>
         
 
@@ -59,7 +59,7 @@
                     <div class="col-sm-6">
                         <label id="image-input-label" class="btn btn-default btn-file  btn-block">
                             Choose file
-                            <input id="image-input" type="file" name="file" accept="image/*" style="display: none;" onchange="handleFiles(this.files)">
+                            <input id="image-input" type="file" name="file" accept="image/*" style="display: none;">
                         </label>
                     </div>
                     <div class="col-sm-6">
@@ -103,10 +103,9 @@
 
         <!--        SCRIPTS             -->
         <script src="static/js/json3.js"></script>
-        <!-- <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script> -->
         <script src="static/js/jquery-1.11.1.min.js"></script>
         <script src="static/js/chessboard-0.3.0.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+        <script src="static/js/chess.js"></script>
         <script src="static/js/cropper.js"></script><!-- Cropper.js is required -->
         <script src="static/js/jquery-cropper.js"></script>
         <script src="static/js/aws-sdk.min.js"></script>

@@ -68,6 +68,7 @@ var init = function() {
                 autoCropArea: 1.0,
                 aspectRatio: 1.0,
                 wheelZoomRatio: 0.01,
+                minCropBoxWidth: "530",
                 background: true,
                 guides: true,
                 center: false,
