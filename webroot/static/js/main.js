@@ -62,11 +62,12 @@ var init = function() {
 
     // Initialize cropper (cropper.js)
     cropperOptions = { dragMode: "move",
-                viewMode: 3,
+                viewMode: 0,
                 cropBoxMovable: false,
                 cropBoxResizable: false,
                 autoCropArea: 1.0,
                 aspectRatio: 1.0,
+                wheelZoomRatio: 0.01,
                 background: true,
                 guides: true,
                 center: false,
@@ -89,9 +90,85 @@ var init = function() {
     // Check server status
     //pingServer();
     //setInterval(pingServer, 6000);
-
+    setupDropArea();
 } // end init
 
+function handleDrop(e) {
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    handleFiles(files);
+}
+
+function handleFiles(files) {
+    ([...files]).forEach(uploadFile);
+}
+
+function uploadFile(file) {
+    console.log("uploadFile");
+    
+    canvas = document.getElementById("image-preview");
+    context = canvas.getContext('2d');
+    var reader = new FileReader();
+
+    reader.addEventListener("loadend", function(arg) {
+
+      var src_image = new Image();
+
+      src_image.onload = function() {
+
+        canvas.height = src_image.height;
+        canvas.width = src_image.width;
+        context.drawImage(src_image, 0, 0);
+
+        cropper = $("#image-preview").data("cropper");
+        cropper.replace(this.src)
+      }
+
+      src_image.src = this.result;
+
+    });
+    if (file) {
+        reader.readAsDataURL(file);
+        $("#board-container").hide()
+        $("#preview-container").show()
+        $("#flip-pane").show()
+        $("#to-move").show()
+        $("#needle-wrapper").hide()
+    } else {
+        alert("no file chosen")
+    }
+}
+
+var setupDropArea = function() {
+    let dropArea = document.getElementById('crop-area');
+    dropArea.addEventListener('drop', handleDrop, false);
+    ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false)
+    })
+
+    ;['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false)
+    })
+    
+    ;['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false)
+    })
+    
+    function highlight(e) {
+        console.log("Hightlighs!")
+        dropArea.classList.add('highlight')
+    }
+    
+    function unhighlight(e) {
+        console.log("unnn")
+        dropArea.classList.remove('highlight')
+    }
+    
+    function preventDefaults (e) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+}
 // var pingServer = function() {
 //     $.ajax({url: ping_url,
 //             timeout: 5000,

@@ -38,7 +38,7 @@
             </div>
 
         
-            <div id="preview-container" class="row">
+            <div id="preview-container" >
                 <canvas id="image-preview" class="col-xs-12"></canvas>
             </div>
         
@@ -59,7 +59,7 @@
                     <div class="col-sm-6">
                         <label id="image-input-label" class="btn btn-default btn-file  btn-block">
                             Choose file
-                            <input id="image-input" type="file" name="file" accept="image/*" style="display: none;">
+                            <input id="image-input" type="file" name="file" accept="image/*" style="display: none;" onchange="handleFiles(this.files)">
                         </label>
                     </div>
                     <div class="col-sm-6">
