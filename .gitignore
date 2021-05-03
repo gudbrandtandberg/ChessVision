@@ -1,2 +1,8 @@
 Dockerfile
 cv_env/
+**/__pycache__
+.vscode/
+*.hdf5
+*.log
+bucket/
+.env
