@@ -6,3 +6,4 @@ cv_env/
 *.log
 bucket/
 .env
+data/new_raw_resized/
