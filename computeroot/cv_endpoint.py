@@ -15,7 +15,7 @@ from chessvision import classify_raw
 import cv_globals
 import cv2
 import chess
-from stockfishpy.stockfishpy import *
+# from stockfishpy.stockfishpy import *
 from extract_squares import extract_squares
 from u_net import load_extractor
 from square_classifier import load_classifier
@@ -240,73 +240,73 @@ def receive_feedback():
 
     return '{ "success": "true" }'
 
-def analyze(fen, move):
-    # check input is legal!!
-    res = {"error": True}
+# def analyze(fen, move):
+#     # check input is legal!!
+#     res = {"error": True}
 
-    board = chess.Board(fen=fen)
-    if not board.is_valid():
-        return res
+#     board = chess.Board(fen=fen)
+#     if not board.is_valid():
+#         return res
     
-    if board.is_game_over():
-        return res
+#     if board.is_game_over():
+#         return res
 
-    plat = platform.system()
-    if plat == "Linux":
-        sf_binary = os.path.join(cv_globals.compute_root, "stockfish-9-64-linux")
-    elif plat == "Darwin":
-        sf_binary = os.path.join(cv_globals.compute_root, "stockfish-9-64-mac")
-    else:
-        logger.error("No support for windows..")
-        return res
+#     plat = platform.system()
+#     if plat == "Linux":
+#         sf_binary = os.path.join(cv_globals.compute_root, "stockfish-9-64-linux")
+#     elif plat == "Darwin":
+#         sf_binary = os.path.join(cv_globals.compute_root, "stockfish-9-64-mac")
+#     else:
+#         logger.error("No support for windows..")
+#         return res
 
-    stockfish = Engine(sf_binary, depth=10)
+#     stockfish = Engine(sf_binary, depth=10)
 
-    try: 
-        stockfish.setposition(fen)
-    except Exception as e:
-        logger.error("BOARD ILLEGAL!: {}".format(e))
-        return res
-    try:
-        best_move = stockfish.bestmove()
-        logger.debug("Best move is: {}".format(best_move["bestmove"])) #is '(none)' if there is mate
-        info = best_move["info"].split()
+#     try: 
+#         stockfish.setposition(fen)
+#     except Exception as e:
+#         logger.error("BOARD ILLEGAL!: {}".format(e))
+#         return res
+#     try:
+#         best_move = stockfish.bestmove()
+#         logger.debug("Best move is: {}".format(best_move["bestmove"])) #is '(none)' if there is mate
+#         info = best_move["info"].split()
 
-        if "cp" in info:
-            score = float(info[info.index("cp")+1]) / 100.
-            if move == "b": 
-                score *= -1
-            mate = ""
-        elif "mate" in info:
-            score = "None"
-            mate = int(info[info.index("mate")+1])
+#         if "cp" in info:
+#             score = float(info[info.index("cp")+1]) / 100.
+#             if move == "b": 
+#                 score *= -1
+#             mate = ""
+#         elif "mate" in info:
+#             score = "None"
+#             mate = int(info[info.index("mate")+1])
     
-    except Exception as e:
-        logger.error("STOCKFISH FAILED: {}".format(e))
-        return res
+#     except Exception as e:
+#         logger.error("STOCKFISH FAILED: {}".format(e))
+#         return res
     
-    return {"best_move": best_move["bestmove"], "score": score, "mate": mate}
+#     return {"best_move": best_move["bestmove"], "score": score, "mate": mate}
 
-@app.route('/analyze/', methods=['POST'])
-@crossdomain(origin='*')
-def engine_analyze():
-    logger.info("Analyzing position using Stockfish")
-    res = '{{ "success": "false" }}'
+# @app.route('/analyze/', methods=['POST'])
+# @crossdomain(origin='*')
+# def engine_analyze():
+#     logger.info("Analyzing position using Stockfish")
+#     res = '{{ "success": "false" }}'
 
-    if "FEN" not in request.form:
-        logger.error("No FEN in the form data...")
-        return res
+#     if "FEN" not in request.form:
+#         logger.error("No FEN in the form data...")
+#         return res
 
-    fen = request.form["FEN"]
-    move = fen.split()[1]
+#     fen = request.form["FEN"]
+#     move = fen.split()[1]
     
-    analysis = analyze(fen, move)
-    if "error" in analysis: 
-        return res
+#     analysis = analyze(fen, move)
+#     if "error" in analysis: 
+#         return res
 
-    best_move, score, mate = analysis["best_move"], analysis["score"], analysis["mate"]
+#     best_move, score, mate = analysis["best_move"], analysis["score"], analysis["mate"]
     
-    return '{{ "success": "true", "bestMove": "{}", "score": "{}", "mate": "{}" }}'.format(best_move, score, mate)
+#     return '{{ "success": "true", "bestMove": "{}", "score": "{}", "mate": "{}" }}'.format(best_move, score, mate)
 
 @app.route('/ping/', methods=['GET'])
 @crossdomain(origin='*')
