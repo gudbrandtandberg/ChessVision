@@ -1,6 +1,6 @@
 import keras
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 from keras.utils import to_categorical
 import numpy as np
 import quilt
@@ -153,6 +153,7 @@ if __name__ == "__main__":
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
 
+    log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     callbacks = [EarlyStopping(monitor='val_loss',
                                patience=10,
                                verbose=1,
@@ -165,7 +166,9 @@ if __name__ == "__main__":
                  ModelCheckpoint(monitor='val_loss',
                                  filepath=weight_filename,
                                  save_best_only=True,
-                                 save_weights_only=False)]
+                                 save_weights_only=False),
+                 TensorBoard(log_dir=log_dir, 
+                             histogram_freq=0)]
 
     start = time.time()
     model.fit_generator(generator=train_generator,

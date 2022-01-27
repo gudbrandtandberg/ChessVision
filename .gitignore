@@ -7,3 +7,5 @@ cv_env/
 bucket/
 .env
 data/new_raw_resized/
+bucket_/
+**/.ipynb_checkpoints
