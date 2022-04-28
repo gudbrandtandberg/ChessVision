@@ -9,3 +9,5 @@ bucket/
 data/new_raw_resized/
 bucket_/
 **/.ipynb_checkpoints
+wandb/
+logs/

@@ -1,9 +1,11 @@
 opencv-python==3.4.8.29
-tensorflow==1.15.4
-keras==2.2.4
+tensorflow==2.5.2
+keras==2.5.0
 flask==1.0
 quilt==2.9.9
 imbalanced-learn
 papermill==0.16.1
 python-chess
 # stockfishpy
+wandb
+pillow

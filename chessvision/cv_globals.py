@@ -19,7 +19,7 @@ extractor_weights_dir = os.path.join(CVROOT, "weights", "extractor")
 square_weights = os.path.join(CVROOT, "weights", "best_classifier.hdf5")
 board_weights = os.path.join(CVROOT, "weights", "best_extractor.hdf5")
 
-square_weights_train = os.path.join(classifier_weights_dir, "{}", "classifier_{{epoch:02d}}-{{val_acc:.4f}}.hdf5")
+square_weights_train = os.path.join(classifier_weights_dir, "{}", "classifier_{{epoch:02d}}-{{val_accuracy:.4f}}.hdf5")
 board_weights_train = os.path.join(extractor_weights_dir, "{}", "extractor_{{epoch:02d}}-{{val_dice_coeff:.4f}}.hdf5")
 
 INPUT_SIZE = (256, 256)
