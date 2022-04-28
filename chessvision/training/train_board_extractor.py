@@ -1,6 +1,5 @@
-import keras
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 from augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
 import numpy as np

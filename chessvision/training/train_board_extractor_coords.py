@@ -1,9 +1,8 @@
-import keras
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 import model.u_net as unet
 from model.augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
 import matplotlib.pyplot as plt
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 import data
 import numpy as np

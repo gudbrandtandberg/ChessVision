@@ -4,8 +4,8 @@ keras==2.5.0
 flask==1.0
 quilt==2.9.9
 imbalanced-learn
-papermill==0.16.1
+papermill
 python-chess
-# stockfishpy
 wandb
 pillow
+matplotlib

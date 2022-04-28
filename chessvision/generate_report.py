@@ -29,5 +29,5 @@ if __name__ == "__main__":
                         threshold=args.threshold)
     )
 
-    subprocess.call(["jupyter-nbconvert", outfile])
+    subprocess.call(["jupyter-nbconvert", outfile, "--to", "html"])
     os.remove(outfile)

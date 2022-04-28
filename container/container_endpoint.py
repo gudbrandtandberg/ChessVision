@@ -17,7 +17,7 @@ import tensorflow as tf
 import chess
 import cv2
 import boto3
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import uuid
 
 prefix = "../" # local
