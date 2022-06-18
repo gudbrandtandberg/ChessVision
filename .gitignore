@@ -11,3 +11,5 @@ bucket_/
 **/.ipynb_checkpoints
 wandb/
 logs/
+lightly_outputs/
+data/quilt_revisions
