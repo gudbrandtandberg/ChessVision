@@ -11,7 +11,7 @@ import numpy as np
 import base64
 import argparse
 
-from chessvision import classify_raw
+from chessvision.chessvision import classify_raw
 import cv_globals
 import cv2
 import chess
@@ -24,7 +24,7 @@ import logging
 import tensorflow as tf
 
 app = Flask(__name__)
-graph = tf.get_default_graph()
+# graph = tf.get_default_graph()
 
 #log = logging.getLogger('werkzeug')
 #log.setLevel(logging.ERROR)
@@ -145,9 +145,9 @@ def predict_img():
 
     try:
         logger.info("Processing image {}".format(filename))
-        global graph
-        with graph.as_default():
-            board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flipped)
+        # global graph
+        # with graph.as_default():
+        board_img, _, _, _, FEN, _, _ = classify_raw(image, filename, board_model, sq_model, flip=flipped)
         
         #move file to success raw folder
         os.rename(tmp_loc, os.path.join(app.config["UPLOAD_FOLDER"], "raw", filename))
