@@ -21,7 +21,7 @@ def build_square_classifier(dense_1_size=128, dense_2_size=30):
     model.add(Conv2D(15, (3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.2))
-    model.add(Flatten())
+    model.add(Flatten(name="embedding_layer"))
     model.add(Dense(dense_1_size, activation='relu'))
     model.add(Dense(dense_2_size, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
