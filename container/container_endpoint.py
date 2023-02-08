@@ -35,7 +35,6 @@ board_extractor.load_weights(os.path.join(model_path, 'best_extractor.hdf5'))
 square_classifier = load_model(os.path.join(model_path, 'best_classifier.hdf5'))
 print("Loading models... DONE!")
 
-graph = tf.get_default_graph()
 
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
@@ -143,9 +142,7 @@ def chessvision_algo():
     os.remove(filename)
 
     try:
-        global graph
-        with graph.as_default():
-            _, _, _, _, FEN, _, _ = classify_raw(img, "filename", board_extractor, square_classifier, flip=flipped)
+        _, _, _, _, FEN, _, _ = classify_raw(img, "filename", board_extractor, square_classifier, flip=flipped)
     
     except BoardExtractionError:
         return flask.Response(
