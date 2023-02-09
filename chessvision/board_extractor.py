@@ -8,10 +8,10 @@ Usage:
 python board_extractor.py -d ../data/images/ -o ./data/boards/
 """
 
-from util import ratio, BoardExtractionError
+from .util import ratio, BoardExtractionError
 import numpy as np
 import cv2
-import cv_globals
+from .cv_globals import INPUT_SIZE, BOARD_SIZE
 
 
 def extract_board(image, orig, model, threshold=80):
@@ -19,7 +19,7 @@ def extract_board(image, orig, model, threshold=80):
     #print("Extracting board..")
     image_batch = np.array([image], np.float32) / 255
     predicted_mask_batch = model.predict(image_batch)
-    predicted_mask = predicted_mask_batch[0].reshape(cv_globals.INPUT_SIZE)
+    predicted_mask = predicted_mask_batch[0].reshape(INPUT_SIZE)
     mask = fix_mask(predicted_mask, threshold=threshold)
 
     #approximate chessboard-mask with a quadrangle
@@ -32,7 +32,7 @@ def extract_board(image, orig, model, threshold=80):
     approx = scale_approx(approx, (orig.shape[0], orig.shape[1])) 
     
     #extract board
-    board = extract_perspective(orig, approx, cv_globals.BOARD_SIZE)
+    board = extract_perspective(orig, approx, BOARD_SIZE)
 
     board = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
     board = cv2.flip(board, 1) # TODO: permute approximation instead..

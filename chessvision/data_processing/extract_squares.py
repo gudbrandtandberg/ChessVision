@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from util import listdir_nohidden, parse_arguments
+from ..util import listdir_nohidden, parse_arguments
 
 def extract_squares(board, flip=False):
     

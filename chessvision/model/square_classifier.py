@@ -1,6 +1,5 @@
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, BatchNormalization
-import cv_globals
 
 input_shape = (64, 64, 1)
 num_classes = 13

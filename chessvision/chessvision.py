@@ -1,11 +1,10 @@
 import cv2
-import numpy as np
 
-import cv_globals
-from util import BoardExtractionError
+from .cv_globals import INPUT_SIZE
+from .util import BoardExtractionError
 
-import board_extractor
-import board_classifier
+from .board_extractor import extract_board
+from .board_classifier import classify_board
 
 def classify_raw(img, filename, board_model, sq_model, flip=False, threshold=80):
 
@@ -14,16 +13,16 @@ def classify_raw(img, filename, board_model, sq_model, flip=False, threshold=80)
     ###############################   STEP 1    #########################################
 
     ## Resize image
-    comp_image = cv2.resize(img, cv_globals.INPUT_SIZE, interpolation=cv2.INTER_AREA)
+    comp_image = cv2.resize(img, INPUT_SIZE, interpolation=cv2.INTER_AREA)
     
     ## Extract board using CNN model and contour approximation
     try: 
-        board_img, mask = board_extractor.extract_board(comp_image, img, board_model, threshold=threshold)
+        board_img, mask = extract_board(comp_image, img, board_model, threshold=threshold)
     except BoardExtractionError as e:
         raise e
     ###############################   STEP 2    #########################################
     
-    FEN, predictions, chessboard, squares, names = board_classifier.classify_board(board_img, sq_model, flip=flip)
+    FEN, predictions, chessboard, squares, names = classify_board(board_img, sq_model, flip=flip)
 
     #print("Processing image {}.. DONE".format(filename))
     
