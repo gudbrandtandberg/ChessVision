@@ -13,5 +13,6 @@ COPY container/container_endpoint_alt.py /container_endpoint.py
 ENV CVROOT=/code/chessvision
 ENV PYTHONPATH=/code
 
-ENTRYPOINT [ "python" "container_endpoint.py" ]
+ENTRYPOINT [ "python" ]
+CMD [ "container_endpoint.py" ]
 
