@@ -1,6 +1,7 @@
 data/
 weights/
-!weights/models/*
+!weights/best_classifier.hdf5
+!weights/best_extractor.hdf5
 .git
 #weights/extractor/
 #weights/classifier/
