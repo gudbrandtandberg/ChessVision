@@ -1,9 +1,11 @@
+cv_env_38/
 cv_env/
 **/__pycache__
 .vscode/
 *.hdf5
 *.log
 bucket/
+bucket*/
 .env
 data/new_raw_resized/
 bucket_/

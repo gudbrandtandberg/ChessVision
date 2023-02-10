@@ -1,12 +1,11 @@
 opencv-python==3.4.8.29
-tensorflow==2.5.2
-flask==1.0
-quilt==2.9.9
+tensorflow==2.8
+flask==2.2
+quilt
 boto3
 python-chess
-# papermill
-# imbalanced-learn
-# matplotlib
-# pillow
+papermill
+imbalanced-learn
+matplotlib
 # wandb
 # aquariumlearning
