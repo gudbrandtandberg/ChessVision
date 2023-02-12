@@ -1,30 +1,27 @@
+import argparse
+import base64
+import json
+import logging
 import os
-from flask import Flask, flash, request, redirect, url_for, make_response, current_app
-import flask
-from werkzeug.utils import secure_filename
+import uuid
 from datetime import timedelta
 from functools import update_wrapper
-import uuid
-import json
-import platform
-import numpy as np
-import base64
-import argparse
 
-from chessvision.chessvision import classify_raw
-import cv_globals
-import cv2
 import chess
-# from stockfishpy.stockfishpy import *
-from extract_squares import extract_squares
-from u_net import load_extractor
-from square_classifier import load_classifier
-from util import BoardExtractionError
-import logging 
-import tensorflow as tf
+import cv2
+import flask
+import numpy as np
+from flask import Flask, current_app, make_response, request
+from werkzeug.utils import secure_filename
+
+import chessvision.cv_globals as cv_globals
+from chessvision import classify_raw
+from chessvision.data_processing.extract_squares import extract_squares
+from chessvision.model.square_classifier import load_classifier
+from chessvision.model.u_net import load_extractor
+from chessvision.util import BoardExtractionError
 
 app = Flask(__name__)
-# graph = tf.get_default_graph()
 
 #log = logging.getLogger('werkzeug')
 #log.setLevel(logging.ERROR)

@@ -4,7 +4,6 @@ Classify a 512x512 image of a chessboard.
 import numpy as np
 import chess
 from .data_processing.extract_squares import extract_squares
-from .util import listdir_nohidden, parse_arguments, BoardExtractionError
 
 label_names  = ['B', 'K', 'N', 'P', 'Q', 'R', 'b', 'k', 'n', 'p', 'q', 'r', 'f']
 

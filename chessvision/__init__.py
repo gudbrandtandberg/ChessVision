@@ -1,0 +1,1 @@
+from .chessvision import classify_raw

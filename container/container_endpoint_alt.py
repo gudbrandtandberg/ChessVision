@@ -1,27 +1,22 @@
-from __future__ import print_function
-
-import os
-import flask
-from flask import Flask, flash, request, redirect, url_for, make_response, current_app
-import json
 import base64
-import numpy as np
-from chessvision.util import BoardExtractionError
-from cv2 import imdecode, IMREAD_COLOR
+import json
+import os
+import uuid
 from datetime import timedelta
 from functools import update_wrapper
-from chessvision.model.u_net import get_unet_256
-from chessvision.model.square_classifier import build_square_classifier
-from chessvision.chessvision import classify_raw
-import cv2
-import boto3
-from tensorflow.keras.models import load_model
-import uuid
 
-# prefix = "../" # local
-# prefix = ""     # container
-# prefix="/weights"
-# model_path = 'model/models'
+import boto3
+import cv2
+import flask
+import numpy as np
+from cv2 import IMREAD_COLOR, imdecode
+from flask import current_app, make_response, request
+from tensorflow.keras.models import load_model
+
+from chessvision.chessvision import classify_raw
+from chessvision.model.u_net import get_unet_256
+from chessvision.util import BoardExtractionError
+
 model_path = "/weights"
 
 client = boto3.client('s3')

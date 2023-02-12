@@ -1,15 +1,15 @@
-import chessvision
-import cv_globals
-from u_net import load_extractor
-from square_classifier import load_classifier
-from util import listdir_nohidden
-import cv2
-import numpy as np
-import os
-import ast
-import time
 import itertools
-import matplotlib.pyplot as plt 
+import time
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+import cv_globals as cv_globals
+from chessvision import classify_raw
+from model.square_classifier import load_classifier
+from model.u_net import load_extractor
+from util import listdir_nohidden
 
 test_data_dir = cv_globals.data_root + "test/"
 labels = ["f", "P", "p", "R", "r", "N", "n", "B", "b", "Q", "q", "K", "k"]
@@ -164,7 +164,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
     for filename, img in data_generator:
         start = time.time()
         try: 
-            board_img, mask, predictions, chessboard, _, squares, names = chessvision.classify_raw(img, filename, extractor, classifier, threshold=threshold)
+            board_img, mask, predictions, chessboard, _, squares, names = classify_raw(img, filename, extractor, classifier, threshold=threshold)
         except:
             errors += 1
             continue

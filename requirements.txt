@@ -7,5 +7,6 @@ python-chess
 papermill
 imbalanced-learn
 matplotlib
+protobuf==3.20.1
 # wandb
 # aquariumlearning
