@@ -15,8 +15,6 @@ from .cv_globals import INPUT_SIZE, BOARD_SIZE
 
 
 def extract_board(image, orig, model, threshold=80):
-    #predict chessboard-mask:
-    #print("Extracting board..")
     image_batch = np.array([image], np.float32) / 255
     predicted_mask_batch = model.predict(image_batch)
     predicted_mask = predicted_mask_batch[0].reshape(INPUT_SIZE)
