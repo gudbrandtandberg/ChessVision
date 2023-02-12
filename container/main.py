@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import os
 import uuid
 from datetime import timedelta
@@ -17,17 +18,11 @@ from chessvision.chessvision import classify_raw
 from chessvision.model.u_net import get_unet_256
 from chessvision.util import BoardExtractionError
 
-model_path = "/weights"
+logger = logging.getLogger("chessvision")
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
 
-client = boto3.client('s3')
-
-print("Loading models...")
-board_extractor = get_unet_256()
-board_extractor.load_weights(os.path.join(model_path, 'best_extractor.hdf5'))
-
-square_classifier = load_model(os.path.join(model_path, 'best_classifier.hdf5'))
-print("Loading models... DONE!")
-
+s3Client = boto3.client('s3')
 
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
@@ -90,18 +85,31 @@ def read_image_from_b64(b64string):
 # The flask app for serving predictions
 app = flask.Flask(__name__)
 
+@app.before_first_request
+def load_models():
+    logger.info("Loading models...")
+    model_path = "/weights"
+    board_extractor = get_unet_256()
+    board_extractor.load_weights(os.path.join(model_path, 'best_extractor.hdf5'))
+    square_classifier = load_model(os.path.join(model_path, 'best_classifier.hdf5'))
+    current_app.board_extractor = board_extractor
+    current_app.square_classifier = square_classifier
+    logger.info("Models loaded")
+
 @app.route('/ping', methods=['GET'])
 def ping():
     """
-    Determine if the container is working and healthy.
-    In this sample container, we declare it healthy if we can load the model
-    successfully.
+    Healthcheck.
     """
-    print("Pinged")
-    health = True
-    status = 200 if health else 404
+    logger.debug("Pinged")
+    board_extractor = current_app.board_extractor
+    square_classifier = current_app.square_classifier
+    error = ""
+    if not square_classifier or not board_extractor:
+        error = "models failed to load"
+    status = not error
     return flask.Response(
-        response="Yeah, bro!",
+        response=json.dumps({status: status, error: error}),
         status=status,
         mimetype='application/json')
 
@@ -110,43 +118,48 @@ def ping():
 def chessvision_algo():
     """
     """
-    print("Invoked")
+    logger.info("Chessvision algorithm invoked")
+    board_extractor = current_app.board_extractor
+    square_classifier = current_app.square_classifier
+    if not square_classifier or not board_extractor:
+        raise Exception("Models not loaded in this application")
+
     img = None
     flipped = None
 
-    if flask.request.content_type == 'application/json':
-        print("Got data")
+    if flask.request.content_type != 'application/json':
+        raise Exception("This endpoints only accepts content-type application/json")
+
+    try:
         data = json.loads(flask.request.data.decode('utf-8'))
         flipped = data["flip"] == "true"
         img = read_image_from_b64(data["image"])
-
-    if img is None or flipped is None:
-        print("Did not got data")
+    except Exception as e:
         return flask.Response(
-            response="Could not parse input!",
+            response=f"Failed to read image from payload: {e}",
             status=415,
             mimetype="application/json")
 
+    
     # Upload image to S3
     filename = str(uuid.uuid4()) + ".JPG"
     cv2.imwrite(filename, img)
     with open(filename, "rb") as data:
-        client.upload_fileobj(data, "chessvision-bucket", "raw-uploads/" + filename)
+        s3Client.upload_fileobj(data, "chessvision-bucket", "raw-uploads/" + filename)
     os.remove(filename)
 
+    # Classify image
     try:
         _, _, _, _, FEN, _, _ = classify_raw(img, filename, board_extractor, square_classifier, flip=flipped)
-    
-    except BoardExtractionError:
+    except BoardExtractionError as e:
         return flask.Response(
-            response="ChessVision algorithm failed",
+            response=json.dumps({"error": f"ChessVision algorithm failed with error '{e}'"}),
             status=500,
             mimetype="application/json")
 
-    result = {"FEN": FEN}
-
+    result = {"FEN": FEN, "error": ""}
     return flask.Response(response=json.dumps(result), status=200, mimetype="application/json")
 
 if __name__ == "__main__":
-    print("Running server")
+    print("Running debug server")
     app.run(host='0.0.0.0', port=8080)
