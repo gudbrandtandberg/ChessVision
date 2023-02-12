@@ -109,7 +109,7 @@ def ping():
         error = "models failed to load"
     status = not error
     return flask.Response(
-        response=json.dumps({status: status, error: error}),
+        response=json.dumps({"status": status, "error": error}),
         status=status,
         mimetype='application/json')
 
