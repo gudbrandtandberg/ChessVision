@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import timedelta
+from datetime import date, timedelta
 from functools import update_wrapper
 
 import boto3
@@ -143,11 +143,11 @@ def chessvision_algo():
     
     # Upload image to S3
     filename = str(uuid.uuid4()) + ".JPG"
+    date_prefix = f"{date.today().year}/{date.today().month}/{date.today().day}/"
     cv2.imwrite(filename, img)
     with open(filename, "rb") as data:
-        s3Client.upload_fileobj(data, "chessvision-bucket", "raw-uploads/" + filename)
+        s3Client.upload_fileobj(data, "chessvision-bucket", "raw-uploads/" + date_prefix + filename)
     os.remove(filename)
-
     # Classify image
     try:
         _, _, _, _, FEN, _, _ = classify_raw(img, filename, board_extractor, square_classifier, flip=flipped)
