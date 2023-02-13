@@ -3,7 +3,6 @@ import numpy as np
 from util import listdir_nohidden
 from board_extractor import extract_perspective
 import os 
-import matplotlib.pyplot as plt
 import json
 import cv_globals
 from square_classifier import load_classifier

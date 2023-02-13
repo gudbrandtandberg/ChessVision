@@ -15,3 +15,4 @@ logs/
 lightly_outputs/
 data/quilt_revisions
 computeroot/user_uploads
+dist/

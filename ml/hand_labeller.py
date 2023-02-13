@@ -1,10 +1,7 @@
 import cv2
-import numpy as np
 from util import listdir_nohidden
 import matplotlib.pyplot as plt
-import pickle
 import csv
-import time
 
 if __name__ == "__main__":
 

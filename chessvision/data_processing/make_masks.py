@@ -1,9 +1,7 @@
 import cv2
 import json
 import numpy as np
-# from util import listdir_nohidden
 import cv2
-#import matplotlib.pyplot as plt
 import os
 from os.path import join
 import cv_globals

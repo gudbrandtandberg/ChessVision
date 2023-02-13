@@ -1,0 +1,1 @@
+include chessvision/weights/best_extractor.hdf5 chessvision/weights/best_classifier.hdf5
