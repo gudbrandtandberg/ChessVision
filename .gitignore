@@ -1,5 +1,4 @@
 cv_env_38/
-cv_env/
 **/__pycache__
 .vscode/
 *.hdf5
@@ -16,3 +15,4 @@ lightly_outputs/
 data/quilt_revisions
 computeroot/user_uploads
 dist/
+*.egg-info
