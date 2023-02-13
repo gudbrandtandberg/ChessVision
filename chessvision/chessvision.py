@@ -1,17 +1,35 @@
+import os
 import logging
-
 import cv2
+from tensorflow.keras.models import load_model
 
 from .board_classifier import classify_board
 from .board_extractor import extract_board
-from .cv_globals import INPUT_SIZE
+from .cv_globals import INPUT_SIZE, board_weights, square_weights
+from .model.u_net import get_unet_256
 from .util import BoardExtractionError
 
 logger = logging.getLogger("chessvision")
+ 
+def load_models():
+    logger.debug("Loading models..")
+    if not os.path.isfile(square_weights):
+        raise Exception("Square model file not found")
+    if not os.path.isfile(board_weights):
+        raise Exception("Board model file not found")
+    board_extractor = get_unet_256()
+    board_extractor.load_weights(board_weights)
+    square_classifier = load_model(square_weights)
+    logger.debug("Models loaded")
+    return board_extractor, square_classifier
 
-def classify_raw(img, filename, board_model, sq_model, flip=False, threshold=80):
+
+def classify_raw(img, filename="", board_model=None, sq_model=None, flip=False, threshold=80):
 
     logger.debug("Processing image {}".format(filename))
+
+    if not board_model or not sq_model:
+        board_model, sq_model = load_models()
     
     ###############################   STEP 1    #########################################
 

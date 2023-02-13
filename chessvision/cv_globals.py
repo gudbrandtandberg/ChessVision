@@ -1,6 +1,6 @@
 import os
 
-CVROOT = os.getenv("CVROOT")
+CVROOT = os.getenv("CVROOT", os.path.dirname(__file__))
 
 compute_root = os.path.join(CVROOT, "computeroot/")
 data_root = os.path.join(CVROOT, "data/")

@@ -24,7 +24,7 @@ def extract_board(image, orig, model, threshold=80):
     approx = find_quadrangle(mask)
     if approx is None:
         print("Contour approximation failed!")
-        raise BoardExtractionError()
+        raise BoardExtractionError("Failed to find something looking like a chessboard. Make sure the input contains a single chessboard, covering at least 60\% of the image.")
     
     #scale approximation to input image size
     approx = scale_approx(approx, (orig.shape[0], orig.shape[1])) 
