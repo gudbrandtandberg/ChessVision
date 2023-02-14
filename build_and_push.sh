@@ -1,10 +1,9 @@
 
 image="chessvision-algo"
-
-account=$(aws sts get-caller-identity --query Account --output text)
-# region=$(aws configure get region)
+version="1.0"
 region=eu-central-1
-fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:latest"
+account=$(aws sts get-caller-identity --query Account --output text)
+fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:${version}"
 
 # Get the login command from ECR and execute it directly
 # $(aws ecr get-login --region ${region} --no-include-email)

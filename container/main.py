@@ -144,10 +144,14 @@ def chessvision_algo():
     # Upload image to S3
     filename = str(uuid.uuid4()) + ".JPG"
     date_prefix = f"{date.today().year}/{date.today().month}/{date.today().day}/"
-    cv2.imwrite(filename, img)
-    with open(filename, "rb") as data:
-        s3Client.upload_fileobj(data, "chessvision-bucket", "raw-uploads/" + date_prefix + filename)
-    os.remove(filename)
+    enc = cv2.imencode(".jpg", img)[1].tobytes()
+    s3Client.put_object(
+        Body=enc,
+        Bucket="chessvision-bucket",
+        Key="raw-uploads/" + date_prefix + filename,
+        ContentType="image/jpeg"
+        )
+
     # Classify image
     try:
         _, _, _, _, FEN, _, _ = classify_raw(img, filename, board_extractor, square_classifier, flip=flipped)
