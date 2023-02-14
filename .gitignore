@@ -7,6 +7,8 @@ bucket/
 bucket*/
 .env
 data/new_raw_resized/
+data/new_boards/
+data/new_squares/
 bucket_/
 **/.ipynb_checkpoints
 wandb/
