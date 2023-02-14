@@ -1,7 +1,7 @@
-import cv_globals
+import chessvision.cv_globals as cv_globals
 import os
 from os.path import join 
-from util import listdir_nohidden
+from chessvision.util import listdir_nohidden
 import random
 
 indir = join(cv_globals.CVROOT, "computeroot/user_uploads/squares/")

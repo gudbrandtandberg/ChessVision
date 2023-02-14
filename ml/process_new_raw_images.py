@@ -18,13 +18,21 @@ from chessvision.model.u_net import load_extractor
 extractor = load_extractor(weights=cv_globals.board_weights)
 classifier = load_classifier(weights=cv_globals.square_weights)
 
-def image_generator():
-    # imgs = list(map(lambda x: cv2.imread(test_data_dir + "raw/" + x), img_filenames))
+def image_generator(years=["2023"], months=["2"], days=["12"]):
 
-    for root, dirs, files in os.walk(os.path.join(cv_globals.CVROOT, "bucket_")):
-        # stripped_root = root.replace(path, "").lstrip("\\")
-        print(f"Scanning directory {root}")
+    for root, dirs, files in os.walk(os.path.join(cv_globals.CVROOT, "bucket")):
+        if dirs:
+            continue
+        day = root.split(os.sep)[-1]
+        month = root.split(os.sep)[-2]
+        year = root.split(os.sep)[-3]
+        if day not in days or month not in months or year not in years:
+            print(f"Skipping folder {year}/{month}/{day}")
+            continue
+
+        print(f"Scanning folder {year}/{month}/{day}")
         for f in files:
+            continue
             if not f.endswith("JPG"):
                 assert False
             img = cv2.imread(os.path.join(root, f))
@@ -34,7 +42,11 @@ def image_generator():
 
 def main():
     threshold = 80
-    datagen = image_generator()
+    years = ["2023"]
+    months = ["2"]
+    days = ["12"]
+
+    datagen = image_generator(years=years, months=months, days=days)
 
     for img, filename in datagen:
 
