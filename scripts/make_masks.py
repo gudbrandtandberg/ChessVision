@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import os
 from os.path import join
-import cv_globals
+import chessvision.cv_globals as cv_globals
 
 
 def make_masks(input_dir, output_dir, image_dir, json_file):
@@ -31,7 +31,7 @@ def make_masks(input_dir, output_dir, image_dir, json_file):
 
 if __name__ == "__main__":
 
-    #python chessvision/data_processing/make_masks.py
+    #python scripts/make_masks.py
 
     json_file = join(cv_globals.data_root, "board_extraction/coordinates.json")
     input_dir = join(cv_globals.data_root, "new_raw_resized/")

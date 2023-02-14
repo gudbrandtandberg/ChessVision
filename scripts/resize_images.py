@@ -1,10 +1,10 @@
 import sys
 import argparse
 import cv2
-from util import listdir_nohidden, parse_arguments
+from chessvision.util import listdir_nohidden, parse_arguments
 import uuid
 import os
-import cv_globals
+import chessvision.cv_globals as cv_globals
 
 def resize_images(indir, outdir):
     """Resizes new raw images"""
