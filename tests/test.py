@@ -5,11 +5,11 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-import cv_globals as cv_globals
+import chessvision.cv_globals as cv_globals
 from chessvision import classify_raw
-from model.square_classifier import load_classifier
-from model.u_net import load_extractor
-from util import listdir_nohidden
+from chessvision.model.square_classifier import load_classifier
+from chessvision.model.u_net import load_extractor
+from chessvision.util import listdir_nohidden
 
 test_data_dir = cv_globals.data_root + "test/"
 labels = ["f", "P", "p", "R", "r", "N", "n", "B", "b", "Q", "q", "K", "k"]
@@ -214,14 +214,17 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 
 
 if __name__ == "__main__":
+    import time
     print("Computing test accuracy...")
-
     extractor = load_extractor(weights=cv_globals.board_weights)
     classifier = load_classifier(weights=cv_globals.square_weights)
 
     test_data_gen = get_test_generator()
-    results = run_tests(test_data_gen, extractor, classifier)
 
+    start = time.time()
+    results = run_tests(test_data_gen, extractor, classifier)
+    stop = time.time()
+    print(f"Tests completed in {stop-start:.1f}s")
     print("Test accuracy: {}".format(results["acc"]))
     # print("Top-1 accuracy: {}".format(results["top_1_accuracy"]))
     print("Top-2 accuracy: {}".format(results["top_2_accuracy"]))

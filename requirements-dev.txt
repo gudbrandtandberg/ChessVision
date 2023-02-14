@@ -11,3 +11,6 @@ protobuf==3.20.1
 wandb
 aquariumlearning
 setuptools
+cairosvg
+pipwin
+#pipwin install cairocffi
