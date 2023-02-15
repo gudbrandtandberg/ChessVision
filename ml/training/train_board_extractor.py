@@ -1,12 +1,12 @@
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
-from augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
+from chessvision.model.augmentations import randomHueSaturationValue, randomShiftScaleRotate, randomHorizontalFlip
 import numpy as np
 import cv2 
-import cv_globals
-from util import listdir_nohidden
-from u_net import load_extractor
+import chessvision.cv_globals as cv_globals
+from chessvision.util import listdir_nohidden
+from chessvision.model.u_net import load_extractor
 import time
 import argparse
 import quilt

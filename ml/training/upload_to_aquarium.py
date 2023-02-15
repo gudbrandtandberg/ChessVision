@@ -1,11 +1,13 @@
-import aquariumlearning as al
-from dataset_utils import get_training_generator
-from square_classifier import load_classifier
-import cv_globals
-from PIL import Image
 import os
+
+import aquariumlearning as al
 import numpy as np
 import tensorflow as tf
+from dataset_utils import get_training_generator
+from PIL import Image
+
+import chessvision.cv_globals as cv_globals
+from chessvision.model.square_classifier import load_classifier
 
 model = load_classifier(weights=cv_globals.square_weights)
 embedding_model = tf.keras.Model(inputs=model.input, outputs=model.get_layer("dense_2").output)

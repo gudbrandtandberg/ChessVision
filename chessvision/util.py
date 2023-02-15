@@ -5,7 +5,7 @@ import os
 import argparse
 import logging
 
-logger = logging.getLogger("chessvision.log")
+logger = logging.getLogger("chessvision")
 
 
 class BoardExtractionError(Exception):

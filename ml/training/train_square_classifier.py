@@ -4,8 +4,8 @@ import numpy as np
 import time
 import argparse
 import os
-from square_classifier import build_square_classifier
-import cv_globals
+from chessvision.model.square_classifier import build_square_classifier
+import chessvision.cv_globals as cv_globals
 import datetime
 from dataset_utils import get_validation_generator, get_training_generator, inverse_labels, get_class_weights, install_data
 import wandb

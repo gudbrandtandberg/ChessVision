@@ -1,5 +1,6 @@
 
 import os
+import random
 import shutil
 from io import BytesIO
 
@@ -36,7 +37,6 @@ def image_generator(years=["2023"], months=["2"], days=["12"]):
             if not f.endswith("JPG"):
                 assert False
             img = cv2.imread(os.path.join(root, f))
-            # yield img_filenames[i], test_imgs[i]
             yield img, os.path.join(root, f)
 
 
@@ -60,6 +60,12 @@ def main():
             os.remove(filename)
             continue
 
+        if random.uniform() < 0.05:
+            print(f"Copying {filename} to test data")
+            shutil.copy(filename, os.path.join(cv_globals.data_root, "new_test"))
+            os.remove(filename)
+            continue
+
         try:
             board_img, mask, predictions, chessboard, _, squares, names = classify_raw(
                 img,
@@ -70,7 +76,7 @@ def main():
                 )
         except Exception as e:
             print(f"Board extraction failed: {e}")
-            shutil.copy(filename, os.path.join(cv_globals.data_root, "new_boards"))
+            shutil.copy(filename, os.path.join(cv_globals.data_root, "new_raw"))
             os.remove(filename)
             continue
         
@@ -100,7 +106,7 @@ def main():
 
         if ok == "n":
             print("Board is not good, copying image to new board images")
-            shutil.copy(filename, os.path.join(cv_globals.data_root, "new_boards"))
+            shutil.copy(filename, os.path.join(cv_globals.data_root, "new_raw"))
         
         print("Copying board to new squares images")
         shutil.copy(filename, os.path.join(cv_globals.data_root, "new_squares"))

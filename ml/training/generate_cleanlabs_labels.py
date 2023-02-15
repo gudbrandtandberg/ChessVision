@@ -1,6 +1,6 @@
 from sklearn.model_selection import cross_val_predict
-from square_classifier import load_classifier
-import cv_globals
+from chessvision.model.square_classifier import load_classifier
+import chessvision.cv_globals as cv_globals
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 import tensorflow
 from dataset_utils import get_training_generator_matrix

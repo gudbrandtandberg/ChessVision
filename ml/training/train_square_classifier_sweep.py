@@ -1,28 +1,32 @@
-import tensorflow
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
-from tensorflow.keras.utils import to_categorical
-import numpy as np
-import quilt
-import cv2
-from dataset_utils import get_validation_generator, get_training_generator, inverse_labels, get_class_weights, install_data
-
-from imblearn.under_sampling import NearMiss
-from imblearn.over_sampling import SMOTE
-from imblearn.combine import SMOTEENN, SMOTETomek
-from sklearn.utils import class_weight
+import argparse
+import datetime
+import os
+import sys
 import time
 from collections import Counter
-import argparse
-import sys, os
-from quilt.data.gudbrandtandberg import chesspieces as pieces
-from square_classifier import build_square_classifier
-import cv_globals
-import datetime
-from sklearn.utils import shuffle
 
-import wandb
+import cv2
+import numpy as np
+import quilt
+import tensorflow
+from dataset_utils import (get_class_weights, get_training_generator,
+                           get_validation_generator, install_data,
+                           inverse_labels)
+from imblearn.combine import SMOTEENN, SMOTETomek
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import NearMiss
+from quilt.data.gudbrandtandberg import chesspieces as pieces
+from sklearn.utils import class_weight, shuffle
+from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
+                                        ReduceLROnPlateau, TensorBoard)
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.utils import to_categorical
 from wandb.keras import WandbCallback
+
+import chessvision.cv_globals as cv_globals
+import wandb
+from chessvision.model.square_classifier import build_square_classifier
+
 
 def train(config=None):
     with wandb.init(config=config):
