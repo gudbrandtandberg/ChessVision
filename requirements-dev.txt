@@ -14,3 +14,5 @@ setuptools
 cairosvg
 pipwin
 #pipwin install cairocffi
+ipython
+ipykernel

@@ -1,5 +1,5 @@
 import papermill as pm
-import cv_globals
+import chessvision.cv_globals as cv_globals
 import argparse
 import subprocess
 import os
@@ -8,7 +8,8 @@ if __name__ == "__main__":
     # Example usage:
     # python generate_report.py --extractor_weights=/Users/gudbrand/Programming/Chess/ChessVision/weights/new_extractor.hdf5 --report_name=new_extractor_report
     # python generate_report.py --classifier_weights=/Users/gudbrand/Programming/Chess/ChessVision/weights/new_classifier.hdf5 --report_name=new_classifier_report
-
+    # python ml/generate_report.py --extractor_weights="C:\Users\Gudbrand\Programming\ChessVision\weights\extractor\02-15-2023-07-44\extractor_30-0.9826.hdf5" --report_name=new_extractor_report
+        
     parser = argparse.ArgumentParser(
         description='Output a html report of chessvision performance')
     parser.add_argument("--extractor_weights", type=str, default=cv_globals.board_weights)
@@ -17,13 +18,13 @@ if __name__ == "__main__":
     parser.add_argument("--report_name", type=str, default="new_report")
     args = parser.parse_args()
 
-    infile  = os.path.join(cv_globals.CVROOT, "chessvision", "notebooks", "Performance Report.ipynb")
-    outfile = os.path.join(cv_globals.CVROOT, "chessvision", "notebooks", "reports", "{}.ipynb".format(args.report_name))
+    infile  = os.path.join(cv_globals.CVROOT, "ml", "notebooks", "Performance Report.ipynb")
+    outfile = os.path.join(cv_globals.CVROOT, "ml", "notebooks", "reports", "{}.ipynb".format(args.report_name))
     
     pm.execute_notebook(
         infile,
         outfile,
-        # kernel_name="python",
+        kernel_name="python",
         parameters=dict(extractor_weights=args.extractor_weights,
                         classifier_weights=args.classifier_weights,
                         threshold=args.threshold)

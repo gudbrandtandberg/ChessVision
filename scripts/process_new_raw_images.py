@@ -21,7 +21,7 @@ classifier = load_classifier(weights=cv_globals.square_weights)
 
 def image_generator(years=["2023"], months=["2"], days=["12"]):
 
-    for root, dirs, files in os.walk(os.path.join(cv_globals.CVROOT, "bucket")):
+    for root, dirs, files in os.walk(os.path.join(cv_globals.data_root, "bucket")):
         if dirs:
             continue
         day = root.split(os.sep)[-1]
@@ -33,7 +33,6 @@ def image_generator(years=["2023"], months=["2"], days=["12"]):
 
         print(f"Scanning folder {year}/{month}/{day}")
         for f in files:
-            continue
             if not f.endswith("JPG"):
                 assert False
             img = cv2.imread(os.path.join(root, f))
@@ -44,7 +43,7 @@ def main():
     threshold = 80
     years = ["2023"]
     months = ["2"]
-    days = ["12"]
+    days = ["15"]
 
     datagen = image_generator(years=years, months=months, days=days)
 
@@ -60,7 +59,7 @@ def main():
             os.remove(filename)
             continue
 
-        if random.uniform() < 0.05:
+        if random.uniform(a=0, b=1) < 0.05:
             print(f"Copying {filename} to test data")
             shutil.copy(filename, os.path.join(cv_globals.data_root, "new_test"))
             os.remove(filename)
