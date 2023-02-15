@@ -38,7 +38,7 @@ formatter = RequestFormatter(
 )
 
 logger = logging.getLogger("chessvision")
-file_handler = logging.FileHandler('cv_endpoint.log', 'w')
+file_handler = logging.FileHandler("logs/cv_endpoint.log", "w")
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 logger.addHandler(stream_handler)
