@@ -10,6 +10,7 @@ data/new_raw_resized/
 data/new_boards/
 data/new_squares/
 data/new_raw/
+data/new_test/
 bucket_/
 **/.ipynb_checkpoints
 wandb/
