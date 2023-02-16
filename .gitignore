@@ -12,6 +12,8 @@ data/new_squares/
 data/new_raw/
 data/new_test/
 bucket_/
+ml/notebooks/reports/*.html
+!ml/notebooks/reports/best_report.html
 **/.ipynb_checkpoints
 wandb/
 logs/
