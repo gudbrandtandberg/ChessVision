@@ -16,3 +16,4 @@ pipwin
 #pipwin install cairocffi
 ipython
 ipykernel
+cleanlab-studio

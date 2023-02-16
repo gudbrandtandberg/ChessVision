@@ -4,17 +4,12 @@ import os
 import sys
 import time
 from collections import Counter
-
-import cv2
 import numpy as np
-import quilt
 import tensorflow
 from dataset_utils import (get_class_weights, get_training_generator,
                            get_validation_generator, install_data,
                            inverse_labels)
-from imblearn.combine import SMOTEENN, SMOTETomek
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import NearMiss
+
 from quilt.data.gudbrandtandberg import chesspieces as pieces
 from sklearn.utils import class_weight, shuffle
 from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
