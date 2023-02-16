@@ -8,7 +8,9 @@ if __name__ == "__main__":
     # Example usage:
     # python generate_report.py --extractor_weights=/Users/gudbrand/Programming/Chess/ChessVision/weights/new_extractor.hdf5 --report_name=new_extractor_report
     # python generate_report.py --classifier_weights=/Users/gudbrand/Programming/Chess/ChessVision/weights/new_classifier.hdf5 --report_name=new_classifier_report
-    # python ml/generate_report.py --extractor_weights="C:\Users\Gudbrand\Programming\ChessVision\weights\extractor\02-15-2023-07-44\extractor_30-0.9826.hdf5" --report_name=new_extractor_report
+
+    # python generate_report.py --classifier_weights= --report_name=new_classifier_report
+    # python generate_report.py --extractor_weights= --report_name=new_extractor_report
         
     parser = argparse.ArgumentParser(
         description='Output a html report of chessvision performance')

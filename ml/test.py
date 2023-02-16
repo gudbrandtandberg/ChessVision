@@ -155,7 +155,8 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
                "squares": [],
                "filenames": [],
                "masks": [],
-               "board_accs": []
+               "board_accs": [],
+               "true_labels": []
                }
 
     confusion_mtx = np.zeros((13, 13), dtype=int)
@@ -194,6 +195,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
         results["squares"].append(squares)
         results["filenames"].append(filename)
         results["masks"].append(mask)
+        results["true_labels"].append(true_labels)
         N += 1
 
     test_accuracy  /= N

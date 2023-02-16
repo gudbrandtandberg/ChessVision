@@ -9,7 +9,7 @@ from sklearn.utils import class_weight
 from tensorflow.keras.utils import to_categorical
 from sklearn.utils import shuffle
 
-pieces = quilt.load("gudbrandtandberg/chesspieces", hash="c8469b9d04e92fea3ff03a344cb512988783cdfa17f6336a35c31e07a4668b02")
+pieces = quilt.load("gudbrandtandberg/chesspieces", hash="d28b23f6aa44126b23150d4108c1af7219f33fbbaa2f61b1c9152a9864f1c8dd")
 
 labels = {"b": 6, "k": 7, "n": 8, "p": 9, "q": 10, "r": 11, "B": 0,
           "f": 12, "K": 1, "N": 2, "P": 3, "Q": 4, "R": 5}
@@ -114,6 +114,6 @@ def labels_only(node, paths):
 def get_class_weights():
     print("Computing class weights")
     y = pieces["training"](asa=labels_only)
-    class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
+    class_weights = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y), y=y)
     class_weights = {c: w for c, w in enumerate(class_weights)}
     return class_weights
