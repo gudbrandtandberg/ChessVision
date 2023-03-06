@@ -10,6 +10,7 @@ ADD weights/best_extractor.hdf5 /weights/best_extractor.hdf5
 COPY ./chessvision/ /app/chessvision
 COPY container/main.py /app/main.py
 COPY container/uwsgi.ini /app/uwsgi.ini
+# COPY container/nginx.conf /etc/nginx/conf.d/custom.conf
 
 ENV CVROOT=/app/chessvision
 ENV PYTHONPATH=/app

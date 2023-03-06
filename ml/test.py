@@ -10,6 +10,7 @@ from chessvision import classify_raw
 from chessvision.model.square_classifier import load_classifier
 from chessvision.model.u_net import load_extractor
 from chessvision.util import listdir_nohidden
+from chessvision.model.ensemble_classifier import EnsembleSquareClassifier
 
 test_data_dir = cv_globals.data_root + "test/"
 labels = ["f", "P", "p", "R", "r", "N", "n", "B", "b", "Q", "q", "K", "k"]
@@ -163,6 +164,7 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
     errors = 0
 
     for filename, img in data_generator:
+        print(f"***Classifying test image {filename}***")
         start = time.time()
         try: 
             board_img, mask, predictions, chessboard, _, squares, names = classify_raw(img, filename, extractor, classifier, threshold=threshold)
@@ -214,12 +216,22 @@ def run_tests(data_generator, extractor, classifier, threshold=80):
 
     return results
 
-
 if __name__ == "__main__":
     import time
     print("Computing test accuracy...")
+    
+    use_ensemble = False
+    if use_ensemble:
+        model_files = [
+            r"C:\Users\Gudbrand\Programming\ChessVision\weights\classifier_1_09-0.9308.hdf5",
+            r"C:\Users\Gudbrand\Programming\ChessVision\weights\classifier_2_02-0.2864.hdf5",
+            r"C:\Users\Gudbrand\Programming\ChessVision\weights\classifier_3_02-0.0764.hdf5",
+        ]
+    else:
+        model_files = [cv_globals.square_weights]
+    
     extractor = load_extractor(weights=cv_globals.board_weights)
-    classifier = load_classifier(weights=cv_globals.square_weights)
+    classifier = EnsembleSquareClassifier(model_files=model_files)
 
     test_data_gen = get_test_generator()
 

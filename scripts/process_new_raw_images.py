@@ -43,7 +43,7 @@ def main():
     threshold = 80
     years = ["2023"]
     months = ["2"]
-    days = ["15"]
+    days = ["17"]
 
     datagen = image_generator(years=years, months=months, days=days)
 

@@ -104,6 +104,9 @@ def get_training_generator_matrix(sample=None, batch_size=32, return_filenames=F
 def get_training_generator(sample=None, batch_size=32, return_filenames=False):
     return pieces["training"](asa=keras_generator(transform=True, sample=sample, batch_size=batch_size, return_filenames=return_filenames))
 
+def get_validation_generator_matrix(batch_size=32, return_filenames=False):
+    return pieces["validation"](asa=matrix(transform=False, sample=None, batch_size=batch_size, return_filenames=return_filenames))
+
 def get_validation_generator(batch_size=32, return_filenames=False):
     return pieces["validation"](asa=keras_generator(transform=False, sample=None, batch_size=batch_size, return_filenames=return_filenames))
 

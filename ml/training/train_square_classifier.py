@@ -1,5 +1,5 @@
 import tensorflow.keras
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 import numpy as np
 import time
 import argparse
@@ -114,8 +114,8 @@ if __name__ == "__main__":
     duration = time.time() - start
     print("Training the square classifier took {} minutes and {} seconds".format(int(np.floor(duration / 60)), int(np.round(duration % 60))))
 
-    predict_and_log_misclassifications("train")
-    predict_and_log_misclassifications("validation")
+    # predict_and_log_misclassifications("train")
+    # predict_and_log_misclassifications("validation")
 
     # Run model on test data
     # from test import load_classifier, load_extractor, get_test_generator, run_tests
