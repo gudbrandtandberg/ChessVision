@@ -6,6 +6,7 @@ cv_env_38/
 bucket/
 bucket*/
 .env
+.venv
 data/new_raw_resized/
 data/new_boards/
 data/new_squares/
