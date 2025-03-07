@@ -1,5 +1,7 @@
 # Chess Vision - a computer vision chess project
 
+> **Note**: This project has moved to [ChessVision-3LC](https://github.com/gudbrandtandberg/ChessVision-3LC)
+
 This repository contains code and resources for extracting chess positions from images using computer vision.
 
 ## Try it
